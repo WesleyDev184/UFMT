@@ -1,0 +1,39 @@
+input,select,button{
+    border-radius: 3px;
+}
+.campo{
+    margin-bottom: -0.5em;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.campo label{
+    display: block;
+}
+.est{
+    position: relative;
+    left: 190px;
+    bottom: 18px;
+}
+.sex{
+    position: relative;
+    left: 350px;
+    bottom: 38px;
+}
+.birth_date{
+    position: relative;
+    left: 180px;
+    bottom: 18px;
+}
+.namec{
+    padding-bottom: 23px;
+    padding-top: 8px;
+}
+.inp_name{
+    width: 430px;
+}
+.group1{
+    height: 210px;
+}
+.disc{
+    padding-top: 15px;
+}
