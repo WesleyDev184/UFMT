@@ -87,7 +87,7 @@ if __name__ == '__main__':
             id_prod = int(input('Entre com o id do produto: '))
             nome = input('Entre com o nome do produto: ')
             preco_unit = float(input('Entre com o preço unitario do produto: '))
-            qtd = int(input('Entre com a quantidade do produto: '))
+            qtd = float(input('Entre com a quantidade do produto: '))
             cadastrarProduto(conn, id_prod, nome, preco_unit, qtd)
         elif choice == '3':
 
