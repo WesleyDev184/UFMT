@@ -1,0 +1,124 @@
+*{
+    margin: 0 auto;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+}
+
+body{
+    margin: 0;
+    width: 100%;
+    display: flex;
+    height: 100vh;
+    font-size: 15px;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(237, 237, 234);
+    flex-direction: column;
+}
+
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 600px;
+    background-color: white;
+    padding: 5px;
+}
+
+h1{
+    display: flex;
+    justify-content: center;
+}
+
+p{
+    margin-top: 30px;
+}
+
+.list{
+    display: flex;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+ul{
+    list-style-image: url('favicon-16x16.png');
+}
+
+table {
+    border-collapse: collapse;
+    font-size: 15px;
+    margin-bottom: 15px;
+  }
+  
+  td, th {
+    border: 1px solid #f3f5f5;
+    text-align: left;
+    padding: 3px;
+    width: 250px;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #b0d3eb;
+  }
+
+.title{
+    background-color: rgb(105, 150, 208);
+    height: 30px;
+}
+
+.regs{
+    width: 100%;
+}
+
+legend{
+    width: auto;
+}
+
+form{
+    margin: 0;
+    display: flex;
+    justify-content: start;
+    width: 350px;
+    flex-direction: column;
+}
+
+input{
+    margin-bottom: 10px;
+}
+
+.cont-btn{
+    display: flex;
+    justify-content: end;
+    margin: 0;
+    padding-top: 8px;
+}
+
+.btn {
+	box-shadow:inset 0px 1px 0px 0px #9acc85;
+	background:linear-gradient(to bottom, #74ad5a 5%, #68a54b 100%);
+	background-color:#74ad5a;
+	border:1px solid #3b6e22;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:13px;
+	font-weight:bold;
+	padding:6px 12px;
+	text-decoration:none;
+    width: auto;
+    margin: 0;
+}
+.btn:hover {
+	background:linear-gradient(to bottom, #68a54b 5%, #74ad5a 100%);
+	background-color:#68a54b;
+}
+.btn:active {
+	position:relative;
+	top:1px;
+}
