@@ -1,4 +1,3 @@
-from ast import Try
 from secrets import choice
 from sqlite3 import Cursor
 import mysql.connector
