@@ -30,9 +30,7 @@ def cadastrarClientes(con, id, nome, cpf):
 #cadastrar Produto
 def cadastrarProduto(con, id_prod, nome, preco_unit, qtd):
     cur = con.cursor()
-    sql = ('insert into produto (id_prod, nome, preco_unit, qtd) values (%s, %s, %s, %s)')
-    dados = (id_prod, nome, preco_unit, qtd)
-    cur.execute(sql, dados)
+    cur.callproc('insert_produto', [id_prod, nome, preco_unit, qtd])
     cur.close()
     con.commit()
     print('Produto inserido com sucesso') 
@@ -57,16 +55,8 @@ def buscarProduto (con):
 #cadastrar venda
 def cadastrarVenda(con, id_prod, id_cli, id_venda, data, qtd):
     cur = con.cursor()
-    sql = ('insert into Compras (id_prod, id_cli, id, data_compra, qtd_compra) values (%s, %s, %s, %s, %s)')
-    dados = (id_prod, id_cli, id_venda, data, qtd)
-    cur.execute(sql, dados)
+    cur.callproc('insert_compra', [id_prod, id_cli, id_venda, data, qtd])
     con.commit()
-
-    sql = ('update Produto set qtd = qtd - %s where id_prod = %s')
-    dados = (qtd, id_prod)
-    cur.execute(sql, dados)
-    con.commit()
-    cur.close()
 
 
 if __name__ == '__main__':
