@@ -1,4 +1,6 @@
+from ast import Try
 from secrets import choice
+from sqlite3 import Cursor
 import mysql.connector
 from mysql.connector import errorcode
 import datetime
@@ -20,9 +22,7 @@ def makeConnection(user, password, h, bd):
 #cadastrar clente
 def cadastrarClientes(con, id, nome, cpf):
     cur = con.cursor()
-    sql = ('insert into cliente (id_cli, nome, cpf) values (%s, %s, %s)')
-    dados = (id, nome, cpf)
-    cur.execute(sql, dados)
+    cur.callproc('insert_client', [id, nome, cpf])
     cur.close()
     con.commit()
     print('cliente inserido com sucesso')
@@ -68,6 +68,7 @@ def cadastrarVenda(con, id_prod, id_cli, id_venda, data, qtd):
     con.commit()
     cur.close()
 
+
 if __name__ == '__main__':
     conn = makeConnection ('root', 'deltafox184', 'localhost', 'lab_bd_compras')
     while(True): 
@@ -78,6 +79,7 @@ if __name__ == '__main__':
         print('(4) Sair')
         print('*******************************')
         choice = input('Opcao: ')
+
         if choice ==  '1':
             id = int(input('Entre com o id do clinete: '))
             nome = input('Entre com o nome do clinete: ')
@@ -89,8 +91,8 @@ if __name__ == '__main__':
             preco_unit = float(input('Entre com o preço unitario do produto: '))
             qtd = float(input('Entre com a quantidade do produto: '))
             cadastrarProduto(conn, id_prod, nome, preco_unit, qtd)
-        elif choice == '3':
 
+        elif choice == '3':
             first_name = input('Peimriro nome: ')
             clientes = buscaClientes(conn, first_name)
             print('Clinetes encontrados: ')
@@ -108,6 +110,7 @@ if __name__ == '__main__':
             data = datetime.date.today()
             qtd = int(input('Entre com a quantidade vendida: '))
             cadastrarVenda(conn, id_prod, id_cli, id_venda, data, qtd)
+
         elif choice == '4':
             print('ate a prixima')
             conn.close()
