@@ -36,9 +36,7 @@ def cadastrarProduto(con, id_prod, nome, preco_unit, qtd):
 
 def buscaClientes(con, first_name): 
     cur = con.cursor()
-    sql = ('select * from Cliente where nome like %s')
-    dado = [first_name + '%']
-    cur.execute(sql, dado)
+    cur.callproc('buscar_cliente', [first_name])
     tuplas = cur.fetchall()
     cur.close()
     return tuplas

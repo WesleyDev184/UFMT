@@ -14,3 +14,13 @@ CREATE PROCEDURE insert_compra(in id_prod int, IN id_cli int, IN id int, in data
         insert into Compras (id_prod, id_cli, id, data_compra, qtd_compra) values (id_prod,id_cli,id,data_compra,qtd_compra);
         update Produto set qtd = qtd - qtd_compra where id_prod = id_prod;
     END
+
+CREATE PROCEDURE buscar_cliente(IN first_name varchar(50))
+    BEGIN
+        select * from Cliente where nome like CONCAT('%', first_name , '%');
+    End
+
+CREATE PROCEDURE buscar_produtos()
+    BEGIN
+        select * from Produto;
+    End
