@@ -82,17 +82,17 @@ function love.update(dt)
     end
 
     if love.keyboard.isDown('w') then
-        racket1.dy = -300
+        racket1.dy = -500
     elseif love.keyboard.isDown('s') then
-        racket1.dy = 300
+        racket1.dy = 500
     else 
         racket1.dy = 0
     end
 
     if love.keyboard.isDown('up') then
-        racket2.dy = -300
+        racket2.dy = -500
     elseif love.keyboard.isDown('down') then
-        racket2.dy = 300
+        racket2.dy = 500
     else 
         racket2.dy = 0
     end
