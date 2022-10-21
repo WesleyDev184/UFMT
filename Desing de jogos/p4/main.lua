@@ -40,7 +40,7 @@ function love.load()
     player= {x=3,y=2}
 
     sound = {}
-    sound.point = love.audio.newSource('tristeza.wav', 'static')
+    sound.point = love.audio.newSource('audio.wav', 'static')
     sound.move = love.audio.newSource('wow.wav', 'static')
 
 
