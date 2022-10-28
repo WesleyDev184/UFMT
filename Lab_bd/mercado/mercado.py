@@ -57,7 +57,7 @@ def cadastrarVenda(con, id_prod, id_cli, id_venda, data, qtd):
 
 
 if __name__ == '__main__':
-    conn = makeConnection ('root', 'deltafox184', 'localhost', 'lab_bd_compras')
+    conn = makeConnection ('root', '', 'localhost', 'lab_bd_compras')
     while(True): 
         print('************ Menu ************')
         print('(1) Cadastrar clinetes')
