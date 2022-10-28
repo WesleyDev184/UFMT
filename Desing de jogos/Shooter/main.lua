@@ -35,8 +35,13 @@ function love.load()
     monsters.w = sprite.zombie:getWidth()/2
     monsters.speed = 100
 
+    ataque_bayblade = 0
+    time_ataque_bayblade = 1
+
     time_limit = 3 --segundos
     timer = time_limit
+    timer2 = 1
+    timer3 = time_limit*3
     
     end_game = false
 end
@@ -93,6 +98,32 @@ function love.update(dt)
         end
     end
 
+    --temporizador de especial
+    timer3 = timer3 - dt
+    if timer3 <= 0 then
+        time_ataque_bayblade = 1
+    end
+    
+    --ataque bayblade
+    if ataque_bayblade == 1 then
+        timer2 = timer2 - dt
+        player.rotation = player.rotation + 0.2
+        local bullet = {}
+        bullet.x = player.x
+        bullet.y = player.y
+        bullet.vector = {}
+        bullet.vector.x = math.cos(player.rotation)
+        bullet.vector.y = math.sin(player.rotation)
+        table.insert(bullets, bullet) -- insere a bala na listade balas
+            
+        if timer2 <= 0 then
+            timer2 = 1
+            timer3 = 9
+            time_ataque_bayblade = 0
+            ataque_bayblade = 0
+        end
+    end
+
     -- Atualiza a posicao da bala
     for i,b in ipairs(bullets) do 
         b.x = b.x + b.vector.x * bullets.speed * dt
@@ -111,7 +142,6 @@ function love.draw()
 
     draw_bg()
     love.graphics.setFont(Font)
-    love.graphics.print('qtd de balas: ' .. #bullets)
     love.graphics.printf('pontuaçao: ' .. player.pontution, -30, 5, width, 'right')
     love.graphics.draw(sprite.player, 
         player.x, 
@@ -141,6 +171,10 @@ function love.draw()
             monsters.h,
             monsters.w
         )
+    end
+
+    if time_ataque_bayblade == 1 then
+        love.graphics.printf("Press b", 15, 15, love.graphics.getWidth())
     end
 
     love.graphics.setFont(largeFont)
@@ -178,6 +212,11 @@ function love.keypressed(key)
     if key == 'return' then
         create_monster()
     end
+
+    if love.keyboard.isDown('b') and time_ataque_bayblade == 1 then
+        ataque_bayblade = 1
+    end
+
 end
 
 function create_monster()
