@@ -11,7 +11,7 @@ body{
 } 
 
 .scroll-model{
-    height: 680px;
+    height: 790px;
     overflow: hidden; 
     overflow-y: scroll;
 }
