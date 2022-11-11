@@ -17,11 +17,15 @@ end
 
 function love.update( dt )
     -- body
+    mundo:update(dt)
 end
 
 function love.draw( ... )
     -- body
     push:start()
+
+    love.graphics.translate(math.ceil( mundo.camX ), mundo.camY)
+    love.graphics.clear(0,151/255,226/255)
 
     mundo:draw()
 
