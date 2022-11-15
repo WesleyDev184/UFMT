@@ -1,8 +1,72 @@
-{% extends 'base.html' %}
-{% block title %}Home{% endblock %}
+{% extends 'base.html' %} {% block title %}Home{% endblock %} {% block container
+%}
 
-{% block container %} 
+<main role="main">
+  <!-- Main jumbotron for a primary marketing message or call to action -->
+  <div
+    class="jumbotron bg-light d-flex align-items-center"
+    style="height: 300px"
+  >
+    <div class="container">
+      <h1 class="display-3">Hello, world!</h1>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iste iusto,
+        quaerat eos, placeat cumque non totam ex, nesciunt enim consectetur
+        quod. Illo molestias mollitia quaerat voluptatum ab praesentium quisquam
+        iusto?.
+      </p>
+      <p>
+        <a
+          class="btn btn-primary btn-lg"
+          href="http://127.0.0.1:5000/cadastro"
+          role="button"
+          >Cadastre um produto &raquo;</a
+        >
+      </p>
+    </div>
+  </div>
+  <br /><br />
 
+  <div class="container">
+    <!-- Example row of columns -->
+    <div class="row">
+      <div class="col-md-4">
+        <h2>Heading</h2>
+        <p>
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+          Voluptatibus, animi quo dicta consequuntur obcaecati pariatur quia
+          dolorum consectetur quasi reiciendis mollitia vitae nobis nulla
+          eligendi ratione voluptate, id, eum quod.
+        </p>
+      </div>
+      <div class="col-md-4">
+        <h2>Heading</h2>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate
+          adipisci, rem facilis magni ab eos nostrum expedita fugiat laborum,
+          deleniti quo impedit quod animi. Impedit illum ipsa rem ipsum nihil.
+        </p>
+      </div>
+      <div class="col-md-4">
+        <h2>Heading</h2>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. At,
+          voluptatem corrupti deleniti illo, excepturi iste beatae dolorem
+          dolorum esse vitae veritatis placeat, fugiat obcaecati? Sequi ducimus
+          nihil incidunt ut dolorum?
+        </p>
+      </div>
+    </div>
 
+    <hr />
+  </div>
+  <!-- /container -->
+</main>
+
+<footer class="container">
+  <p>
+    &copy; <a href="https://github.com/WesleyDev184">WesleyDev184</a> 2022-2022
+  </p>
+</footer>
 
 {% endblock %}

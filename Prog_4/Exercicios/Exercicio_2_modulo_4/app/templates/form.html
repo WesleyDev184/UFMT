@@ -1,24 +1,47 @@
-{% extends 'base.html' %}
-{% block title %}Cadastro{% endblock %}
-
-{% block container %} 
+{% extends 'base.html' %} {% block title %}Cadastro{% endblock %} {% block
+container %}
 
 <div class="row">
-    <div class="col"></div>
-    <div class="col-4" style="margin-top: 150px;">
-        <form>
-            <div class="mb-3">
-              <label for="name" class="form-label">Name</label>
-              <input type="password" class="form-control" id="name">
-            </div>
-            <div class="mb-3">
-              <label for="email" class="form-label">Email address</label>
-              <input type="email" class="form-control" id="email" aria-describedby="emailHelp">
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </form>
+  <div class="col"></div>
+  <div class="col-6 d-flex justify-content-center" style="margin-top: 150px">
+    <div class="card mb-3" style="max-width: 540px">
+      <div class="row g-0">
+        <div class="col-md-4 d-flex align-items-center">
+          <img src="https://cdn-icons-png.flaticon.com/512/1573/1573701.png" class="img-fluid rounded-start px-3" alt="new user""/>
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <form action="/cadastro_form" method="post">
+              <div class="mb-3">
+                <label for="name" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="name" name="name" />
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Marca</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="marca"
+                  name="marca"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Valor</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="valor"
+                  name="valor"
+                />
+              </div>
+              <button type="submit" class="btn btn-success">Cadastrar</button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="col"></div>
+  </div>
+  <div class="col"></div>
 </div>
 
 {% endblock %}
