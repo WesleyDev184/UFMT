@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %} {% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+
+    ::-webkit-scrollbar {
+      display: none;
+      }
+
+    body{
+      background-color: #161b22;
+    }
+    
+  </style>
+</head>
+
+<body>
+  {% block container %}
+  {% endblock %}
+</body>
+
+</html>
