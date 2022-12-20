@@ -1,4 +1,4 @@
-    Map = class{}
+Map = class{}
 
 function Map:init( world )
     -- body
