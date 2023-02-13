@@ -2,13 +2,14 @@ import java.util.Scanner;
 
 public class Exercicio_3 {
    public static void main(String[] args) {
-      Scanner input = new Scanner(System.in);
-      System.out.print("Entre Com o peso em KG: ");
-      double weight = input.nextDouble();
-      System.out.print("Entre com a autura em metros: ");
-      double height = input.nextDouble();
-      double bmi = weight / (height * height);
-      System.out.println("BMI is " + bmi);
+      try (Scanner input = new Scanner(System.in)) {
+         System.out.print("Entre Com o peso em KG: ");
+         double weight = input.nextDouble();
+         System.out.print("Entre com a autura em metros: ");
+         double height = input.nextDouble();
+         double bmi = weight / (height * height);
+         System.out.println("BMI is " + bmi);
+      }
       System.out.println("BMI VALUES");
       System.out.println("Underweight: less than 18.5");
       System.out.println("Normal: between 18.5 and 24.9");
