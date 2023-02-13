@@ -3,7 +3,7 @@ import java.util.Scanner;
 public class Exercicio_1 {
    public static void main(String[] args) {
       try (Scanner input = new Scanner(System.in)) {
-        System.out.print("Entre com o raio: ");
+          System.out.print("Entre com o raio: ");
           int radius = input.nextInt();
 
           double diameter = 2 * radius;
