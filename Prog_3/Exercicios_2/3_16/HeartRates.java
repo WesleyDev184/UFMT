@@ -1,5 +1,6 @@
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 
 public class HeartRates {
     private String firstName;
@@ -54,6 +55,12 @@ public class HeartRates {
 
     public void setBirthYear(int birthYear) {
         this.birthYear = birthYear;
+    }
+
+    public String getBirthDate() {
+        LocalDate birthDate = LocalDate.of(birthYear, birthMonth, birthDay);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return birthDate.format(formatter);
     }
 
     public int calculateAge() {
