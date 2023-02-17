@@ -1,0 +1,10 @@
+	  INP
+        STA T
+	  INP
+        ADD T
+	  STA T
+	  INP
+	  ADD T
+	  OUT
+	  HLT
+T 	  DAT 0

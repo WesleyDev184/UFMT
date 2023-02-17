@@ -1,0 +1,10 @@
+        INP
+        STA P
+        INP
+        STA E
+        LDA P
+        SUB E
+        OUT
+        HLT
+P       DAT 0
+E       DAT 0
