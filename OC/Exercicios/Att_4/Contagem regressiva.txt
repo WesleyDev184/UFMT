@@ -1,0 +1,9 @@
+LDA cont
+loop OUT
+SUB one
+BRA loop
+
+HLT
+
+contador DAT 3
+one DAT 1

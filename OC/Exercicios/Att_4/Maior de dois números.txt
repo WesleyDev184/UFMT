@@ -1,0 +1,20 @@
+INP
+STA x
+
+INP
+STA y
+
+LDA x     
+SUB y    
+BRP print_x 
+
+LDA y
+OUT
+HLT
+
+print_x LDA x
+OUT
+HLT
+
+x DAT 0
+y DAT 0

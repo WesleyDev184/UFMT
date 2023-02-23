@@ -1,0 +1,32 @@
+INP    
+STA x  
+
+INP    
+STA y  
+
+INP    
+STA z  
+
+ADD y
+ADD x
+
+BRZ print_zero
+BRP print_pos
+LDA neg
+OUT
+HLT
+
+print_zero LDA zero
+OUT
+HLT
+
+print_pos LDA uno
+OUT
+HLT    
+
+x DAT 0
+y DAT 0
+z DAT 0
+zero DAT 0
+uno DAT 1
+neg DAT -1

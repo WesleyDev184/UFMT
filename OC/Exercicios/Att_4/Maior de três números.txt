@@ -1,0 +1,46 @@
+INP    
+STA x  
+
+INP    
+STA y  
+
+INP    
+STA z  
+
+LDA x
+SUB y
+BRP check_x_z 
+LDA y
+SUB z
+
+BRP check_y_z 
+LDA z 
+        
+OUT         
+HLT           
+
+check_x_z LDA x
+SUB z
+BRP print_x   
+LDA z         
+OUT           
+HLT          
+
+check_y_z LDA y
+SUB z
+BRP print_y   
+LDA z         
+OUT           
+HLT           
+
+print_x LDA x
+OUT     
+HLT     
+
+print_y LDA y
+OUT    
+HLT    
+
+x DAT 0
+y DAT 0
+z DAT 0
