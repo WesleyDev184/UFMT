@@ -16,14 +16,14 @@ public class DivisionQuiz {
         Scanner input = new Scanner(System.in);
         while (total < 10 && wrong < 10) {
             if (level == 1) {
-                number1 = random.nextInt(10); // generates a random integer between 0 and 9 (inclusive)
-                number2 = random.nextInt(10); // generates a random integer between 0 and 9 (inclusive)
+                number1 = 1 + random.nextInt(9); // generates a random integer between 1 and 9 (inclusive)
+                number2 = 1 + random.nextInt(9); // generates a random integer between 1 and 9 (inclusive)
             } else if (level == 2) {
-                number1 = random.nextInt(100); // generates a random integer between 0 and 99 (inclusive)
-                number2 = random.nextInt(100); // generates a random integer between 0 and 99 (inclusive)
+                number1 = 1 + random.nextInt(99); // generates a random integer between 1 and 99 (inclusive)
+                number2 = 1 + random.nextInt(99); // generates a random integer between 1 and 99 (inclusive)
             } else {
-                number1 = random.nextInt(1000); // generates a random integer between 0 and 999 (inclusive)
-                number2 = random.nextInt(1000); // generates a random integer between 0 and 999 (inclusive)
+                number1 = 1 + random.nextInt(999); // generates a random integer between 1 and 999 (inclusive)
+                number2 = 1 + random.nextInt(999); // generates a random integer between 1 and 999 (inclusive)
             }
 
             while (Math.abs(res - (double) number1 / number2) < 0.1 && wrong < 10) {

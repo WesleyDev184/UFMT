@@ -70,10 +70,10 @@ public class MixQuiz {
                         total++;
                         break;
                     case 3:
-                        System.out.printf("\nQuanto é %d dividido por %d? ", number1, number2);
+                        System.out.printf("\nQuanto é %d dividido por %d? ", 1 + number1, 1 + number2);
                         res3 = input.nextDouble();
 
-                        result = (double) number1 / number2;
+                        result = (double) 1 + number1 / 1 + number2;
                         if (Math.abs(res3 - result) < 0.1) {
                             Responses.goodResponses(random.nextInt(4));
                             correct++;
