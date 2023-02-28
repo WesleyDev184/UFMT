@@ -36,23 +36,28 @@ public class main {
         int res = 0;
         int correct = 0;
         int total = 0;
+        int wrong = 0;
         int number1;
         int number2;
 
-        while (total < 10) {
+        while (total < 10 && wrong < 10) {
             number1 = random.nextInt(101); // generates a random integer between 0 and 100 (inclusive)
             number2 = random.nextInt(101); // generates a random integer between 0 and 100 (inclusive)
 
-            System.out.printf("Quanto é %d vezes %d? ", number1, number2);
-            Scanner input = new Scanner(System.in);
-            res = input.nextInt();
-            if (res == number1 * number2) {
-                Responses.goodResponses(random.nextInt(4));
-                correct++;
-            } else {
-                Responses.badResponses(random.nextInt(4));
+            while (res != number1 * number2 && wrong < 10) {
+                System.out.printf("Quanto é %d vezes %d? ", number1, number2);
+                System.out.print("Digite sua resposta: " + number1 * number2);
+                Scanner input = new Scanner(System.in);
+                res = input.nextInt();
+                if (res == number1 * number2) {
+                    Responses.goodResponses(random.nextInt(4));
+                    correct++;
+                } else {
+                    Responses.badResponses(random.nextInt(4));
+                    wrong++;
+                }
+                total++;
             }
-            total++;
         }
 
         double percentage = (double) correct / total * 100;
