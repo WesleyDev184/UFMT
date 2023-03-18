@@ -10,7 +10,7 @@ typedef struct list
 
 List *createList()
 {
-    List *l = (List *)malloc(sizeof(List));
+    List *l;
     l->cont = 0;
     return l;
 }
