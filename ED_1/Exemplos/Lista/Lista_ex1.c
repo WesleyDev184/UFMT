@@ -8,23 +8,13 @@ typedef struct list
     int cont;
 } List;
 
-List *createList()
-{
-    List *l;
-    l->cont = 0;
-    return l;
-}
-
 int isFull(List *l)
 {
     if (l->cont == MAX)
     {
         return 1;
     }
-    else
-    {
-        return 0;
-    }
+    return 0;
 }
 
 int isEmpty(List *l)
@@ -33,10 +23,7 @@ int isEmpty(List *l)
     {
         return 1;
     }
-    else
-    {
-        return 0;
-    }
+    return 0;
 }
 
 void insertAtStart(List *l, int item)
@@ -228,7 +215,8 @@ void printList(List *l)
 
 int main()
 {
-    List *l = createList();
+    List *l;
+    l->cont = 0;
 
     int op, item, pos;
 
@@ -255,49 +243,49 @@ int main()
         case 1:
             printf("\nDigite o valor: ");
             scanf("%d", &item);
-            insertAtStart(l, item);
+            insertAtStart(&l, item);
             break;
         case 2:
             printf("\nDigite o valor: ");
             scanf("%d", &item);
-            insertAtEnd(l, item);
+            insertAtEnd(&l, item);
             break;
         case 3:
             printf("\nDigite o valor: ");
             scanf("%d", &item);
             printf("\nDigite a posicao: ");
             scanf("%d", &pos);
-            insertAtPosition(l, item, pos);
+            insertAtPosition(&l, item, pos);
             break;
         case 4:
-            removeAtStart(l);
+            removeAtStart(&l);
             break;
         case 5:
-            removeAtEnd(l);
+            removeAtEnd(&l);
             break;
         case 6:
             printf("\nDigite a posicao: ");
             scanf("%d", &pos);
-            removeAtPosition(l, pos);
+            removeAtPosition(&l, pos);
             break;
         case 7:
             printf("\nDigite o valor: ");
             scanf("%d", &item);
-            removeAtValue(l, item);
+            removeAtValue(&l, item);
             break;
         case 8:
             printf("\nDigite o valor: ");
             scanf("%d", &item);
-            seekValue(l, item);
+            seekValue(&l, item);
             break;
         case 9:
-            seekGraterValue(l);
+            seekGraterValue(&l);
             break;
         case 10:
-            seekSmallerValue(l);
+            seekSmallerValue(&l);
             break;
         case 11:
-            printList(l);
+            printList(&l);
             break;
         case 12:
             printf("\nSaindo...\n");
