@@ -22,7 +22,7 @@ LinkedList *createList()
     l->head = NULL;
     l->rear = NULL;
     return l;
-} 
+}
 
 // Função que adiciona um novo nó ao final da lista encadeada dupla
 void insertAtEnd(LinkedList *list, int data)
@@ -97,8 +97,8 @@ void insertAtPosition(LinkedList *list, int data, int position)
     {
         // Se não estiver vazia, percorre a lista até encontrar o último nó
         Node *current = list->head;
-        int i = 0;
-        while (i < position && current != NULL)
+        int i = 1;
+        while (i < position && current->next != NULL)
         {
             current = current->next;
             i++;
@@ -127,7 +127,7 @@ void removeNodeAtPosition(LinkedList *list, int pos)
     }
     else
     {
-        // Se não estiver vazia, percorre a lista até encontrar o último nó
+        // Se não estiver vazia, percorre a lista até encontrar o nó na posição pos
         Node *current = list->head;
         int i = 0;
         while (i < pos && current->next != NULL)
@@ -136,9 +136,24 @@ void removeNodeAtPosition(LinkedList *list, int pos)
             i++;
         }
         // Remove o nó da lista
-        current->next = current->next->next;
-        current->next->prev = current;
-        free(current->next->prev);
+        if (current == list->head)
+        {
+            // Caso especial: o nó a ser removido é a cabeça da lista
+            list->head = current->next;
+            if (list->head != NULL)
+            {
+                list->head->prev = NULL;
+            }
+        }
+        else
+        {
+            current->prev->next = current->next;
+            if (current->next != NULL)
+            {
+                current->next->prev = current->prev;
+            }
+        }
+        free(current);
     }
 }
 
@@ -231,7 +246,11 @@ int main()
 
     printList(list);
 
-    removeNodeAtPosition(list, 3);
+    removeNodeAtPosition(list, 5);
+
+    printList(list);
+
+    insertAtPosition(list, 9, 4);
 
     printList(list);
 }

@@ -39,7 +39,7 @@ void enqueue(Queue *queue, int data)
     }
 }
 
-void dequeue(Queue *queue)
+int dequeue(Queue *queue)
 { // Função para remover o elemento mais antigo da fila
     if (queue->front == NULL)
     {                                // Se a fila está vazia
@@ -48,6 +48,7 @@ void dequeue(Queue *queue)
     }
     else
     {                                      // Se a fila não está vazia
+        int data = queue->front->data;     // Armazena o dado do primeiro nó
         Node *temp = queue->front;         // Armazena o ponteiro para o primeiro nó
         queue->front = queue->front->next; // Define o ponteiro de início como o próximo nó
         free(temp);                        // Libera o espaço alocado para o primeiro nó
@@ -55,6 +56,7 @@ void dequeue(Queue *queue)
         {                       // Se a fila ficar vazia
             queue->rear = NULL; // Define o ponteiro de fim como NULL
         }
+        return data; // Retorna o dado do primeiro nó
     }
 }
 
@@ -104,7 +106,11 @@ int main()
         }
         case 2:
         {
-            dequeue(queue);
+            int data = dequeue(queue);
+            if (data != -1)
+            {
+                printf("Dequeued element: %d\n", data);
+            }
             break;
         }
         case 3:
