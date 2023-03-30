@@ -2,8 +2,9 @@ public class HourlyEmployee extends Employee {
     private double wage;
     private double hours;
 
-    public HourlyEmployee(String FirstName, String LastName, int SocialSecurityNumber, double wage, double hours) {
-        super(FirstName, LastName, SocialSecurityNumber);
+    public HourlyEmployee(String FirstName, String LastName, int SocialSecurityNumber, double wage, double hours,
+            BirthDate birthDate) {
+        super(FirstName, LastName, SocialSecurityNumber, birthDate);
         this.wage = wage;
         this.hours = hours;
     }
@@ -35,8 +36,10 @@ public class HourlyEmployee extends Employee {
 
     @Override
     public String toString() {
-        return String.format("Hourly Employee: %s %s %d %.2f %,2f", getFirstName(), getLastName(),
+        return String.format(
+                "Hourly Employee:\n Name: %s %s\n Social Number: %d\n Wage: %.2f\n Hours: %.2f\n BirthDate %s",
+                getFirstName(), getLastName(),
                 getSocialSecurityNumber(),
-                getWage(), getHours());
+                getWage(), getHours(), getBirthDate());
     }
 }

@@ -1,8 +1,9 @@
 public class SalariedEmployee extends Employee {
     private double weeklySalary;
 
-    public SalariedEmployee(String FirstName, String LastName, int SocialSecurityNumber, double weeklySalary) {
-        super(FirstName, LastName, SocialSecurityNumber);
+    public SalariedEmployee(String FirstName, String LastName, int SocialSecurityNumber, double weeklySalary,
+            BirthDate birthDate) {
+        super(FirstName, LastName, SocialSecurityNumber, birthDate);
         this.weeklySalary = weeklySalary;
     }
 
@@ -21,8 +22,9 @@ public class SalariedEmployee extends Employee {
 
     @Override
     public String toString() {
-        return String.format("Salaried Employee: %s %s %d %.2f", getFirstName(), getLastName(),
+        return String.format("Salaried Employee:\n Name: %s %s\n Social Number: %d\n Weekly salary %.2f\n BirthDate %s",
+                getFirstName(), getLastName(),
                 getSocialSecurityNumber(),
-                getWeeklySalary());
+                getWeeklySalary(), getBirthDate());
     }
 }

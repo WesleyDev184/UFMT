@@ -2,11 +2,13 @@ public abstract class Employee {
     private String FirstName;
     private String LastName;
     private int SocialSecurityNumber;
+    private BirthDate birthDate;
 
-    protected Employee(String FirstName, String LastName, int SocialSecurityNumber) {
+    protected Employee(String FirstName, String LastName, int SocialSecurityNumber, BirthDate birthDate) {
         this.FirstName = FirstName;
         this.LastName = LastName;
         this.SocialSecurityNumber = SocialSecurityNumber;
+        this.birthDate = birthDate;
     }
 
     public String getFirstName() {
@@ -33,11 +35,17 @@ public abstract class Employee {
         this.SocialSecurityNumber = SocialSecurityNumber;
     }
 
+    public BirthDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(BirthDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
     public String toString() {
         return String.format("%s %s %d", getFirstName(), getLastName(), getSocialSecurityNumber());
     }
 
-    public double earnings() {
-        return 0;
-    }
+    public abstract double earnings();
 }

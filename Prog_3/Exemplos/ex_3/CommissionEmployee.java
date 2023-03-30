@@ -3,8 +3,8 @@ public class CommissionEmployee extends Employee {
     private double commissionRate;
 
     public CommissionEmployee(String FirstName, String LastName, int SocialSecurityNumber, double grossSales,
-            double commissionRate) {
-        super(FirstName, LastName, SocialSecurityNumber);
+            double commissionRate, BirthDate birthDate) {
+        super(FirstName, LastName, SocialSecurityNumber, birthDate);
         this.grossSales = grossSales;
         this.commissionRate = commissionRate;
     }
@@ -32,8 +32,10 @@ public class CommissionEmployee extends Employee {
 
     @Override
     public String toString() {
-        return String.format("Commission Employee: %s %s %d %.2f %.2f", getFirstName(), getLastName(),
+        return String.format(
+                "Commission Employee: \n Name: %s %s\n Social Number: %d\n Gross Sales: %.2f\n Commission Rate: %.2f\n BirthDate %s",
+                getFirstName(), getLastName(),
                 getSocialSecurityNumber(),
-                getGrossSales(), getCommissionRate());
+                getGrossSales(), getCommissionRate(), getBirthDate());
     }
 }
