@@ -1,14 +1,14 @@
 package Person;
 
-public class Person {
+public abstract class Person {
 
     private String Name;
-    private BirthDate BirthDate;
+    private DateOfBirth DateOfBirth;
     private Address Address;
 
-    public Person(String Name, BirthDate BirthDate, Address Address) {
+    protected Person(String Name, DateOfBirth DateOfBirth, Address Address) {
         this.Name = Name;
-        this.BirthDate = BirthDate;
+        this.DateOfBirth = DateOfBirth;
         this.Address = Address;
     }
 
@@ -20,12 +20,12 @@ public class Person {
         this.Name = Name;
     }
 
-    public BirthDate getBirthDate() {
-        return BirthDate;
+    public DateOfBirth getBirthDate() {
+        return DateOfBirth;
     }
 
-    public void setBirthDate(BirthDate BirthDate) {
-        this.BirthDate = BirthDate;
+    public void setBirthDate(DateOfBirth DateOfBirth) {
+        this.DateOfBirth = DateOfBirth;
     }
 
     public Address getAddress() {
@@ -36,8 +36,6 @@ public class Person {
         this.Address = Address;
     }
 
-    public String toString() {
-        return String.format("Name: %s %s %s", Name, BirthDate, Address);
-    }
+    public abstract String toString();
 
 }

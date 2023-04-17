@@ -1,13 +1,13 @@
 package Person;
 
-public class BirthDate {
+public class DateOfBirth {
     private int day;
     private int month;
     private int year;
 
     private static final int[] daysPerMonth = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-    public BirthDate(int day, int month, int year) {
+    public DateOfBirth(int day, int month, int year) {
         if (month <= 0 || month > 12) {
             throw new IllegalArgumentException("month (" + month + ") must be 1-12");
         }
