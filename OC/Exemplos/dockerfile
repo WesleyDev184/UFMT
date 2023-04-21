@@ -1,0 +1,7 @@
+FROM riscv64/riscv64-linux-gnu:latest
+
+COPY . /app
+
+RUN riscv64-linux-gnu-gcc -o test /app/test.s
+
+CMD ["/app/test"]
