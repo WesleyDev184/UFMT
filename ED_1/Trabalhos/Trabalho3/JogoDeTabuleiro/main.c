@@ -13,7 +13,7 @@ LinkedList *createCircularList(char *filename)
 {
     FILE *fp;
     int size, value, values[26];
-    LinkedList *list;
+    LinkedList *list = (LinkedList *)malloc(sizeof(LinkedList)) ;
 
     fp = fopen(filename, "r");
     if (fp == NULL)
@@ -45,7 +45,8 @@ int main()
 {
     LinkedList *list = createCircularList("defineBoard.txt");
 
-    // printList(list);
+   
+   printList(list);
 
     return 0;
 }

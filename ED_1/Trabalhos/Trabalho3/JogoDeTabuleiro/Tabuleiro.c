@@ -34,7 +34,6 @@ LinkedList *createList(int size, int *values)
     l->rear = NULL;
 
     Node *new_node = NULL;
-    Node *prev_node = NULL;
     for (int i = 0; i < size; i++)
     {
         new_node = (Node *)malloc(sizeof(Node));
@@ -45,19 +44,18 @@ LinkedList *createList(int size, int *values)
 
         if (l->head == NULL)
         {
+            // Se estiver vazia, o novo nó é o nó cabeça
             l->head = new_node;
             l->rear = new_node;
-            new_node->next = l->head;
-            new_node->prev = l->rear;
         }
         else
         {
+            // Se não estiver vazia, o novo nó aponta para o nó cabeça atual
             new_node->next = l->head;
-            new_node->prev = prev_node;
+            new_node->prev = NULL;
             l->head->prev = new_node;
-            prev_node->next = new_node;
+            l->head = new_node;
         }
-        prev_node = new_node;
     }
     l->head->prev = l->rear;
     l->rear->next = l->head;
@@ -76,11 +74,12 @@ void printList(LinkedList *list)
         // Se não estiver vazia, percorre a lista até encontrar o último nó
         printf("Lista: ");
         Node *current = list->head;
-        while (current != NULL)
+        while (current != list->rear)
         {
             printf("%d ", current->data);
             current = current->next;
         }
+        printf("%d ", current->data);
     }
     printf("\n");
 }
