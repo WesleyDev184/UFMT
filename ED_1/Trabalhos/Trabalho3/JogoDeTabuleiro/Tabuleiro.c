@@ -72,13 +72,16 @@ void printList(LinkedList *list)
     else
     {
         // Se não estiver vazia, percorre a lista até encontrar o último nó
-        printf("Lista: ");
+        printf("Tabuleiro: \n");
         Node *current = list->head;
         while (current != list->rear)
         {
+            printf("%c ", current->id);
             printf("%d ", current->data);
             current = current->next;
+            printf("\n");
         }
+        printf("%c ", current->id);
         printf("%d ", current->data);
     }
     printf("\n");

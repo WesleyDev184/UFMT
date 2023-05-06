@@ -5,68 +5,72 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct nodePlayer
-{
-    char id;
+typedef struct nodePlayer {
+    char *id;
     int data;
     struct nodePlayer *next;
-    // struct node *prev;
 } NodePlayer;
 
-typedef struct listPlayers
-{
+typedef struct listPlayers {
     NodePlayer *head;
     NodePlayer *rear;
 } ListPlayers;
 
 /**
- * This function creates a circular doubly linked list with nodes containing data and an ID.
+ * This function creates a singly linked list with nodes containing data and an ID.
  *
  * @param size The size parameter is an integer that represents the number of elements in the linked
  * list that will be created.
- * @param values An array of integers containing the values to be stored in the linked list.
+ * @param values An array of strings containing the IDs to be stored in the linked list.
  *
- * @return The function `createList` returns a pointer to a `LinkedList` structure.
+ * @return The function `createPlayerList` returns a pointer to a `ListPlayers` structure.
  */
-ListPlayers *createPlayerList(int size, char **values)
-{
-    ListPlayers *l = (ListPlayers *)malloc(sizeof(ListPlayers));
+
+ListPlayers *createPlayerList(int size, char **values) {
+    if (size == 0 || values == NULL) {
+        return NULL;
+    }
+
+    ListPlayers *l = (ListPlayers *) malloc(sizeof(ListPlayers));
+    if (l == NULL) {
+        return NULL;
+    }
     l->head = NULL;
     l->rear = NULL;
 
     NodePlayer *new_node = NULL;
-    for (int i = 0; i < size; i++)
-    {
-        new_node = (NodePlayer *)malloc(sizeof(NodePlayer));
-        new_node->id = (char *)malloc(strlen(values[i]) + 1); // Aloca espaço para a string, incluindo o caractere terminador
-        new_node->data = NULL;                                // Define o campo 'data' como um ponteiro e atribui o valor NULL
+    NodePlayer *current_node = NULL;
+    size_t id_size = 0;
+    for (int i = 0; i < size; i++) {
+        id_size = strlen(values[i]) + 1;
+        new_node = (NodePlayer *) calloc(1, sizeof(NodePlayer) + id_size);
+        if (new_node == NULL) {
+            return NULL;
+        }
+        new_node->id = (char *) (new_node + 1);
+        strcpy(new_node->id, values[i]);
+        new_node->data = 0;
         new_node->next = NULL;
 
-        if (l->head == NULL)
-        {
-            // Se estiver vazia, o novo nó é o nó cabeça
+        if (l->head == NULL) {
             l->head = new_node;
             l->rear = new_node;
-        }
-        else
-        {
-            // Se não estiver vazia, o novo nó aponta para o nó cabeça atual
-            new_node->next = l->head;
-
-            l->head = new_node;
+            current_node = new_node;
+        } else {
+            current_node->next = new_node;
+            current_node = new_node;
         }
     }
-
     l->rear->next = l->head;
+
     return l;
 }
 
-void destroyPlayerList(ListPlayers *list)
-{
+
+void destroyPlayerList(ListPlayers *list) {
     // Percorre a lista e libera a memória alocada para cada nó e para cada string no campo 'id'
     NodePlayer *current = list->head;
-    while (current != NULL)
-    {
+    while (current != NULL) {
         NodePlayer *next = current->next;
         free(current->id);
         free(current);
@@ -77,25 +81,20 @@ void destroyPlayerList(ListPlayers *list)
     free(list);
 }
 
-void printListPlayer(ListPlayers *list)
-{
-    // Verifica se a lista encadeada dupla está vazia
-    if (list->head == NULL)
-    {
-        printf("Lista vazia :(");
-    }
-    else
-    {
-        // Se não estiver vazia, percorre a lista até encontrar o último nó
-        printf("Lista: ");
-        NodePlayer *current = list->head;
-        while (current != list->rear)
-        {
-            printf("%s ", current->id);
-            current = current->next;
-        }
+
+void printListPlayer(ListPlayers *list) {
+    printf("Players: \n");
+
+    NodePlayer *current = list->head;
+
+    while (current != list->rear) {
         printf("%s ", current->id);
+        printf("%d ", current->data);
+        current = current->next;
+        printf("\n");
     }
+    printf("%s ", current->id);
+    printf("%d ", current->data);
     printf("\n");
 }
 
