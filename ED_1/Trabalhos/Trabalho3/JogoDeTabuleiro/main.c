@@ -7,6 +7,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "Tabuleiro.c"
 #include "Jogador.c"
 
@@ -40,136 +41,126 @@ LinkedList *createCircularBoard(char *filename)
     return list;
 }
 
-ListPlayers* createCircularListPlayers(char* filename) {
-    FILE* fp;
+ListPlayer *createCircularPlayer(char *filename)
+{
+    FILE *file;
     int size;
-    char** players;
-    ListPlayers* listOfPlayers = NULL;
 
-    fp = fopen(filename, "r");
-    if (fp == NULL) {
-        printf("Erro ao abrir o arquivo.\n");
-        return NULL;
+    // Abre o file para leitura
+    file = fopen(filename, "r");
+    if (file == NULL)
+    {
+        printf("Erro ao abrir o file\n");
+        return 1;
     }
 
-    // Lê o tamanho da lista na primeira linha do arquivo
-    if (fscanf(fp, "%d", &size) != 1) {
-        printf("Erro ao ler o tamanho da lista.\n");
-        fclose(fp);
-        return NULL;
-    }
+    // Lê o size do array do file
+    fscanf(file, "%d", &size);
 
-    // Aloca o array de ponteiros
-    players = (char**)malloc(size * sizeof(char*));
-    if (players == NULL) {
-        printf("Erro ao alocar a memória para o array de ponteiros.\n");
-        fclose(fp);
-        return NULL;
-    }
+    char strings[size][50];
+    ListPlayer *list = createPlayerList(size);
 
-    // Lê os valores do arquivo e adiciona na lista
-    for (int i = 0; i < size; i++) {
-        char buffer[101];
-        if (fscanf(fp, "%100s", buffer) != 1) {
-            printf("Erro ao ler o valor na linha %d.\n", i+2);
-            fclose(fp);
-            free(players);
-            destroyPlayerList(listOfPlayers);
-            return NULL;
-        }else{
-        printf("Leu a linha %d\n",i+2);
-        }
-        players[i] = strdup(buffer);
+    // Fecha o file
+    fclose(file);
 
-        printf("valor %s\n", players[i]);
-
-        if (players[i] == NULL) {
-            printf("Erro ao alocar a memória para o valor na linha %d.\n", i+2);
-            fclose(fp);
-            for (int j = 0; j < i; j++) {
-                free(players[j]);
-            }
-            free(players);
-            destroyPlayerList(listOfPlayers);
-            return NULL;
-        }
-    }
-
-    listOfPlayers = createPlayerList(size, players);
-    if (listOfPlayers == NULL) {
-        printf("Erro ao criar a lista de jogadores.\n");
-        fclose(fp);
-        for (int i = 0; i < size; i++) {
-            free(players[i]);
-        }
-        free(players);
-        return NULL;
-    }
-
-    fclose(fp);
-    free(players);
-
-    return listOfPlayers;
+    return list;
 }
 
-
-int rollDice() {
-    srand(time(NULL)); // Inicializa o gerador de números aleatórios com a hora atual
+int rollDice()
+{
+    srand(time(NULL));     // Inicializa o gerador de números aleatórios com a hora atual
     return rand() % 6 + 1; // Retorna um número aleatório entre 1 e 6
 }
 
-void Game(){
+void Game()
+{
     LinkedList *board = createCircularBoard("defineBoard.txt");
     printList(board);
 
-    ListPlayers *players = createCircularListPlayers("definePlayer.txt");
-    printListPlayer(players);
+    ListPlayer *players = createCircularPlayer("definePlayer.txt");
+    printPlayerList(players);
 
-    NodePlayer *current_player = players->head; // Começa com o primeiro jogador
-    Node *current_position = board->head; // Começa na posição inicial do tabuleiro
+    NodePLayer *current_player = players->head; // Começa com o primeiro jogador
+    Node *current_position = board->head;       // Começa na posição inicial do tabuleiro
 
     printf("test\n");
+    srand(time(NULL));
 
+    while (1)
+    {
+        if (players->head == NULL)
+        {
+            printf("Todos os jogadores foram destruidos\n");
+            break;
+        }
 
-    // Realiza as jogadas
-    // while (1) {
-    //     int roll = rollDice(); // Sorteia o valor do dado
-    //     printf("%s jogou o dado e tirou %d\n", current_player->id, roll);
+        printf("Vez do jogador %c\n", current_player->id);
 
-    //     // Move o jogador na lista circular
-    //     for (int i = 0; i < roll; i++) {
-    //         current_player = current_player->next;
-    //     }
+        if (current_player->position != NULL)
+        {
+            while (current_position->id != current_player->position)
+            {
+                current_position = current_position->next;
+            }
+        }
 
-    //     // Move o jogador na lista do tabuleiro
-    //     for (int i = 0; i < roll; i++) {
-    //         current_position = current_position->next;
-    //         if (current_position == NULL) { // Se chegou ao final do tabuleiro, volta para o início
-    //             current_position = board->head;
-    //         }
-    //     }
+        int roll = rand() % 6 + 1; // Sorteia o valor do dado
+        printf("O jogador %c jogou o dado e tirou %d\n", current_player->id, roll);
 
-    //     printf("%s está na posição %d\n", current_player->id, current_position->id);
+        // Move o jogador na lista do tabuleiro
+        if (current_position->data < 0)
+        {
+            for (int i = 0; i < roll; i++)
+            {
+                current_position = current_position->prev;
+                if (current_position == NULL)
+                {
+                    current_position = board->head;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < roll; i++)
+            {
+                current_position = current_position->next;
+                if (current_position == NULL)
+                {
+                    current_position = board->head;
+                }
+            }
+        }
 
-    //     // Verifica se o jogador venceu
-    //     if (current_position->id == board->rear->data) {
-    //         printf("%s venceu!\n", current_player->id);
-    //         break;
-    //     }
-    // }
+        printf("O jogador %c esta na posicao %c\n", current_player->id, current_position->id);
+
+        current_player->data += current_position->data;
+
+        if (current_player->data <= 0)
+        {
+            NodePLayer *temp = current_player->next;
+            destroyPlayer(players, current_player->id);
+            printf("O jogador foi destruido\n");
+            printf("\n");
+            current_player = temp;
+        }
+        else
+        {
+            printf("O jogador %c tem %d pontos\n\n", current_player->id, current_player->data);
+            setPosition(players, current_player->id, current_position->id);
+            current_player = current_player->next;
+            current_position = board->head;
+        }
+
+        if (players->head == players->rear)
+        {
+            printf("O jogador %c venceu o jogo com %d pontos!\n", players->head->id, players->head->data);
+            break;
+        }
+    }
 }
 
 int main()
 {
-    /*
-
-    int num;
-
-    srand(time(NULL));
-
-    num = rand() % 6 + 1;
-    */
-
     Game();
     return 0;
 }

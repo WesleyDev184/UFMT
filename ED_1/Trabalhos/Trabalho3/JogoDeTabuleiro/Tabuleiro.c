@@ -1,3 +1,9 @@
+/*
+ * UFMT - Ciencia da Computacao
+ * Estrutura de Dados 1 - Trabalho 6 : lst - estática x dinamica
+ * Prof Ivairton
+ * Discentes:  Lucas Barbosa Amaral, Wesley Antonio Junior dos Santos
+ */
 #ifndef TABULEIRO_C
 #define TABULEIRO_C
 
