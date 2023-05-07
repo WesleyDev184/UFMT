@@ -93,12 +93,12 @@ void printPlayerList(ListPlayer *list)
         NodePLayer *current = list->head;
         while (current != list->rear)
         {
-            printf("%c ", current->id);
+            printf("%c: ", current->id);
             printf("%d ", current->data);
             current = current->next;
             printf("\n");
         }
-        printf("%c ", current->id);
+        printf("%c: ", current->id);
         printf("%d ", current->data);
     }
     printf("\n");

@@ -66,12 +66,6 @@ ListPlayer *createCircularPlayer(char *filename)
     return list;
 }
 
-int rollDice()
-{
-    srand(time(NULL));     // Inicializa o gerador de números aleatórios com a hora atual
-    return rand() % 6 + 1; // Retorna um número aleatório entre 1 e 6
-}
-
 void Game()
 {
     LinkedList *board = createCircularBoard("defineBoard.txt");
@@ -83,7 +77,6 @@ void Game()
     NodePLayer *current_player = players->head; // Começa com o primeiro jogador
     Node *current_position = board->head;       // Começa na posição inicial do tabuleiro
 
-    printf("test\n");
     srand(time(NULL));
 
     while (1)
@@ -150,6 +143,9 @@ void Game()
             current_player = current_player->next;
             current_position = board->head;
         }
+
+        printPlayerList(players);
+        printf("\n");
 
         if (players->head == players->rear)
         {
