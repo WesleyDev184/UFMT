@@ -9,6 +9,6 @@
  Apenas uma observação:
 
     O código está rodando normalmente e é executado da mesma maneira, porém por algum motivo,
-    ao rodar muitas vezes rodar no mesmo terminal, aleatoriamente pode ocorrer um erro onde 
-    um dos jogadores "destruidos", mesmo apagados, continuam sendo impressos porem vazios por 
+    ao rodar muitas vezes no mesmo terminal, aleatoriamente pode ocorrer um erro onde 
+    um dos jogadores "destruídos", mesmo apagados, continuam sendo impressos porem vazios por 
     algum motivo porem mesmo com isso, ainda é funcional e imprime o "vencedor" corretamente. 
