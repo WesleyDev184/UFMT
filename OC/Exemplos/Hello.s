@@ -2,7 +2,7 @@
 
 # Define a mensagem a ser impressa.
 msg:
-	.string: .asciiz "Hello, world!\n"
+	.string: "Hello, world!\n"
 
 # Ponto de entrada do programa.
 _start:
