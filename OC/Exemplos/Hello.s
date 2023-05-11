@@ -1,19 +1,18 @@
-# Imprime "Hello, world!" na tela e encerra o programa.
+.globl _start
 
-# Define a mensagem a ser impressa.
-msg:
-	.string: "Hello, world!\n"
-
-# Ponto de entrada do programa.
-_start:
-	# Chama a função de sistema para imprimir a mensagem.
-	li a0, 4   # Carrega o número da syscall para imprimir.
-	la a1, msg # Carrega o endereço da mensagem.
-	li a2, 14  # Carrega o tamanho da mensagem.
-	li a7, 64  # Carrega o número da syscall para execução.
-	ecall     # Chama a syscall.
-
-	# Chama a função de sistema para encerrar o programa.
-	li a0, 0   # Carrega o código de saída.
-	li a7, 93  # Carrega o número da syscall para sair.
-	ecall     # Chama a syscall.
+    string:  .asciz "Hello World!!!\n"
+  
+    _start:
+        li a0, 1            # file descriptor = 1 (stdout)
+        la a1, string       # buffer
+        li a2, 19           # size
+        li a7, 64           # syscall write (64)
+        ecall
+    
+    _end:
+    
+        li a0, 0            # exit code
+        li a7, 93           # syscall exit
+        ecall
+    
+    
