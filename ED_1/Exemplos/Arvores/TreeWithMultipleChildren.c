@@ -1,87 +1,162 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MAX_CHILDREN 3
 typedef struct node
 {
-  int data;
-  struct node *firstChild;
-  struct node *nextSibling;
+  int values[MAX_CHILDREN];
+  int count;
+  struct node *childs[MAX_CHILDREN + 1];
 } Node;
 
-Node *createNode(int data)
+Node *createNode(int value)
 {
   Node *newNode = (Node *)malloc(sizeof(Node));
-  newNode->data = data;
-  newNode->firstChild = NULL;
-  newNode->nextSibling = NULL;
+  newNode->values[0] = value;
+  newNode->count = 1;
+  for (int i = 0; i < MAX_CHILDREN + 1; i++)
+    newNode->childs[i] = NULL;
   return newNode;
 }
 
-void addChild(Node *parent, Node *child)
+void insert(Node *root, int value)
 {
-  if (parent->firstChild == NULL)
+  if (root->count < MAX_CHILDREN)
   {
-    parent->firstChild = child;
+    root->values[root->count] = value;
+    root->count++;
   }
   else
   {
-    Node *sibling = parent->firstChild;
-    while (sibling->nextSibling != NULL)
-    {
-      sibling = sibling->nextSibling;
-    }
-    sibling->nextSibling = child;
+    int i = 0;
+    while (i < MAX_CHILDREN && root->values[i] < value)
+      i++;
+    if (root->childs[i] == NULL)
+      root->childs[i] = createNode(value);
+    else
+      insert(root->childs[i], value);
   }
 }
 
-void printTree(Node *root)
+void printTreeOrdinate(Node *root)
 {
-  if (root == NULL)
+  if (root != NULL)
   {
-    return;
+    for (int i = 0; i < root->count; i++)
+      printf("%d ", root->values[i]);
+    for (int i = 0; i < MAX_CHILDREN + 1; i++)
+      printTreeOrdinate(root->childs[i]);
   }
-  printf("%d: ", root->data);
-  Node *child = root->firstChild;
-  while (child != NULL)
+}
+
+void printTreePreOrder(Node *root)
+{
+  if (root != NULL)
   {
-    printf("%d ", child->data);
-    child = child->nextSibling;
+    for (int i = 0; i < MAX_CHILDREN + 1; i++)
+      printTreePreOrder(root->childs[i]);
+    for (int i = 0; i < root->count; i++)
+      printf("%d ", root->values[i]);
   }
-  printf("\n");
-  child = root->firstChild;
-  while (child != NULL)
+}
+
+void printTreePostOrder(Node *root)
+{
+  if (root != NULL)
   {
-    printTree(child);
-    child = child->nextSibling;
+    for (int i = 0; i < root->count; i++)
+      printf("%d ", root->values[i]);
+    for (int i = 0; i < MAX_CHILDREN + 1; i++)
+      printTreePostOrder(root->childs[i]);
+  }
+}
+
+void printTreeHeight(Node *root, int height)
+{
+  if (root != NULL)
+  {
+    for (int i = 0; i < MAX_CHILDREN + 1; i++)
+      printTreeHeight(root->childs[i], height + 1);
+
+    printf("Height: %d\n", height);
+  }
+}
+
+void printNodeByChildLevel(Node *root, int level)
+{
+  if (root != NULL)
+  {
+    if (level == 0)
+    {
+      for (int i = 0; i < root->count; i++)
+        printf("%d ", root->values[i]);
+    }
+    else
+    {
+      for (int i = 0; i < MAX_CHILDREN + 1; i++)
+        printNodeByChildLevel(root->childs[i], level - 1);
+    }
+  }
+}
+
+void seachNodeByValue(Node *root, int value)
+{
+  if (root != NULL)
+  {
+    for (int i = 0; i < root->count; i++)
+    {
+      if (root->values[i] == value)
+      {
+        printf("Value %d found!\n", value);
+        return;
+      }
+    }
+    for (int i = 0; i < MAX_CHILDREN + 1; i++)
+      seachNodeByValue(root->childs[i], value);
   }
 }
 
 int main()
 {
-  Node *root = createNode(1);
-  Node *child1 = createNode(2);
-  Node *child2 = createNode(3);
-  Node *child3 = createNode(4);
-  Node *child4 = createNode(5);
-  Node *child5 = createNode(6);
-  Node *child6 = createNode(7);
-  Node *child7 = createNode(8);
-  Node *child8 = createNode(9);
-  Node *child9 = createNode(10);
-  Node *child10 = createNode(11);
+  Node *root = createNode(0);
+  insert(root, 10);
+  insert(root, 5);
+  insert(root, 15);
+  insert(root, 3);
+  insert(root, 7);
+  insert(root, 12);
+  insert(root, 17);
+  insert(root, 1);
+  insert(root, 4);
+  insert(root, 6);
+  insert(root, 8);
+  insert(root, 11);
+  insert(root, 13);
+  insert(root, 16);
+  insert(root, 18);
+  insert(root, 2);
+  insert(root, 9);
+  insert(root, 14);
+  insert(root, 19);
+  insert(root, 20);
 
-  addChild(root, child1);
-  addChild(root, child2);
-  addChild(root, child3);
-  addChild(child1, child4);
-  addChild(child1, child5);
-  addChild(child1, child6);
-  addChild(child2, child7);
-  addChild(child2, child8);
-  addChild(child3, child9);
-  addChild(child3, child10);
+  printf("Ordinate: ");
+  printTreeOrdinate(root);
 
-  printTree(root);
+  printf("\nPre-Order: ");
+  printTreePreOrder(root);
+
+  printf("\nPost-Order: ");
+  printTreePostOrder(root);
+
+  printf("\nHeight: ");
+  printTreeHeight(root, 0);
+
+  printf("\nNode by level: ");
+  printNodeByChildLevel(root, 1);
+
+  printf("\nSearch node by value: ");
+  seachNodeByValue(root, 10);
 
   return 0;
 }
