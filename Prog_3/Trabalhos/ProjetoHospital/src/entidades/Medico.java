@@ -1,6 +1,6 @@
 package entidades;
 
-public class Medico extends Funcionario {
+public abstract class Medico extends Funcionario {
 	private int CRM;
 	private String especialidade;
 
@@ -20,6 +20,5 @@ public class Medico extends Funcionario {
 		CRM = cRM;
 	}
 
-	public void operar() {
-	}
+	public abstract void operar();
 }

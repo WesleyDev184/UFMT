@@ -116,6 +116,56 @@ void seachNodeByValue(Node *root, int value)
   }
 }
 
+void removeNode(Node *root, int value)
+{
+  if (root != NULL)
+  {
+    for (int i = 0; i < root->count; i++)
+    {
+      if (root->values[i] == value)
+      {
+        for (int j = i; j < root->count - 1; j++)
+          root->values[j] = root->values[j + 1];
+        root->count--;
+        return;
+      }
+    }
+    for (int i = 0; i < MAX_CHILDREN + 1; i++)
+      removeNode(root->childs[i], value);
+  }
+}
+
+void seachMax(Node *root)
+{
+  if (root->childs[MAX_CHILDREN] == NULL)
+  {
+    printf("Valor maximo: %d\n", root->values[root->count - 1]);
+    return;
+  }
+  seachMax(root->childs[MAX_CHILDREN]);
+}
+
+void seachMin(Node *root)
+{
+  if (root->childs[0] == NULL)
+  {
+    printf("Valor minimo: %d\n", root->values[0]);
+    return;
+  }
+  seachMin(root->childs[0]);
+}
+
+void nodeCounter(Node *root, int *counter)
+{
+  if (root != NULL)
+  {
+    for (int i = 0; i < root->count; i++)
+      (*counter)++;
+    for (int i = 0; i < MAX_CHILDREN + 1; i++)
+      nodeCounter(root->childs[i], counter);
+  }
+}
+
 int main()
 {
   Node *root = createNode(0);
@@ -157,6 +207,26 @@ int main()
 
   printf("\nSearch node by value: ");
   seachNodeByValue(root, 10);
+
+  printf("\nSearch max value: ");
+  seachMax(root);
+
+  printf("\nSearch min value: ");
+  seachMin(root);
+
+  int counter = 0;
+  nodeCounter(root, &counter);
+  printf("\nNumber of nodes: %d", counter);
+
+  printf("\nRemove node by value: 10");
+  removeNode(root, 10);
+
+  printf("\nOrdinate: ");
+  printTreeOrdinate(root);
+
+  counter = 0;
+  nodeCounter(root, &counter);
+  printf("\nNumber of nodes: %d", counter);
 
   return 0;
 }

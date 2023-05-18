@@ -1,4 +1,4 @@
--- Active: 1684147198273@@127.0.0.1@3306@teste
+-- Active: 1684147198273@@127.0.0.1@3306@hospital
 -- MySQL dump 10.13  Distrib 5.7.21, for Linux (x86_64)
 --
 -- Host: 127.0.0.1    Database: hospital
