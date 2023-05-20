@@ -2,6 +2,7 @@ package entidades;
 
 public abstract class Medico extends Funcionario {
 	private int CRM;
+	private double valorHora;
 	private String especialidade;
 
 	public String getEspecialidade() {
@@ -18,6 +19,16 @@ public abstract class Medico extends Funcionario {
 
 	public void setCRM(int cRM) {
 		CRM = cRM;
+	}
+
+	public double getValorHora() {
+		return valorHora;
+	}
+
+	public void setValorHora(double valorHora) {
+		if (valorHora > 0) {
+			this.valorHora = valorHora;
+		}
 	}
 
 	public abstract void operar();
