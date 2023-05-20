@@ -1,17 +1,19 @@
 package Entities.HospitalCare.MedicalProcedures;
 
+import java.sql.Date;
+
 import Entities.Person.Doctor.Doctor;
 import Entities.Person.Patient.Patient;
 
 public abstract class MedicalProcedures {
   private Patient patient;
   private Doctor doctor;
-  private String date;
+  private Date date;
   private int duration;
   private double cost;
   private Room room;
 
-  protected MedicalProcedures(Patient patient, Doctor doctor, String date, int duration, double cost, Room room) {
+  protected MedicalProcedures(Patient patient, Doctor doctor, Date date, int duration, double cost, Room room) {
     this.patient = patient;
     this.doctor = doctor;
     this.date = date;
@@ -28,7 +30,7 @@ public abstract class MedicalProcedures {
     return doctor;
   }
 
-  public String getDate() {
+  public Date getDate() {
     return date;
   }
 
@@ -48,7 +50,7 @@ public abstract class MedicalProcedures {
     this.doctor = doctor;
   }
 
-  public void setDate(String date) {
+  public void setDate(Date date) {
     this.date = date;
   }
 

@@ -1,5 +1,7 @@
 package Entities.Person.Doctor;
 
+import java.sql.Date;
+
 import Entities.Person.Address;
 import Entities.Person.Person;
 
@@ -9,7 +11,7 @@ public class Doctor extends Person {
   private Specialty specialty;
   private double timeValue;
 
-  public Doctor(String name, String dateOfBirth, Address address, String crm,
+  public Doctor(String name, Date dateOfBirth, Address address, String crm,
       Specialty specialty, double timeValue) {
     super(name, dateOfBirth, address);
     this.crm = crm;

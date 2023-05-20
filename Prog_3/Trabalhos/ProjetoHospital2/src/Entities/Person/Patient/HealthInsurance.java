@@ -1,28 +1,37 @@
 package Entities.Person.Patient;
 
 public class HealthInsurance {
+  private int id;
+  private String healthInsuranceName;
+  private double healthInsuranceMonthlyPayment;
 
-  private String HealthInsuranceName;
-  private String HealthInsuranceMonthlyPayment;
+  public HealthInsurance(int id, String healthInsuranceName, double healthInsuranceMonthlyPayment) {
+    this.id = id;
+    this.healthInsuranceName = healthInsuranceName;
+    this.healthInsuranceMonthlyPayment = healthInsuranceMonthlyPayment;
+  }
 
-  public HealthInsurance(String HealthInsuranceName, String HealthInsuranceMonthlyPayment) {
-    this.HealthInsuranceName = HealthInsuranceName;
-    this.HealthInsuranceMonthlyPayment = HealthInsuranceMonthlyPayment;
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  public int getId() {
+    return id;
   }
 
   public String getHealthInsuranceName() {
-    return HealthInsuranceName;
+    return healthInsuranceName;
   }
 
-  public void setHealthInsuranceName(String HealthInsuranceName) {
-    this.HealthInsuranceName = HealthInsuranceName;
+  public void setHealthInsuranceName(String healthInsuranceName) {
+    this.healthInsuranceName = healthInsuranceName;
   }
 
-  public String getHealthInsuranceMonthlyPayment() {
-    return HealthInsuranceMonthlyPayment;
+  public double getHealthInsuranceMonthlyPayment() {
+    return healthInsuranceMonthlyPayment;
   }
 
-  public void setHealthInsuranceMonthlyPayment(String HealthInsuranceMonthlyPayment) {
-    this.HealthInsuranceMonthlyPayment = HealthInsuranceMonthlyPayment;
+  public void setHealthInsuranceMonthlyPayment(double healthInsuranceMonthlyPayment) {
+    this.healthInsuranceMonthlyPayment = healthInsuranceMonthlyPayment;
   }
 }

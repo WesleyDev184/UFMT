@@ -1,27 +1,27 @@
 package Entities.HospitalCare.HospitalAppointments;
 
-import java.time.LocalDate;
+import java.sql.Date;
 
 import Entities.Person.Doctor.Doctor;
 import Entities.Person.Patient.Patient;
 
 public class HospitalAppointment {
 
-  private LocalDate Date;
+  private Date Date;
   private Patient Patient;
   private Doctor Doctor;
 
-  public HospitalAppointment(LocalDate Date, Patient Patient, Doctor Doctor) {
+  public HospitalAppointment(Date Date, Patient Patient, Doctor Doctor) {
     this.Date = Date;
     this.Patient = Patient;
     this.Doctor = Doctor;
   }
 
-  public LocalDate getDate() {
+  public Date getDate() {
     return Date;
   }
 
-  public void setDate(LocalDate Date) {
+  public void setDate(Date Date) {
     this.Date = Date;
   }
 

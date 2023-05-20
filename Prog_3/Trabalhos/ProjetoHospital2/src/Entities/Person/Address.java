@@ -1,17 +1,26 @@
 package Entities.Person;
 
 public class Address {
-
+  private int Id;
   private String PublicPlace;
   private int Number;
   private int CEP;
   private String Neighborhood;
 
-  public Address(String PublicPlace, int Number, int CEP, String Neighborhood) {
+  public Address(int id, String PublicPlace, int Number, int CEP, String Neighborhood) {
+    this.Id = id;
     this.PublicPlace = PublicPlace;
     this.Number = Number;
     this.CEP = CEP;
     this.Neighborhood = Neighborhood;
+  }
+
+  public int getId() {
+    return Id;
+  }
+
+  public void setId(int id) {
+    this.Id = id;
   }
 
   public String getPublicPlace() {

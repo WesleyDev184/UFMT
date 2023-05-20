@@ -1,7 +1,6 @@
 package Entities.Person.Doctor;
 
 public class Specialty {
-
   private String name;
 
   public Specialty(String name) {

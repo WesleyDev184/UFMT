@@ -1,12 +1,14 @@
 package Entities.Person;
 
+import java.sql.Date;
+
 public abstract class Person {
 
   private String Name;
-  private String BirthDate;
+  private Date BirthDate;
   private Address Address;
 
-  protected Person(String Name, String BirthDate, Address Address) {
+  protected Person(String Name, Date BirthDate, Address Address) {
     this.Name = Name;
     this.BirthDate = BirthDate;
     this.Address = Address;
@@ -20,11 +22,11 @@ public abstract class Person {
     this.Name = Name;
   }
 
-  public String getBirthDate() {
+  public Date getBirthDate() {
     return BirthDate;
   }
 
-  public void setBirthDate(String BirthDate) {
+  public void setBirthDate(Date BirthDate) {
     this.BirthDate = BirthDate;
   }
 
