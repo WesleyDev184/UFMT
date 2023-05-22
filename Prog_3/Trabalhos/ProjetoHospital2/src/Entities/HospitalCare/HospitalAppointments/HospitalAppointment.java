@@ -6,15 +6,24 @@ import Entities.Person.Doctor.Doctor;
 import Entities.Person.Patient.Patient;
 
 public class HospitalAppointment {
-
+  private int id;
   private Date Date;
   private Patient Patient;
   private Doctor Doctor;
 
-  public HospitalAppointment(Date Date, Patient Patient, Doctor Doctor) {
+  public HospitalAppointment(int id, Date Date, Patient Patient, Doctor Doctor) {
+    this.id = id;
     this.Date = Date;
     this.Patient = Patient;
     this.Doctor = Doctor;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
   }
 
   public Date getDate() {
@@ -41,4 +50,8 @@ public class HospitalAppointment {
     this.Doctor = Doctor;
   }
 
+  @Override
+  public String toString() {
+    return "HospitalAppointment [Date=" + Date + ", Patient=" + Patient + ", Doctor=" + Doctor + "]";
+  }
 }

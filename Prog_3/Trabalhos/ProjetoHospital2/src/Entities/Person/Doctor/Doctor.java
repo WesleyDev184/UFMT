@@ -6,17 +6,26 @@ import Entities.Person.Address;
 import Entities.Person.Person;
 
 public class Doctor extends Person {
-
+  private int id;
   private String crm;
   private Specialty specialty;
   private double timeValue;
 
-  public Doctor(String name, Date dateOfBirth, Address address, String crm,
+  public Doctor(int id, String name, Date dateOfBirth, Address address, String crm,
       Specialty specialty, double timeValue) {
     super(name, dateOfBirth, address);
+    this.id = id;
     this.crm = crm;
     this.specialty = specialty;
     this.timeValue = timeValue;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  public int getId() {
+    return id;
   }
 
   public String getCrm() {

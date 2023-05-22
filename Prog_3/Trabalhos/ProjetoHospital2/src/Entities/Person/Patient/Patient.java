@@ -7,10 +7,10 @@ import Entities.Person.Person;
 
 public class Patient extends Person {
   private int id;
-  private int CPF;
+  private long CPF;
   private HealthInsurance healthInsurance;
 
-  public Patient(int id, String name, Date birthDate, Address address, int CPF, HealthInsurance healthInsurance) {
+  public Patient(int id, String name, Date birthDate, Address address, long CPF, HealthInsurance healthInsurance) {
     super(name, birthDate, address);
     this.id = id;
     this.CPF = CPF;
@@ -25,11 +25,11 @@ public class Patient extends Person {
     return id;
   }
 
-  public int getCPF() {
+  public long getCPF() {
     return CPF;
   }
 
-  public void setCPF(int CPF) {
+  public void setCPF(long CPF) {
     this.CPF = CPF;
   }
 
@@ -43,7 +43,7 @@ public class Patient extends Person {
 
   @Override
   public String toString() {
-    return "Patient [CPF=" + CPF + ", healthInsurance=" + healthInsurance
-        + ", toString()=" + toString() + "]";
+    return "Patient [id=" + id + ", CPF=" + CPF + ", healthInsurance=" + healthInsurance + ", toString()="
+        + super.toString() + "]";
   }
 }

@@ -34,4 +34,10 @@ public class HealthInsurance {
   public void setHealthInsuranceMonthlyPayment(double healthInsuranceMonthlyPayment) {
     this.healthInsuranceMonthlyPayment = healthInsuranceMonthlyPayment;
   }
+
+  @Override
+  public String toString() {
+    return "HealthInsurance [healthInsuranceMonthlyPayment=" + healthInsuranceMonthlyPayment
+        + ", healthInsuranceName=" + healthInsuranceName + ", id=" + id + "]";
+  }
 }
