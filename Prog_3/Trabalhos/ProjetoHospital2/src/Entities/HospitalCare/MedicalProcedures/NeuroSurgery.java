@@ -7,8 +7,8 @@ import Entities.Person.Patient.Patient;
 
 public class NeuroSurgery extends MedicalProcedures {
 
-  protected NeuroSurgery(Patient patient, Doctor doctor, Date date, int duration, double cost, Room room) {
-    super(patient, doctor, date, duration, cost, room);
+  public NeuroSurgery(int id, Patient patient, Doctor doctor, Date date, int duration, double cost, Room room,
+      ProcedureType procedureType) {
+    super(id, patient, doctor, date, duration, cost, room, procedureType);
   }
-
 }

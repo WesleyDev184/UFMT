@@ -7,8 +7,9 @@ import Entities.Person.Patient.Patient;
 
 public class Pharyngoplasty extends MedicalProcedures {
 
-  protected Pharyngoplasty(Patient patient, Doctor doctor, Date date, int duration, double cost, Room room) {
-    super(patient, doctor, date, duration, cost, room);
+  public Pharyngoplasty(int id, Patient patient, Doctor doctor, Date date, int duration, double cost, Room room,
+      ProcedureType procedureType) {
+    super(id, patient, doctor, date, duration, cost, room, procedureType);
   }
 
 }

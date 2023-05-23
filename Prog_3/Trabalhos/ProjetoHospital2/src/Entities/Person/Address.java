@@ -55,7 +55,6 @@ public class Address {
     this.Neighborhood = Neighborhood;
   }
 
-  @Override
   public String toString() {
     return "Address [Id=" + Id + ", PublicPlace=" + PublicPlace + ", Number=" + Number + ", CEP=" + CEP
         + ", Neighborhood=" + Neighborhood + "]";
