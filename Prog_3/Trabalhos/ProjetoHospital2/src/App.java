@@ -10,7 +10,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("LayoutTeste.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("./screens/LoginPage/LoginPage.fxml"));
         primaryStage.setScene(new Scene(root));
         // set stage borderless
         primaryStage.initStyle(StageStyle.UNDECORATED);

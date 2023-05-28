@@ -25,23 +25,23 @@ public class DoctorDaoTeste {
     Date date = Date.valueOf("1980-01-01");
 
     // criar um médico
-    Doctor doctor = new Doctor(1, "Dr. House", date, address, "123456", specialty, 100.0);
+    Doctor doctor = new Doctor(1, "Dr. Batat", date, address, "123458", specialty, 100.0);
     doctorDao.insert(doctor);
 
     // Obter um médico por ID
 
-    Doctor retrievedDoctor = doctorDao.getById(1);
-    System.out.println("Médico recuperado: " + retrievedDoctor);
+    // Doctor retrievedDoctor = doctorDao.getById(1);
+    // System.out.println("Médico recuperado: " + retrievedDoctor);
 
     // Atualizar um médico
-    retrievedDoctor.setName("Dr. House");
-    doctorDao.update(retrievedDoctor);
+    // retrievedDoctor.setName("Dr. House");
+    // doctorDao.update(retrievedDoctor);
 
     // Obter todos os médicos
-    System.out.println("Todos os médicos:");
-    for (Doctor doc : doctorDao.getAll()) {
-      System.out.println(doc);
-    }
+    // System.out.println("Todos os médicos:");
+    // for (Doctor doc : doctorDao.getAll()) {
+    // System.out.println(doc);
+    // }
 
     // // Deletar um médico
     // doctorDao.delete(1);

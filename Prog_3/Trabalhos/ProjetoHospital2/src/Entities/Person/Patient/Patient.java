@@ -41,6 +41,14 @@ public class Patient extends Person {
     this.healthInsurance = healthInsurance;
   }
 
+  public String getHealthInsuranceName() {
+    if (healthInsurance != null) {
+      return healthInsurance.getHealthInsuranceName(); // Supondo que o nome do seguro de saúde seja obtido através do
+    } else {
+      return ""; // Retornar uma string vazia caso o seguro de saúde seja nulo
+    }
+  }
+
   @Override
   public String toString() {
     return "Patient [id=" + id + ", CPF=" + CPF + ", healthInsurance=" + healthInsurance + ", toString()="

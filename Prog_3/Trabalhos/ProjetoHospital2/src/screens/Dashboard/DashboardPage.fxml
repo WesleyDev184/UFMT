@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<StackPane fx:id="window" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="644.0" prefWidth="1040.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="screens.Dashboard.Controller">
+   <children>
+      <AnchorPane fx:id="mainPanel" prefHeight="200.0" prefWidth="200.0" style="-fx-background-radius: 10px;">
+         <children>
+            <BorderPane layoutX="237.0" layoutY="125.0" prefHeight="544.0" prefWidth="840.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <top>
+                  <AnchorPane prefHeight="35.0" prefWidth="840.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <AnchorPane fx:id="navbar" layoutX="207.0" layoutY="-82.0" prefHeight="37.0" prefWidth="1040.0" styleClass="navbar" stylesheets="@../styles/Dashboard.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <ImageView fitHeight="26.0" fitWidth="28.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
+                                 <image>
+                                    <Image url="@../img/Hospital.png" />
+                                 </image>
+                              </ImageView>
+                              <Label layoutX="44.0" layoutY="8.0" text="Sitema de gerenciamento Hospitalar" textFill="#1b1c22">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <Button fx:id="btnClose" layoutX="982.0" layoutY="7.0" mnemonicParsing="false" onAction="#Close" prefHeight="24.0" prefWidth="44.0" styleClass="close" stylesheets="@../styles/globalStyles.css" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
+                                 <graphic>
+                                    <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../img/Close.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                              <Button fx:id="btnMinimize" layoutX="928.0" layoutY="4.0" mnemonicParsing="false" onAction="#Minimize" prefHeight="24.0" prefWidth="44.0" styleClass="minimize" stylesheets="@../styles/globalStyles.css" AnchorPane.bottomAnchor="9.399999999999999" AnchorPane.rightAnchor="58.0" AnchorPane.topAnchor="4.0">
+                                 <graphic>
+                                    <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../img/minimize.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+               </top>
+               <left>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <AnchorPane fx:id="sideMenu" layoutY="155.0" prefHeight="509.0" prefWidth="200.0" styleClass="left-panel" stylesheets="@../styles/LoginStyles.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <ImageView fitHeight="92.0" fitWidth="109.0" layoutX="54.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../img/profile.png" />
+                                 </image>
+                              </ImageView>
+                              <Label layoutX="31.0" layoutY="118.0" text="Bem vindo, Admin" textAlignment="CENTER" textFill="WHITE">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Label>
+                              <Button fx:id="sideMenuHomeBtn" graphicTextGap="6.0" layoutX="26.0" layoutY="193.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#Home" prefHeight="38.0" prefWidth="150.0" styleClass="nav-btn" stylesheets="@../styles/Dashboard.css" text="Home" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="26.0">
+                                 <graphic>
+                                    <ImageView fitHeight="23.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../img/Home.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                              <Button fx:id="sideMenuLogOutBtn" layoutX="14.0" layoutY="560.0" minHeight="33.0" minWidth="92.0" mnemonicParsing="false" onAction="#LogOut" prefHeight="33.0" prefWidth="92.0" styleClass="logout" stylesheets="@../styles/Dashboard.css" text="LogOut" textAlignment="CENTER" textFill="WHITE">
+                                 <graphic>
+                                    <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../img/Logout.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                              <MenuButton fx:id="sideMenuPatientsBtn" graphicTextGap="3.0" layoutX="26.0" layoutY="231.0" mnemonicParsing="false" popupSide="RIGHT" prefHeight="38.0" prefWidth="150.0" styleClass="nav-btn" stylesheets="@../styles/Dashboard.css" text="Pacientes" textFill="WHITE" AnchorPane.leftAnchor="25.0">
+                                <items>
+                                  <MenuItem mnemonicParsing="false" onAction="#Patients" text="Pacientes" />
+                                  <MenuItem mnemonicParsing="false" text="Planos de saude" />
+                                </items>
+                                 <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../img/Paciente.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </MenuButton>
+                              <MenuButton fx:id="sideMenuDoctorsBtn" layoutX="25.0" layoutY="269.0" mnemonicParsing="false" popupSide="RIGHT" prefHeight="38.0" prefWidth="150.0" styleClass="nav-btn" stylesheets="@../styles/Dashboard.css" text="Medicos" textFill="WHITE">
+                                 <items>
+                                    <MenuItem mnemonicParsing="false" text="Action 1" />
+                                    <MenuItem mnemonicParsing="false" text="Action 2" />
+                                 </items>
+                                 <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../img/Medico.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </MenuButton>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+               </left>
+               <center>
+                  <AnchorPane fx:id="homePanel" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #f3f3f3;" BorderPane.alignment="CENTER">
+                     <children>
+                        <AnchorPane fx:id="homePanel" layoutX="113.0" layoutY="79.0" prefHeight="607.0" prefWidth="840.0" styleClass="bg-white" stylesheets="@../styles/globalStyles.css" visible="false" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
+                           <children>
+                              <BorderPane layoutX="106.0" layoutY="69.0" prefHeight="591.0" prefWidth="824.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <top>
+                                    <AnchorPane prefHeight="164.0" prefWidth="824.0" styleClass="bg-block" stylesheets="@../styles/Dashboard.css" BorderPane.alignment="CENTER">
+                                       <children>
+                                          <AnchorPane layoutX="620.0" layoutY="18.0" prefHeight="129.0" prefWidth="176.0" styleClass="card" stylesheets="@../styles/Dashboard.css">
+                                             <children>
+                                                <ImageView fitHeight="46.0" fitWidth="37.0" layoutX="29.0" layoutY="62.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../img/surgery.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Label layoutX="17.0" layoutY="14.0" style="-fx-text-fill: #fff;" text="Total de Procedimentos" textFill="WHITE" />
+                                                <Label fx:id="cardProcedureCount" alignment="CENTER_RIGHT" layoutX="66.0" layoutY="66.0" prefHeight="30.0" prefWidth="94.0" style="-fx-text-fill: #fff;" text="0" textFill="WHITE">
+                                                   <font>
+                                                      <Font name="System Bold" size="20.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane layoutX="14.0" layoutY="18.0" prefHeight="129.0" prefWidth="176.0" styleClass="card" stylesheets="@../styles/Dashboard.css">
+                                             <children>
+                                                <ImageView fitHeight="46.0" fitWidth="37.0" layoutX="29.0" layoutY="62.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../img/Paciente.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Label layoutX="33.0" layoutY="14.0" style="-fx-text-fill: #fff;" text="Total de Pacientes" textFill="WHITE" />
+                                                <Label fx:id="cardPatientCount" alignment="CENTER_RIGHT" layoutX="66.0" layoutY="66.0" prefHeight="30.0" prefWidth="94.0" style="-fx-text-fill: #fff;" text="0" textFill="WHITE">
+                                                   <font>
+                                                      <Font name="System Bold" size="20.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane layoutX="206.0" layoutY="18.0" prefHeight="129.0" prefWidth="176.0" styleClass="card" stylesheets="@../styles/Dashboard.css">
+                                             <children>
+                                                <ImageView fitHeight="46.0" fitWidth="37.0" layoutX="29.0" layoutY="62.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../img/Medico.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Label layoutX="37.0" layoutY="14.0" style="-fx-text-fill: #fff;" text="Total de Medicos" textFill="WHITE" />
+                                                <Label fx:id="cardDoctorCount" alignment="CENTER_RIGHT" layoutX="66.0" layoutY="66.0" prefHeight="30.0" prefWidth="94.0" style="-fx-text-fill: #fff;" text="0" textFill="WHITE">
+                                                   <font>
+                                                      <Font name="System Bold" size="20.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane layoutX="412.0" layoutY="18.0" prefHeight="129.0" prefWidth="176.0" styleClass="card" stylesheets="@../styles/Dashboard.css">
+                                             <children>
+                                                <ImageView fitHeight="46.0" fitWidth="37.0" layoutX="29.0" layoutY="62.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../img/appointment.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Label layoutX="32.0" layoutY="14.0" style="-fx-text-fill: #fff;" text="Total de Consultas" textFill="WHITE" />
+                                                <Label fx:id="cardAppointmentCount" alignment="CENTER_RIGHT" layoutX="66.0" layoutY="66.0" prefHeight="30.0" prefWidth="94.0" style="-fx-text-fill: #fff;" text="0" textFill="WHITE">
+                                                   <font>
+                                                      <Font name="System Bold" size="20.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </AnchorPane>
+                                       </children>
+                                    </AnchorPane>
+                                 </top>
+                                 <bottom>
+                                    <AnchorPane prefHeight="408.0" prefWidth="824.0" stylesheets="@../styles/Dashboard.css" BorderPane.alignment="CENTER">
+                                       <children>
+                                          <TableView layoutX="60.0" layoutY="13.0" prefHeight="383.0" prefWidth="704.0" styleClass="bg-block" stylesheets="@../styles/Dashboard.css" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="60.0" AnchorPane.topAnchor="13.0">
+                                            <columns>
+                                              <TableColumn prefWidth="75.0" text="C1" />
+                                              <TableColumn prefWidth="75.0" text="C2" />
+                                            </columns>
+                                          </TableView>
+                                       </children>
+                                    </AnchorPane>
+                                 </bottom>
+                              </BorderPane>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane fx:id="patinetsPanel" layoutX="336.0" layoutY="143.0" prefHeight="607.0" prefWidth="840.0" styleClass="bg-white" stylesheets="@../styles/globalStyles.css" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
+                           <children>
+                              <BorderPane layoutX="237.0" layoutY="157.0" prefHeight="607.0" prefWidth="840.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <top>
+                                    <AnchorPane prefHeight="363.0" prefWidth="824.0" styleClass="bg-block" stylesheets="@../styles/Dashboard.css" BorderPane.alignment="CENTER">
+                                       <children>
+                                          <TableView fx:id="patientTable" layoutX="11.0" layoutY="74.0" prefHeight="275.0" prefWidth="803.0" AnchorPane.bottomAnchor="10.0">
+                                            <columns>
+                                              <TableColumn fx:id="patientTableId" prefWidth="96.0" text="ID" />
+                                              <TableColumn fx:id="patientTableName" prefWidth="187.0" text="Nome" />
+                                                <TableColumn fx:id="patientTableCpf" prefWidth="153.0" text="CPF" />
+                                                <TableColumn fx:id="patientTableBirthDate" prefWidth="191.0" text="Data de Nascimeto" />
+                                                <TableColumn fx:id="patientTableHealthInsuranceName" prefWidth="175.0" text="Plano de Saude" />
+                                            </columns>
+                                          </TableView>
+                                          <TextField fx:id="patientSearch" layoutX="42.0" layoutY="23.0" prefHeight="33.0" prefWidth="200.0" promptText="Search" styleClass="input" stylesheets="@../styles/globalStyles.css" />
+                                          <ImageView fitHeight="27.0" fitWidth="23.0" layoutX="14.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../img/search.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </AnchorPane>
+                                 </top>
+                              </BorderPane>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+               </center>
+            </BorderPane>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>
