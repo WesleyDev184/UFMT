@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +13,6 @@ import Connection.CreateConnection;
 import Dao.Person.Doctor.DoctorDao;
 import Dao.Person.Patient.PatientDao;
 import Entities.HospitalCare.MedicalProcedures.MedicalProcedures;
-import Entities.HospitalCare.MedicalProcedures.NeuroSurgery;
-import Entities.HospitalCare.MedicalProcedures.Pharyngoplasty;
 import Entities.HospitalCare.MedicalProcedures.ProcedureType;
 import Entities.HospitalCare.MedicalProcedures.Room;
 import Entities.Person.Doctor.Doctor;
@@ -21,79 +20,94 @@ import Entities.Person.Patient.Patient;
 
 public class MedicalProceduresDao {
   private Connection connection;
-  private RoomDao roomDao;
   private ProcedureTypeDao procedureTypeDao;
+  private RoomDao roomDao;
   private PatientDao patientDao;
   private DoctorDao doctorDao;
 
   public MedicalProceduresDao() throws ClassNotFoundException, SQLException {
-    // Obter uma conexão com o banco de dados
     connection = CreateConnection.getConnection();
+    procedureTypeDao = new ProcedureTypeDao();
     roomDao = new RoomDao();
     patientDao = new PatientDao();
     doctorDao = new DoctorDao();
-    procedureTypeDao = new ProcedureTypeDao();
   }
 
-  public void insert(MedicalProcedures medicalProcedure) throws SQLException {
-    String query = "INSERT INTO medical_procedures (patient_id, doctor_id, date, duration, room_id, procedure_type_id) VALUES (?, ?, ?, ?, ?, ?)";
-    PreparedStatement statement = connection.prepareStatement(query);
-    statement.setInt(1, medicalProcedure.getPatient().getId());
-    statement.setInt(2, medicalProcedure.getDoctor().getId());
-    statement.setDate(3, medicalProcedure.getDate());
-    statement.setInt(4, medicalProcedure.getDuration());
-    statement.setInt(5, medicalProcedure.getRoom().getId());
-    statement.setInt(6, medicalProcedure.getProcedureType().getId());
-    statement.executeUpdate();
-  }
+  public void insert(MedicalProcedures procedure) throws SQLException {
+    String query = "INSERT INTO medical_procedures (patient_id, doctor_id, date, duration, room_id, procedure_type_id) "
+        +
+        "VALUES (?, ?, ?, ?, ?, ?)";
 
-  public MedicalProcedures getById(int id) throws SQLException, ClassNotFoundException {
-    String query = "SELECT * FROM medical_procedures WHERE id = ?";
-    PreparedStatement statement = connection.prepareStatement(query);
-    statement.setInt(1, id);
-    ResultSet resultSet = statement.executeQuery();
+    try (PreparedStatement statement = connection.prepareStatement(query)) {
+      statement.setInt(1, procedure.getPatient().getId());
+      statement.setInt(2, procedure.getDoctor().getId());
+      statement.setDate(3, procedure.getDate());
+      statement.setInt(4, procedure.getDuration());
+      statement.setInt(5, procedure.getRoom().getId());
+      statement.setInt(6, procedure.getProcedureType().getId());
 
-    if (resultSet.next()) {
-      MedicalProcedures medicalProcedure = createMedicalProcedureFromResultSet(resultSet);
-      return medicalProcedure;
+      statement.executeUpdate();
     }
-
-    return null; // Procedimento médico não encontrado
   }
 
-  public List<MedicalProcedures> getAll() throws SQLException, ClassNotFoundException {
-    String query = "SELECT * FROM medical_procedures";
-    PreparedStatement statement = connection.prepareStatement(query);
-    ResultSet resultSet = statement.executeQuery();
+  public void updateMedicalProcedure(MedicalProcedures procedure) throws SQLException {
+    String query = "UPDATE medical_procedures SET patient_id = ?, doctor_id = ?, date = ?, duration = ?, room_id = ?, procedure_type_id = ? "
+        +
+        "WHERE id = ?";
 
-    List<MedicalProcedures> medicalProcedures = new ArrayList<>();
+    try (PreparedStatement statement = connection.prepareStatement(query)) {
+      statement.setInt(1, procedure.getPatient().getId());
+      statement.setInt(2, procedure.getDoctor().getId());
+      statement.setDate(3, procedure.getDate());
+      statement.setInt(4, procedure.getDuration());
+      statement.setInt(5, procedure.getRoom().getId());
+      statement.setInt(6, procedure.getProcedureType().getId());
+      statement.setInt(7, procedure.getId());
 
-    while (resultSet.next()) {
-      MedicalProcedures medicalProcedure = createMedicalProcedureFromResultSet(resultSet);
-      medicalProcedures.add(medicalProcedure);
+      statement.executeUpdate();
     }
-
-    return medicalProcedures;
   }
 
-  public void update(MedicalProcedures medicalProcedure) throws SQLException {
-    String query = "UPDATE medical_procedures SET patient_id = ?, doctor_id = ?, date = ?, duration = ?, room_id = ?, procedure_type_id = ? WHERE id = ?";
-    PreparedStatement statement = connection.prepareStatement(query);
-    statement.setInt(1, medicalProcedure.getPatient().getId());
-    statement.setInt(2, medicalProcedure.getDoctor().getId());
-    statement.setDate(3, medicalProcedure.getDate());
-    statement.setInt(4, medicalProcedure.getDuration());
-    statement.setInt(5, medicalProcedure.getRoom().getId());
-    statement.setInt(6, medicalProcedure.getProcedureType().getId());
-    statement.setInt(7, medicalProcedure.getId());
-    statement.executeUpdate();
-  }
-
-  public void delete(int id) throws SQLException {
+  public void deleteMedicalProcedure(int id) throws SQLException {
     String query = "DELETE FROM medical_procedures WHERE id = ?";
-    PreparedStatement statement = connection.prepareStatement(query);
-    statement.setInt(1, id);
-    statement.executeUpdate();
+
+    try (PreparedStatement statement = connection.prepareStatement(query)) {
+      statement.setInt(1, id);
+      statement.executeUpdate();
+    }
+  }
+
+  public MedicalProcedures getMedicalProcedureById(int id) throws SQLException, ClassNotFoundException {
+    String query = "SELECT * FROM medical_procedures WHERE id = ?";
+
+    try {
+      PreparedStatement statement = connection.prepareStatement(query);
+      statement.setInt(1, id);
+      ResultSet resultSet = statement.executeQuery();
+
+      if (resultSet.next()) {
+        return createMedicalProcedureFromResultSet(resultSet);
+      }
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+
+    return null;
+  }
+
+  public List<MedicalProcedures> getAllMedicalProcedures() throws SQLException, ClassNotFoundException {
+    List<MedicalProcedures> procedures = new ArrayList<>();
+    String query = "SELECT * FROM medical_procedures";
+
+    try (Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query)) {
+      while (resultSet.next()) {
+        MedicalProcedures procedure = createMedicalProcedureFromResultSet(resultSet);
+        procedures.add(procedure);
+      }
+    }
+
+    return procedures;
   }
 
   private MedicalProcedures createMedicalProcedureFromResultSet(ResultSet resultSet)
@@ -114,14 +128,6 @@ public class MedicalProceduresDao {
     Room room = roomDao.getById(roomId);
     ProcedureType procedureType = procedureTypeDao.getById(procedureTypeId);
 
-    // Determinar o tipo de procedimento médico com base no tipo
-    // do objeto ProcedureType recuperado do banco de dados
-    if (procedureType.getName().equals("NeuroSurgery")) {
-      return new NeuroSurgery(id, patient, doctor, date, duration, procedureType.getCost(), room, procedureType);
-    } else if (procedureType.getName().equals("Pharyngoplasty")) {
-      return new Pharyngoplasty(id, patient, doctor, date, duration, procedureType.getCost(), room, procedureType);
-    } else {
-      throw new IllegalArgumentException("Tipo de procedimento médico inválido");
-    }
+    return new MedicalProcedures(id, patient, doctor, date, duration, room, procedureType);
   }
 }

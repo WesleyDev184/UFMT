@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,16 +18,25 @@ public class AddressDao {
     this.connection = CreateConnection.getConnection();
   }
 
-  public void insert(Address address) throws SQLException {
+  public Address insert(Address address) throws SQLException {
     String query = "INSERT INTO addresses (public_place, number, cep, neighborhood) VALUES (?, ?, ?, ?)";
-    try (PreparedStatement statement = connection.prepareStatement(query)) {
+    try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
       statement.setString(1, address.getPublicPlace());
       statement.setInt(2, address.getNumber());
-      statement.setFloat(3, address.getCEP());
+      statement.setInt(3, address.getCEP());
       statement.setString(4, address.getNeighborhood());
       statement.executeUpdate();
+
+      ResultSet generatedKeys = statement.getGeneratedKeys();
+      if (generatedKeys.next()) {
+        int generatedId = generatedKeys.getInt(1);
+        address.setId(generatedId); // Define o ID gerado no objeto Address
+      }
+
+      return address;
     } catch (SQLException e) {
       System.out.println(e.getMessage());
+      throw e;
     }
   }
 

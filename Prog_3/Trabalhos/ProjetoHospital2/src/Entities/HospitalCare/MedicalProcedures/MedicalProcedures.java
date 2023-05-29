@@ -5,24 +5,22 @@ import java.sql.Date;
 import Entities.Person.Doctor.Doctor;
 import Entities.Person.Patient.Patient;
 
-public abstract class MedicalProcedures {
+public class MedicalProcedures {
   private int id;
   private Patient patient;
   private Doctor doctor;
   private Date date;
   private int duration;
-  private double cost;
   private Room room;
   private ProcedureType procedureType;
 
-  public MedicalProcedures(int id, Patient patient, Doctor doctor, Date date, int duration, double cost, Room room,
+  public MedicalProcedures(int id, Patient patient, Doctor doctor, Date date, int duration, Room room,
       ProcedureType procedureType) {
     this.id = id;
     this.patient = patient;
     this.doctor = doctor;
     this.date = date;
     this.duration = duration;
-    this.cost = cost;
     this.room = room;
     this.procedureType = procedureType;
   }
@@ -45,10 +43,6 @@ public abstract class MedicalProcedures {
 
   public int getDuration() {
     return duration;
-  }
-
-  public double getCost() {
-    return cost;
   }
 
   public Room getRoom() {
@@ -79,10 +73,6 @@ public abstract class MedicalProcedures {
     this.duration = duration;
   }
 
-  public void setCost(double cost) {
-    this.cost = cost;
-  }
-
   public void setRoom(Room room) {
     this.room = room;
   }
@@ -99,9 +89,9 @@ public abstract class MedicalProcedures {
         ", doctor=" + doctor +
         ", date=" + date +
         ", duration=" + duration +
-        ", cost=" + cost +
+        ", cost=" + procedureType.getCost() +
         ", room=" + room +
-        ", procedureType=" + procedureType +
+        ", procedureType=" + procedureType.getName() +
         '}';
   }
 }

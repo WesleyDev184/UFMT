@@ -33,7 +33,7 @@ CREATE TABLE health_insurances (
 CREATE TABLE patients (
   id INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
-  cpf BIGINT NOT NULL UNIQUE,
+  cpf VARCHAR(15) NOT NULL UNIQUE,
   birth_date DATE NOT NULL,
   address_id INT NOT NULL,
   health_insurance_id INT NOT NULL,

@@ -28,7 +28,7 @@ public class PatientDao {
     statement.setString(1, patient.getName());
     statement.setDate(2, patient.getBirthDate());
     statement.setInt(3, patient.getAddress().getId());
-    statement.setFloat(4, patient.getCPF());
+    statement.setString(4, patient.getCPF());
     statement.setInt(5, patient.getHealthInsurance().getId());
     statement.executeUpdate();
 
@@ -73,7 +73,7 @@ public class PatientDao {
     statement.setString(1, patient.getName());
     statement.setDate(2, patient.getBirthDate());
     statement.setInt(3, patient.getAddress().getId());
-    statement.setFloat(4, patient.getCPF());
+    statement.setString(4, patient.getCPF());
     statement.setInt(5, patient.getHealthInsurance().getId());
     statement.setInt(6, patient.getId());
     statement.executeUpdate();
@@ -91,7 +91,7 @@ public class PatientDao {
     String name = resultSet.getString("name");
     Date birthDate = resultSet.getDate("birth_date");
     int addressId = resultSet.getInt("address_id");
-    int CPF = (int) resultSet.getFloat("CPF");
+    String CPF = resultSet.getString("CPF");
     int healthInsuranceId = resultSet.getInt("health_insurance_id");
 
     // Obter o objeto Address relacionado

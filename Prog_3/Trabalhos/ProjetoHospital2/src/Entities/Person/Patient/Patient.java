@@ -7,10 +7,10 @@ import Entities.Person.Person;
 
 public class Patient extends Person {
   private int id;
-  private long CPF;
+  private String CPF;
   private HealthInsurance healthInsurance;
 
-  public Patient(int id, String name, Date birthDate, Address address, long CPF, HealthInsurance healthInsurance) {
+  public Patient(int id, String name, Date birthDate, Address address, String CPF, HealthInsurance healthInsurance) {
     super(name, birthDate, address);
     this.id = id;
     this.CPF = CPF;
@@ -25,11 +25,11 @@ public class Patient extends Person {
     return id;
   }
 
-  public long getCPF() {
+  public String getCPF() {
     return CPF;
   }
 
-  public void setCPF(long CPF) {
+  public void setCPF(String CPF) {
     this.CPF = CPF;
   }
 

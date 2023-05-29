@@ -18,50 +18,48 @@ import Entities.Person.Patient.Patient;
 public class MedicalProceduresDaoTeste {
   public static void main(String[] args) {
     try {
-
+      // Cria uma instância do MedicalProceduresDao
+      MedicalProceduresDao dao = new MedicalProceduresDao();
       PatientDao patientDao = new PatientDao();
       DoctorDao doctorDao = new DoctorDao();
       RoomDao roomDao = new RoomDao();
       ProcedureTypeDao procedureTypeDao = new ProcedureTypeDao();
 
-      // Criação de objetos necessários para testar o DAO
+      // Cria objetos Patient, Doctor, Room e ProcedureType para teste
       Patient patient = patientDao.getById(1);
-
       Doctor doctor = doctorDao.getById(1);
-
       Room room = roomDao.getById(1);
-
       ProcedureType procedureType = procedureTypeDao.getById(1);
 
-      Date date = Date.valueOf("2023-05-21");
-      int duration = 120;
+      // Cria um objeto Date para teste
+      Date date = new Date(2020, 10, 10);
 
-      // Criação de um objeto de NeuroSurgery
-      // NeuroSurgery neuroSurgery = new NeuroSurgery(0, patient, doctor, date,
-      // duration, procedureType.getCost(), room,
+      // Cria um novo MedicalProcedure
+      // MedicalProcedures newProcedure = new MedicalProcedures(0, patient, doctor,
+      // date, 115, room,
       // procedureType);
 
-      // // Criação de um objeto de Pharyngoplasty
-      // Pharyngoplasty pharyngoplasty = new Pharyngoplasty(0, patient, doctor, date,
-      // duration, procedureType.getCost(),
-      // room,
-      // procedureType);
+      // // Insere o novo MedicalProcedure no banco de dados
+      // dao.insert(newProcedure);
+      // System.out.println("MedicalProcedure inserido com sucesso!");
 
-      // // Inserção dos objetos no banco de dados
-      MedicalProceduresDao dao = new MedicalProceduresDao();
-      // dao.insert(neuroSurgery);
-      // dao.insert(pharyngoplasty);
+      // Obtém um MedicalProcedure pelo ID
+      MedicalProcedures retrievedProcedure = dao.getMedicalProcedureById(5);
+      // Atualiza o MedicalProcedure
+      System.out.println("MedicalProcedure encontrado: " + retrievedProcedure);
 
-      // Recuperação de todos os procedimentos médicos do banco de dados
-      List<MedicalProcedures> medicalProcedures = dao.getAll();
-
-      MedicalProcedures medicalProcedure = dao.getById(2);
-      System.out.println(medicalProcedure);
-
-      // // Exibição dos procedimentos médicos recuperados
-      // for (MedicalProcedures medicalProcedure : medicalProcedures) {
-      // System.out.println(medicalProcedure);
-      // }
+      retrievedProcedure.setDuration(60); // Atualiza a duração para 60 minutos
+      dao.updateMedicalProcedure(retrievedProcedure);
+      System.out.println("MedicalProcedure atualizado com sucesso!");
+      // Obtém todos os MedicalProcedures
+      List<MedicalProcedures> allProcedures = dao.getAllMedicalProcedures();
+      System.out.println("Lista de MedicalProcedures:");
+      for (MedicalProcedures procedure : allProcedures) {
+        System.out.println(procedure);
+      }
+      // Exclui o MedicalProcedure
+      dao.deleteMedicalProcedure(4);
+      System.out.println("MedicalProcedure excluído com sucesso!");
     } catch (ClassNotFoundException | SQLException e) {
       e.printStackTrace();
     }

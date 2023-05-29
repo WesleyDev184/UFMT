@@ -23,6 +23,18 @@
   -fx-background-color: #ffbd4c;
 }
 
+.addBtn {
+  -fx-background-color: transparent;
+  -fx-background-radius: 5px;
+  -fx-text-fill: #1b1c22;
+  -fx-cursor: hand;
+}
+
+.addBtn:hover {
+  -fx-background-color: #57bf9c;
+  -fx-text-fill: #fff;
+}
+
 .input {
   -fx-background-color: linear-gradient(to bottom, #efefef, #eee);
   -fx-background-radius: 4px;

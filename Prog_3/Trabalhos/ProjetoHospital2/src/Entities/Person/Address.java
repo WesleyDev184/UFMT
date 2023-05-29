@@ -4,10 +4,10 @@ public class Address {
   private int Id;
   private String PublicPlace;
   private int Number;
-  private long CEP;
+  private int CEP;
   private String Neighborhood;
 
-  public Address(int id, String PublicPlace, int Number, long CEP, String Neighborhood) {
+  public Address(int id, String PublicPlace, int Number, int CEP, String Neighborhood) {
     this.Id = id;
     this.PublicPlace = PublicPlace;
     this.Number = Number;
@@ -39,11 +39,11 @@ public class Address {
     this.Number = Number;
   }
 
-  public long getCEP() {
+  public int getCEP() {
     return CEP;
   }
 
-  public void setCEP(long CEP) {
+  public void setCEP(int CEP) {
     this.CEP = CEP;
   }
 
