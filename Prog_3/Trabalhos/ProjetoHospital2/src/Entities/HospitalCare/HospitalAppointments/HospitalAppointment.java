@@ -50,6 +50,18 @@ public class HospitalAppointment {
     this.Doctor = Doctor;
   }
 
+  public String getPatientName() {
+    return Patient.getName();
+  }
+
+  public String getDoctorName() {
+    return Doctor.getName();
+  }
+
+  public String getSpecialtyName() {
+    return Doctor.getSpecialty().getName();
+  }
+
   @Override
   public String toString() {
     return "HospitalAppointment [Date=" + Date + ", Patient=" + Patient + ", Doctor=" + Doctor + "]";

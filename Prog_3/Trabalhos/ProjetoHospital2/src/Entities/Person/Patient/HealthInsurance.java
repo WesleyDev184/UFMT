@@ -37,7 +37,6 @@ public class HealthInsurance {
 
   @Override
   public String toString() {
-    return "HealthInsurance [healthInsuranceMonthlyPayment=" + healthInsuranceMonthlyPayment
-        + ", healthInsuranceName=" + healthInsuranceName + ", id=" + id + "]";
+    return getHealthInsuranceName();
   }
 }

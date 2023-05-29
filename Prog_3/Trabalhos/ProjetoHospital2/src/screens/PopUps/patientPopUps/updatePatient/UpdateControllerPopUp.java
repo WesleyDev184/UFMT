@@ -1,4 +1,4 @@
-package screens.PopUps.addNewPatient;
+package screens.PopUps.patientPopUps.updatePatient;
 
 import java.net.URL;
 import java.sql.Date;
@@ -25,7 +25,7 @@ import javafx.scene.control.TextField;
 import javafx.util.Callback;
 import screens.Dashboard.Controller;
 
-public class ControllerPopUp implements Initializable {
+public class UpdateControllerPopUp implements Initializable {
 
   @FXML
   private Button addButon;
@@ -58,6 +58,7 @@ public class ControllerPopUp implements Initializable {
   private ComboBox<HealthInsurance> selectInsurance;
 
   private Controller dashboardController;
+  private Patient patient;
   private List<HealthInsurance> healthInsurances;
   private HealthInsuranceDao healthInsuranceDao;
   private AddressDao addressDao;
@@ -97,7 +98,22 @@ public class ControllerPopUp implements Initializable {
     this.dashboardController = controller;
   }
 
-  public void AddNewPatient() {
+  public void setPatient(Patient patient) {
+    this.patient = patient;
+  }
+
+  public void setFields() {
+    inputName.setText(patient.getName());
+    inputCpf.setText(patient.getCPF());
+    inputDate.setValue(patient.getBirthDate().toLocalDate());
+    inputCep.setText(String.valueOf(patient.getAddress().getCEP()));
+    inputPublicPlace.setText(patient.getAddress().getPublicPlace());
+    inputResidenceNumber.setText(String.valueOf(patient.getAddress().getNumber()));
+    inputNeighborhood.setText(patient.getAddress().getNeighborhood());
+    selectInsurance.getSelectionModel().select(patient.getHealthInsurance());
+  }
+
+  public void UpdatePatient() {
     try {
       addressDao = new AddressDao();
       patientDao = new PatientDao();
@@ -152,15 +168,15 @@ public class ControllerPopUp implements Initializable {
       }
 
       // Inserting the patient
-      Address address = new Address(0, publicPlace, Integer.parseInt(residenceNumber),
+      Address address = new Address(patient.getAddress().getId(), publicPlace, Integer.parseInt(residenceNumber),
           Integer.parseInt(cep), neighborhood);
-      Address newAddress = addressDao.insert(address);
+      Address newAddress = addressDao.update(address);
 
       Date date = Date.valueOf(dateOfBirth);
 
-      Patient patient = new Patient(0, name, date, newAddress, cpf, selectedInsurance);
+      Patient patientUpdated = new Patient(patient.getId(), name, date, newAddress, cpf, selectedInsurance);
 
-      patientDao.insert(patient);
+      patientDao.update(patientUpdated);
 
       // Updating the patient table in the dashboard
       if (dashboardController != null) {

@@ -52,15 +52,17 @@ public class Doctor extends Person {
     this.timeValue = timeValue;
   }
 
+  public String getSpecialtyName() {
+    return specialty.getName();
+  }
+
   public String operate() {
     return String.format("Doctor %s is operating", getName());
   } // end of method operate
 
   @Override
   public String toString() {
-    return String.format("Name: %s \nDate Of Birth %s \nAddress: %s \nCRM: %s \nSpecialty: %s \nTime Value: %s",
-        getName(),
-        getBirthDate(), getAddress(), crm, specialty, timeValue);
+    return getName();
   }
 
 }

@@ -83,6 +83,40 @@ public class HospitalAppointmentDao {
     return appointments;
   }
 
+  public HospitalAppointment getById(int id) throws SQLException, ClassNotFoundException {
+    String query = "SELECT * FROM hospital_appointments WHERE id = ?";
+    PreparedStatement statement = connection.prepareStatement(query);
+    statement.setInt(1, id);
+    ResultSet resultSet = statement.executeQuery();
+
+    HospitalAppointment appointment = null;
+
+    if (resultSet.next()) {
+      appointment = createAppointmentFromResultSet(resultSet);
+    }
+
+    return appointment;
+  }
+
+  public HospitalAppointment update(HospitalAppointment appointment) throws SQLException {
+    String query = "UPDATE hospital_appointments SET appointment_date = ?, patient_id = ?, doctor_id = ? WHERE id = ?";
+    PreparedStatement statement = connection.prepareStatement(query);
+    statement.setDate(1, appointment.getDate());
+    statement.setInt(2, appointment.getPatient().getId());
+    statement.setInt(3, appointment.getDoctor().getId());
+    statement.setInt(4, appointment.getId());
+    statement.executeUpdate();
+
+    return appointment;
+  }
+
+  public void delete(int id) throws SQLException {
+    String query = "DELETE FROM hospital_appointments WHERE id = ?";
+    PreparedStatement statement = connection.prepareStatement(query);
+    statement.setInt(1, id);
+    statement.executeUpdate();
+  }
+
   private HospitalAppointment createAppointmentFromResultSet(ResultSet resultSet)
       throws SQLException, ClassNotFoundException {
     int appointmentId = resultSet.getInt("id");

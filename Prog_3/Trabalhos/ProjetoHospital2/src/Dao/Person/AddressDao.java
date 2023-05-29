@@ -66,7 +66,7 @@ public class AddressDao {
     return addresses;
   }
 
-  public void update(Address address) throws SQLException {
+  public Address update(Address address) throws SQLException {
     String query = "UPDATE addresses SET public_place = ?, number = ?, cep = ?, neighborhood = ? WHERE id = ?";
     try (PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setString(1, address.getPublicPlace());
@@ -76,6 +76,8 @@ public class AddressDao {
       statement.setInt(5, address.getId());
       statement.executeUpdate();
     }
+
+    return address; // Retorna o objeto atualizado
   }
 
   public void delete(int id) throws SQLException {

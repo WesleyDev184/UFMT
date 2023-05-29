@@ -51,7 +51,6 @@ public class Patient extends Person {
 
   @Override
   public String toString() {
-    return "Patient [id=" + id + ", CPF=" + CPF + ", healthInsurance=" + healthInsurance + ", toString()="
-        + super.toString() + "]";
+    return getName();
   }
 }
