@@ -81,6 +81,22 @@ public class MedicalProcedures {
     this.procedureType = procedureType;
   }
 
+  public String getProcedureTypeName() {
+    return procedureType.getName();
+  }
+
+  public double getProcedureTypeCost() {
+    return procedureType.getCost();
+  }
+
+  public String getDoctorName() {
+    return doctor.getName();
+  }
+
+  public String getPatientName() {
+    return patient.getName();
+  }
+
   @Override
   public String toString() {
     return "MedicalProcedure{" +

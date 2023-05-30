@@ -40,8 +40,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import screens.PopUps.appointmentPupUps.addAppointment.AppointmentControllerAdd;
 import screens.PopUps.appointmentPupUps.updateAppointment.AppointmentControllerUpdate;
+import screens.PopUps.doctorPopUps.addNewDoctor.DoctorControllerPopUpAdd;
+import screens.PopUps.doctorPopUps.updateDoctor.DoctorControllerPopUpUpdate;
 import screens.PopUps.patientPopUps.addNewPatient.ControllerPopUp;
 import screens.PopUps.patientPopUps.updatePatient.UpdateControllerPopUp;
+import screens.PopUps.procedurePopUps.addProcedure.ProcedureControllerAdd;
 
 public class Controller implements Initializable {
 
@@ -139,7 +142,7 @@ public class Controller implements Initializable {
     private Button addNewAppointment;
 
     @FXML
-    private Button addNewDoctor;
+    private Button addNewDoctorBtn;
 
     @FXML
     private AnchorPane doctorPanel;
@@ -168,28 +171,69 @@ public class Controller implements Initializable {
     @FXML
     private TableColumn<Doctor, String> doctorTableSpecialty;
 
+    @FXML
+    private TableColumn<Doctor, Double> doctorTableTimeValue;
+
+    @FXML
+    private Button addNewProcedureBtn;
+
+    @FXML
+    private TextField procedureSearch;
+
+    @FXML
+    private TableView<MedicalProcedures> procedureTable;
+
+    @FXML
+    private TableColumn<MedicalProcedures, Integer> procedureDuration;
+
+    @FXML
+    private TableColumn<MedicalProcedures, Integer> procedureTableCost;
+
+    @FXML
+    private TableColumn<MedicalProcedures, Date> procedureTableDate;
+
+    @FXML
+    private TableColumn<MedicalProcedures, String> procedureTableDoctorName;
+
+    @FXML
+    private TableColumn<MedicalProcedures, Integer> procedureTableId;
+
+    @FXML
+    private TableColumn<MedicalProcedures, String> procedureTablePatientName;
+
+    @FXML
+    private TableColumn<MedicalProcedures, String> procedureTableType;
+
+    @FXML
+    private AnchorPane proceduresPanel;
+
     private double x, y;
     private List<Patient> allPatients;
     private List<HospitalAppointment> allAppointments;
     private List<Doctor> allDoctors;
+    private List<MedicalProcedures> allProcedures;
     private ObservableList<Patient> observableListPatients;
     private ObservableList<HospitalAppointment> observableListAppointments;
+    private ObservableList<MedicalProcedures> observableListProcedures;
+    private ObservableList<Doctor> observableListDoctors;
     private PatientDao patientDao;
+    private DoctorDao doctorDao;
     private MedicalProceduresDao medicalProceduresDao;
     private HospitalAppointmentDao hospitalAppointmentDao;
-    private DoctorDao doctorDao;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
             AddPatientOnTable();
             AddAppointmentOnTable();
-            addDoctorsTable();
+            addDoctorsOnTable();
+            addProceduresOnTable();
             isntaceCounters();
 
             homePanel.setVisible(true);
             patinetsPanel.setVisible(false);
             doctorPanel.setVisible(false);
+            proceduresPanel.setVisible(false);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -226,9 +270,159 @@ public class Controller implements Initializable {
         patinetsPanel.setVisible(false);
     }
 
-    public void addDoctorsTable() throws ClassNotFoundException, SQLException {
+    public void Procedures() {
+        proceduresPanel.setVisible(true);
+        homePanel.setVisible(false);
+        patinetsPanel.setVisible(false);
+        doctorPanel.setVisible(false);
+    }
+
+    public void addProceduresOnTable() throws ClassNotFoundException, SQLException {
+        allProcedures = getAllProcedures();
+        observableListProcedures = FXCollections
+                .observableArrayList(allProcedures);
+
+        procedureTableId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        procedureTableDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+        procedureTablePatientName.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+        procedureTableDoctorName.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
+        procedureTableType.setCellValueFactory(new PropertyValueFactory<>("procedureTypeName"));
+        procedureDuration.setCellValueFactory(new PropertyValueFactory<>("duration"));
+        procedureTableCost.setCellValueFactory(new PropertyValueFactory<>("procedureTypeCost"));
+
+        // Create the actions column
+        TableColumn<MedicalProcedures, Void> actionsColumn = new TableColumn<>("Actions");
+        actionsColumn.setCellFactory(param -> new TableCell<MedicalProcedures, Void>() {
+            private final Button updateButton = new Button("Update");
+            private final Button deleteButton = new Button("Delete");
+
+            {
+                // Set action for update button
+                updateButton.setOnAction(event -> {
+                    MedicalProcedures medicalProcedures = getTableView().getItems().get(getIndex());
+                    // Call a function to handle the update action for the patient
+                    handleUpdateProcedure(medicalProcedures);
+                });
+                updateButton.setStyle(
+                        "-fx-background-color: #f8d16a; -fx-text-fill: #ffffff; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+
+                // Set action for delete button
+                deleteButton.setOnAction(event -> {
+                    MedicalProcedures medicalProcedures = getTableView().getItems().get(getIndex());
+                    // Call a function to handle the delete action for the patient
+                    try {
+                        handleDeleteProcedure(medicalProcedures);
+                    } catch (ClassNotFoundException | SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+                deleteButton.setStyle(
+                        "-fx-background-color: #ff5c5c; -fx-text-fill: #ffffff; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    HBox buttonsContainer = new HBox(4); // Adjust the spacing between buttons if needed
+                    buttonsContainer.getChildren().addAll(updateButton, deleteButton);
+                    setGraphic(buttonsContainer);
+                }
+            }
+        });
+
+        procedureTable.getColumns().add(actionsColumn);
+        procedureTable.setItems(observableListProcedures);
+        searchProcedureTable();
+    }
+
+    public void handleUpdateProcedure(MedicalProcedures procedure) {
+        System.out.println(procedure.getPatientName());
+    }
+
+    public void addNewProcedure() {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("../PopUps/procedurePopUps/addProcedure/addNewProcedure.fxml"));
+        try {
+            Parent root = loader.load();
+
+            // Get the scene2 controller so that it will update the table at the end
+            ProcedureControllerAdd addNewProcedureController = loader.getController();
+            addNewProcedureController.setDashboardController(this); // Definir a referência do controlador da tela
+                                                                    // principal
+
+            Stage mainStage = new Stage();
+            Scene scene = new Scene(root);
+            mainStage.setScene(scene);
+
+            mainStage.initStyle(StageStyle.UNDECORATED);
+            // drag it here
+            root.setOnMousePressed(event -> {
+                x = event.getSceneX();
+                y = event.getSceneY();
+            });
+            root.setOnMouseDragged(event -> {
+
+                mainStage.setX(event.getScreenX() - x);
+                mainStage.setY(event.getScreenY() - y);
+
+            });
+            mainStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void handleDeleteProcedure(MedicalProcedures procedure) throws ClassNotFoundException, SQLException {
+        medicalProceduresDao = new MedicalProceduresDao();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Procedure");
+        alert.setHeaderText(null);
+        alert.setContentText("Você Quer Mesmo Deletar o Procedimento " + procedure.getId() + "?");
+        Optional<ButtonType> action = alert.showAndWait();
+
+        if (action.get() == ButtonType.OK) {
+            medicalProceduresDao.deleteMedicalProcedure(procedure.getId());
+            updateProcedureTable();
+        }
+    }
+
+    public void searchProcedureTable() {
+        procedureSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                List<MedicalProcedures> allProcedures = getAllProcedures();
+                ObservableList<MedicalProcedures> filteredList = filterProcedures(allProcedures, newValue);
+                procedureTable.setItems(filteredList);
+            } catch (ClassNotFoundException | SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private ObservableList<MedicalProcedures> filterProcedures(List<MedicalProcedures> procedures, String searchText) {
+        ObservableList<MedicalProcedures> filteredList = FXCollections.observableArrayList();
+        for (MedicalProcedures procedure : procedures) {
+            if (procedure.getPatientName().toLowerCase().contains(searchText.toLowerCase())
+                    || procedure.getDoctorName().toLowerCase().contains(searchText.toLowerCase())) {
+                filteredList.add(procedure);
+            }
+        }
+        return filteredList;
+    }
+
+    public void updateProcedureTable() throws ClassNotFoundException, SQLException {
+        List<MedicalProcedures> updatedProcedures = getAllProcedures();
+        ObservableList<MedicalProcedures> observableListProcedures = FXCollections
+                .observableArrayList(updatedProcedures);
+        procedureTable.setItems(observableListProcedures);
+    }
+
+    public void addDoctorsOnTable() throws ClassNotFoundException, SQLException {
         allDoctors = getAllDoctors();
-        ObservableList<Doctor> observableListDoctors = FXCollections
+        observableListDoctors = FXCollections
                 .observableArrayList(allDoctors);
 
         doctorTableId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -236,6 +430,7 @@ public class Controller implements Initializable {
         doctorTableBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
         doctorTableCrm.setCellValueFactory(new PropertyValueFactory<>("crm"));
         doctorTableSpecialty.setCellValueFactory(new PropertyValueFactory<>("specialtyName"));
+        doctorTableTimeValue.setCellValueFactory(new PropertyValueFactory<>("timeValue"));
 
         // Create the actions column
         TableColumn<Doctor, Void> actionsColumn = new TableColumn<>("Actions");
@@ -288,7 +483,39 @@ public class Controller implements Initializable {
     }
 
     public void handleUpdateDoctor(Doctor doctor) {
-        System.out.println(doctor);
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("../PopUps/doctorPopUps/updateDoctor/updateDoctorPopUp.fxml"));
+        try {
+            Parent root = loader.load();
+
+            // Get the scene2 controller so that it will update the table at the end
+            DoctorControllerPopUpUpdate UpdateDoctorController = loader
+                    .getController();
+            UpdateDoctorController.setDashboardController(this); // Definir a referência do controlador da tela
+                                                                 // principal
+            UpdateDoctorController.setDoctor(doctor); // Definir o paciente que será atualizado
+            UpdateDoctorController.setFields();
+
+            Stage mainStage = new Stage();
+            Scene scene = new Scene(root);
+            mainStage.setScene(scene);
+
+            mainStage.initStyle(StageStyle.UNDECORATED);
+            // drag it here
+            root.setOnMousePressed(event -> {
+                x = event.getSceneX();
+                y = event.getSceneY();
+            });
+            root.setOnMouseDragged(event -> {
+
+                mainStage.setX(event.getScreenX() - x);
+                mainStage.setY(event.getScreenY() - y);
+
+            });
+            mainStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void handleDeleteDoctor(Doctor doctor) throws ClassNotFoundException, SQLException {
@@ -302,6 +529,39 @@ public class Controller implements Initializable {
         if (action.get() == ButtonType.OK) {
             doctorDao.delete(doctor.getId());
             updateDoctorTable();
+        }
+    }
+
+    public void addNewDoctor() {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("../PopUps/doctorPopUps/addNewDoctor/addNewDoctorPopUp.fxml"));
+        try {
+            Parent root = loader.load();
+
+            // Get the scene2 controller so that it will update the table at the end
+            DoctorControllerPopUpAdd addNewDoctorController = loader.getController();
+            addNewDoctorController.setDashboardController(this); // Definir a referência do controlador da tela
+                                                                 // principal
+
+            Stage mainStage = new Stage();
+            Scene scene = new Scene(root);
+            mainStage.setScene(scene);
+
+            mainStage.initStyle(StageStyle.UNDECORATED);
+            // drag it here
+            root.setOnMousePressed(event -> {
+                x = event.getSceneX();
+                y = event.getSceneY();
+            });
+            root.setOnMouseDragged(event -> {
+
+                mainStage.setX(event.getScreenX() - x);
+                mainStage.setY(event.getScreenY() - y);
+
+            });
+            mainStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -727,7 +987,7 @@ public class Controller implements Initializable {
 
     private List<MedicalProcedures> getAllProcedures() throws ClassNotFoundException, SQLException {
         medicalProceduresDao = new MedicalProceduresDao();
-        return medicalProceduresDao.getAllMedicalProcedures();
+        return medicalProceduresDao.getAll();
     }
 
     public void isntaceCounters() throws ClassNotFoundException, SQLException {

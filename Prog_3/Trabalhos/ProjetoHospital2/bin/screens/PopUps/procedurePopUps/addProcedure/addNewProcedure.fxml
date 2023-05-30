@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="311.0" prefWidth="444.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="screens.PopUps.procedurePopUps.addProcedure.ProcedureControllerAdd">
+   <children>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" stylesheets="@../../../styles/globalStyles.css">
+         <children>
+            <BorderPane layoutX="73.0" layoutY="86.0" prefHeight="414.4" prefWidth="444.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <top>
+                  <AnchorPane prefHeight="48.0" prefWidth="444.0" styleClass="bg-white" BorderPane.alignment="CENTER">
+                     <children>
+                        <Button fx:id="closebtn" layoutX="378.0" layoutY="12.0" mnemonicParsing="false" onAction="#close" prefHeight="26.0" prefWidth="49.0" styleClass="close" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+                           <graphic>
+                              <ImageView fitHeight="12.0" fitWidth="14.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../img/Close.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <ImageView fitHeight="33.0" fitWidth="33.0" layoutX="14.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../img/Hospital.png" />
+                           </image>
+                        </ImageView>
+                        <Label layoutX="49.0" layoutY="16.0" text="Form dos Procedimentos">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+               </top>
+               <bottom>
+                  <AnchorPane prefHeight="250.0" prefWidth="444.0" styleClass="bg-white" BorderPane.alignment="CENTER">
+                     <children>
+                        <ComboBox fx:id="selectPatient" layoutX="14.0" layoutY="33.0" prefWidth="175.0" promptText="Pacientes" />
+                        <Label layoutX="15.0" layoutY="14.0" text="Paciente:" />
+                        <ComboBox fx:id="selectDoctor" layoutX="14.0" layoutY="88.0" prefHeight="26.0" prefWidth="175.0" promptText="Medicos" />
+                        <Label layoutX="15.0" layoutY="69.0" text="Medico:" />
+                        <ComboBox fx:id="selectProcedureType" layoutX="222.0" layoutY="33.0" prefWidth="175.0" promptText="Procedimentos" />
+                        <Label layoutX="222.0" layoutY="14.0" text="Tipo de Procedimento:" />
+                        <DatePicker fx:id="procedureDate" layoutX="15.0" layoutY="140.0" prefWidth="175.0" promptText="Data do Procedimento" />
+                        <Label layoutX="16.0" layoutY="122.0" text="Data Do Procedimento:" />
+                        <TextField fx:id="inputDuration" layoutX="222.0" layoutY="89.0" prefHeight="26.0" prefWidth="175.0" promptText="Duração" />
+                        <Label layoutX="222.0" layoutY="69.0" text="Duração do Procedimento:" />
+                        <ComboBox fx:id="selectRoom" layoutX="222.0" layoutY="139.0" prefHeight="26.0" prefWidth="175.0" promptText="Salas" />
+                        <Label layoutX="222.0" layoutY="121.0" text="Sala de Operação:" />
+                        <Button fx:id="addBtn" layoutX="378.0" layoutY="211.0" mnemonicParsing="false" onAction="#addNewMedicalProcedure" prefHeight="35.0" prefWidth="88.0" styleClass="addBtn" text="Salvar" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+                     </children>
+                  </AnchorPane>
+               </bottom>
+            </BorderPane>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

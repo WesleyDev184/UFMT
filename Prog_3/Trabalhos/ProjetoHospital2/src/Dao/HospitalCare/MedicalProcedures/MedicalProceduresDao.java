@@ -95,7 +95,7 @@ public class MedicalProceduresDao {
     return null;
   }
 
-  public List<MedicalProcedures> getAllMedicalProcedures() throws SQLException, ClassNotFoundException {
+  public List<MedicalProcedures> getAll() throws SQLException, ClassNotFoundException {
     List<MedicalProcedures> procedures = new ArrayList<>();
     String query = "SELECT * FROM medical_procedures";
 

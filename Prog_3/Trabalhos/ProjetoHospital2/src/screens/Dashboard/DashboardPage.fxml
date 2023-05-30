@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="window" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="644.0" prefWidth="1040.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="screens.Dashboard.Controller">
+<StackPane fx:id="window" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="658.0" prefWidth="1056.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="screens.Dashboard.Controller">
    <children>
       <AnchorPane fx:id="mainPanel" prefHeight="200.0" prefWidth="200.0" style="-fx-background-radius: 10px;">
          <children>
@@ -22,7 +22,7 @@
                <top>
                   <AnchorPane prefHeight="35.0" prefWidth="840.0" BorderPane.alignment="CENTER">
                      <children>
-                        <AnchorPane fx:id="navbar" layoutX="207.0" layoutY="-82.0" prefHeight="37.0" prefWidth="1040.0" styleClass="navbar" stylesheets="@../styles/Dashboard.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="navbar" layoutX="-14.0" prefHeight="37.0" prefWidth="1070.0" styleClass="navbar" stylesheets="@../styles/Dashboard.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-14.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <ImageView fitHeight="26.0" fitWidth="28.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
                                  <image>
@@ -106,7 +106,7 @@
                               <MenuButton fx:id="sideMenuDoctorsBtn" layoutX="25.0" layoutY="269.0" mnemonicParsing="false" popupSide="RIGHT" prefHeight="38.0" prefWidth="150.0" styleClass="nav-btn" stylesheets="@../styles/Dashboard.css" text="Medicos" textFill="WHITE">
                                  <items>
                                     <MenuItem mnemonicParsing="false" onAction="#Doctors" text="Medicos" />
-                                    <MenuItem mnemonicParsing="false" text="Action 2" />
+                                    <MenuItem mnemonicParsing="false" onAction="#Procedures" text="Procedimentos" />
                                  </items>
                                  <graphic>
                                     <ImageView fitHeight="24.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
@@ -122,7 +122,7 @@
                   </AnchorPane>
                </left>
                <center>
-                  <AnchorPane fx:id="homePanel" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #f3f3f3;" BorderPane.alignment="CENTER">
+                  <AnchorPane fx:id="homePanel" prefHeight="554.0" prefWidth="856.0" style="-fx-background-color: #f3f3f3;" BorderPane.alignment="CENTER">
                      <children>
                         <AnchorPane fx:id="homePanel" layoutX="113.0" layoutY="79.0" prefHeight="607.0" prefWidth="840.0" styleClass="bg-white" stylesheets="@../styles/globalStyles.css" visible="false" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
                            <children>
@@ -194,9 +194,9 @@
                                     </AnchorPane>
                                  </top>
                                  <bottom>
-                                    <AnchorPane prefHeight="408.0" prefWidth="824.0" stylesheets="@../styles/Dashboard.css" BorderPane.alignment="CENTER">
+                                    <AnchorPane prefHeight="418.0" prefWidth="824.0" stylesheets="@../styles/Dashboard.css" BorderPane.alignment="CENTER">
                                        <children>
-                                          <TableView fx:id="appointmentTable" layoutX="14.0" layoutY="65.0" prefHeight="336.0" prefWidth="796.0" AnchorPane.bottomAnchor="10.0">
+                                          <TableView fx:id="appointmentTable" layoutX="14.0" layoutY="65.0" prefHeight="317.0" prefWidth="796.0" AnchorPane.bottomAnchor="10.0">
                                              <columns>
                                                 <TableColumn fx:id="appointmentTableId" prefWidth="65.0" text="ID" />
                                                 <TableColumn fx:id="appointmentTablePatientName" prefWidth="158.0" text="Paciente" />
@@ -205,13 +205,13 @@
                                                 <TableColumn fx:id="appointmentTableDate" prefWidth="162.0" text="Data Da Consulta" />
                                              </columns>
                                           </TableView>
-                                          <TextField fx:id="appointmentSearch" layoutX="43.0" layoutY="14.0" onAction="#SearchTablePatients" prefHeight="33.0" prefWidth="200.0" promptText="Search" styleClass="input" stylesheets="@../styles/globalStyles.css" />
-                                          <ImageView fitHeight="27.0" fitWidth="23.0" layoutX="14.0" layoutY="19.0" pickOnBounds="true" preserveRatio="true">
+                                          <TextField fx:id="appointmentSearch" layoutX="45.0" layoutY="42.0" onAction="#SearchTablePatients" prefHeight="33.0" prefWidth="200.0" promptText="Search" styleClass="input" stylesheets="@../styles/globalStyles.css" />
+                                          <ImageView fitHeight="27.0" fitWidth="23.0" layoutX="14.0" layoutY="47.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
                                                 <Image url="@../img/search.png" />
                                              </image>
                                           </ImageView>
-                                          <Button fx:id="addNewAppointment" graphicTextGap="6.0" layoutX="701.0" layoutY="12.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#AddNewAppointment" prefHeight="38.0" prefWidth="109.0" styleClass="addBtn" stylesheets="@../styles/globalStyles.css" text="Adicionar" textAlignment="CENTER" textFill="WHITE">
+                                          <Button fx:id="addNewAppointment" graphicTextGap="6.0" layoutX="700.0" layoutY="39.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#AddNewAppointment" prefHeight="38.0" prefWidth="109.0" styleClass="addBtn" stylesheets="@../styles/globalStyles.css" text="Adicionar" textAlignment="CENTER" textFill="WHITE">
                                              <graphic>
                                                 <ImageView fitHeight="18.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
@@ -220,6 +220,11 @@
                                                 </ImageView>
                                              </graphic>
                                           </Button>
+                                          <Label layoutX="12.0" layoutY="6.0" text="Consultas Marcadas:">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </Label>
                                        </children>
                                     </AnchorPane>
                                  </bottom>
@@ -230,15 +235,15 @@
                            <children>
                               <BorderPane layoutX="237.0" layoutY="157.0" prefHeight="607.0" prefWidth="840.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <top>
-                                    <AnchorPane prefHeight="76.0" prefWidth="824.0" styleClass="bg-block" stylesheets="@../styles/Dashboard.css" BorderPane.alignment="CENTER">
+                                    <AnchorPane prefHeight="110.0" prefWidth="824.0" styleClass="bg-block" stylesheets="@../styles/Dashboard.css" BorderPane.alignment="CENTER">
                                        <children>
-                                          <TextField fx:id="patientSearch" layoutX="43.0" layoutY="22.0" onAction="#SearchTablePatients" prefHeight="33.0" prefWidth="200.0" promptText="Search" styleClass="input" stylesheets="@../styles/globalStyles.css" />
-                                          <ImageView fitHeight="27.0" fitWidth="23.0" layoutX="14.0" layoutY="27.0" pickOnBounds="true" preserveRatio="true">
+                                          <TextField fx:id="patientSearch" layoutX="45.0" layoutY="62.0" onAction="#SearchTablePatients" prefHeight="33.0" prefWidth="200.0" promptText="Search" styleClass="input" stylesheets="@../styles/globalStyles.css" />
+                                          <ImageView fitHeight="27.0" fitWidth="23.0" layoutX="14.0" layoutY="67.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
                                                 <Image url="@../img/search.png" />
                                              </image>
                                           </ImageView>
-                                          <Button fx:id="addNewPatient" graphicTextGap="6.0" layoutX="701.0" layoutY="19.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#AddNewPatient" prefHeight="38.0" prefWidth="109.0" styleClass="addBtn" stylesheets="@../styles/globalStyles.css" text="Adicionar" textAlignment="CENTER" textFill="WHITE">
+                                          <Button fx:id="addNewPatient" graphicTextGap="6.0" layoutX="700.0" layoutY="59.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#AddNewPatient" prefHeight="38.0" prefWidth="109.0" styleClass="addBtn" stylesheets="@../styles/globalStyles.css" text="Adicionar" textAlignment="CENTER" textFill="WHITE">
                                              <graphic>
                                                 <ImageView fitHeight="18.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
@@ -247,13 +252,18 @@
                                                 </ImageView>
                                              </graphic>
                                           </Button>
+                                          <Label layoutX="12.0" layoutY="14.0" text="Pacientes Registrados:">
+                                             <font>
+                                                <Font size="18.0" />
+                                             </font>
+                                          </Label>
                                        </children>
                                     </AnchorPane>
                                  </top>
                                  <bottom>
-                                    <AnchorPane prefHeight="508.0" prefWidth="824.0" styleClass="bg-block" stylesheets="@../styles/Dashboard.css" BorderPane.alignment="CENTER">
+                                    <AnchorPane prefHeight="468.0" prefWidth="824.0" styleClass="bg-block" stylesheets="@../styles/Dashboard.css" BorderPane.alignment="CENTER">
                                        <children>
-                                          <TableView fx:id="patientTable" layoutX="11.0" layoutY="101.0" prefHeight="481.0" prefWidth="803.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                          <TableView fx:id="patientTable" layoutX="11.0" layoutY="15.0" prefHeight="443.0" prefWidth="804.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">
                                             <columns>
                                               <TableColumn fx:id="patientTableId" prefWidth="65.0" text="ID" />
                                               <TableColumn fx:id="patientTableName" prefWidth="158.0" text="Nome" />
@@ -268,19 +278,19 @@
                               </BorderPane>
                            </children>
                         </AnchorPane>
-                        <AnchorPane fx:id="doctorPanel" layoutX="259.0" layoutY="150.0" prefHeight="607.0" prefWidth="840.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="doctorPanel" layoutX="259.0" layoutY="108.0" prefHeight="607.0" prefWidth="840.0" visible="false" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
                            <children>
                               <BorderPane prefHeight="607.0" prefWidth="840.0">
                                  <top>
-                                    <AnchorPane prefHeight="76.0" prefWidth="824.0" styleClass="bg-block" stylesheets="@../styles/Dashboard.css" BorderPane.alignment="CENTER">
+                                    <AnchorPane prefHeight="122.0" prefWidth="840.0" styleClass="bg-block" stylesheets="@../styles/Dashboard.css" BorderPane.alignment="CENTER">
                                        <children>
-                                          <TextField fx:id="doctorSearch" layoutX="43.0" layoutY="22.0" onAction="#searchDoctorTable" prefHeight="33.0" prefWidth="200.0" promptText="Search" styleClass="input" stylesheets="@../styles/globalStyles.css" />
-                                          <ImageView fitHeight="27.0" fitWidth="23.0" layoutX="14.0" layoutY="27.0" pickOnBounds="true" preserveRatio="true">
+                                          <TextField fx:id="doctorSearch" layoutX="40.0" layoutY="74.0" onAction="#searchDoctorTable" prefHeight="33.0" prefWidth="200.0" promptText="Search" styleClass="input" stylesheets="@../styles/globalStyles.css" />
+                                          <ImageView fitHeight="27.0" fitWidth="21.0" layoutX="14.0" layoutY="80.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
                                                 <Image url="@../img/search.png" />
                                              </image>
                                           </ImageView>
-                                          <Button fx:id="addNewDoctor" graphicTextGap="6.0" layoutX="701.0" layoutY="19.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#AddNewPatient" prefHeight="38.0" prefWidth="109.0" styleClass="addBtn" stylesheets="@../styles/globalStyles.css" text="Adicionar" textAlignment="CENTER" textFill="WHITE">
+                                          <Button fx:id="addNewDoctorBtn" graphicTextGap="6.0" layoutX="701.0" layoutY="71.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addNewDoctor" prefHeight="38.0" prefWidth="109.0" styleClass="addBtn" stylesheets="@../styles/globalStyles.css" text="Adicionar" textAlignment="CENTER" textFill="WHITE">
                                              <graphic>
                                                 <ImageView fitHeight="18.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
@@ -289,19 +299,74 @@
                                                 </ImageView>
                                              </graphic>
                                           </Button>
+                                          <Label layoutX="19.0" layoutY="20.0" text="Medicos registrados:">
+                                             <font>
+                                                <Font size="18.0" />
+                                             </font>
+                                          </Label>
                                        </children>
                                     </AnchorPane>
                                  </top>
                                  <bottom>
-                                    <AnchorPane prefHeight="508.0" prefWidth="824.0" styleClass="bg-block" stylesheets="@../styles/Dashboard.css" BorderPane.alignment="CENTER">
+                                    <AnchorPane prefHeight="467.0" prefWidth="840.0" styleClass="bg-block" stylesheets="@../styles/Dashboard.css" BorderPane.alignment="CENTER">
                                        <children>
-                                          <TableView fx:id="doctorTable" layoutX="11.0" layoutY="101.0" prefHeight="481.0" prefWidth="803.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                          <TableView fx:id="doctorTable" layoutX="16.0" layoutY="5.0" prefHeight="452.0" prefWidth="820.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
                                              <columns>
                                                 <TableColumn fx:id="doctorTableId" prefWidth="65.0" text="ID" />
-                                                <TableColumn fx:id="doctorTableName" prefWidth="158.0" text="Nome" />
-                                                <TableColumn fx:id="doctorTableCrm" prefWidth="142.0" text="CRM" />
-                                                <TableColumn fx:id="doctorTableBirthDate" prefWidth="158.0" text="Data de Nascimeto" />
-                                                <TableColumn fx:id="doctorTableSpecialty" prefWidth="156.0" text="Especialidade" />
+                                                <TableColumn fx:id="doctorTableName" prefWidth="127.19998168945312" text="Nome" />
+                                                <TableColumn fx:id="doctorTableCrm" prefWidth="98.4000244140625" text="CRM" />
+                                                <TableColumn fx:id="doctorTableBirthDate" prefWidth="156.0" text="Data de Nascimeto" />
+                                                <TableColumn fx:id="doctorTableSpecialty" prefWidth="139.99993896484375" text="Especialidade" />
+                                                <TableColumn fx:id="doctorTableTimeValue" prefWidth="104.80010986328125" text="Valor da Hora" />
+                                             </columns>
+                                          </TableView>
+                                       </children>
+                                    </AnchorPane>
+                                 </bottom>
+                              </BorderPane>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane fx:id="proceduresPanel" layoutX="203.0" layoutY="36.0" prefHeight="598.0" prefWidth="840.0" stylesheets="@../styles/globalStyles.css" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
+                           <children>
+                              <BorderPane layoutX="210.0" layoutY="132.0" prefHeight="607.2" prefWidth="840.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <top>
+                                    <AnchorPane prefHeight="114.0" prefWidth="840.0" styleClass="bg-block" stylesheets="@../styles/Dashboard.css" BorderPane.alignment="CENTER">
+                                       <children>
+                                          <TextField fx:id="procedureSearch" layoutX="40.0" layoutY="67.0" onAction="#searchProcedureTable" prefHeight="33.0" prefWidth="200.0" promptText="Search" styleClass="input" stylesheets="@../styles/globalStyles.css" />
+                                          <ImageView fitHeight="27.0" fitWidth="21.0" layoutX="14.0" layoutY="73.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../img/search.png" />
+                                             </image>
+                                          </ImageView>
+                                          <Button fx:id="addNewProcedureBtn" graphicTextGap="6.0" layoutX="702.0" layoutY="64.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addNewProcedure" prefHeight="38.0" prefWidth="109.0" styleClass="addBtn" stylesheets="@../styles/globalStyles.css" text="Adicionar" textAlignment="CENTER" textFill="WHITE">
+                                             <graphic>
+                                                <ImageView fitHeight="18.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../img/plus.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                          <Label layoutX="19.0" layoutY="20.0" text="Procedimentos Marcados:">
+                                             <font>
+                                                <Font size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </AnchorPane>
+                                 </top>
+                                 <bottom>
+                                    <AnchorPane prefHeight="483.0" prefWidth="840.0" styleClass="bg-white" BorderPane.alignment="CENTER">
+                                       <children>
+                                          <TableView fx:id="procedureTable" layoutX="10.0" layoutY="16.0" prefHeight="452.0" prefWidth="820.0" stylesheets="@../styles/Dashboard.css">
+                                             <columns>
+                                                <TableColumn fx:id="procedureTableId" prefWidth="43.19999694824219" text="ID" />
+                                                <TableColumn fx:id="procedureTablePatientName" prefWidth="118.39996337890625" text="Paciente" />
+                                                <TableColumn fx:id="procedureTableDoctorName" prefWidth="111.20001220703125" text="Medico" />
+                                                <TableColumn fx:id="procedureTableDate" prefWidth="143.20001220703125" text="Data do Procedimento" />
+                                                <TableColumn fx:id="procedureDuration" prefWidth="80.79998779296875" text="Duração" />
+                                                <TableColumn fx:id="procedureTableType" prefWidth="106.4000244140625" text="Tipo" />
+                                                <TableColumn fx:id="procedureTableCost" prefWidth="97.60003662109375" text="Valor" />
                                              </columns>
                                           </TableView>
                                        </children>
