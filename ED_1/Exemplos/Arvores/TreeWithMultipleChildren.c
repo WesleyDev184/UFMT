@@ -19,22 +19,31 @@ Node *createNode(int value)
   return newNode;
 }
 
-void insert(Node *root, int value)
+void insert(Node **root, int value)
 {
-  if (root->count < MAX_CHILDREN)
+  if (*root == NULL)
   {
-    root->values[root->count] = value;
-    root->count++;
+    *root = createNode(value);
   }
   else
   {
-    int i = 0;
-    while (i < MAX_CHILDREN && root->values[i] < value)
-      i++;
-    if (root->childs[i] == NULL)
-      root->childs[i] = createNode(value);
+    if ((*root)->count < MAX_CHILDREN)
+    {
+      int i = 0;
+      while (i < (*root)->count && value > (*root)->values[i])
+        i++;
+      for (int j = (*root)->count; j > i; j--)
+        (*root)->values[j] = (*root)->values[j - 1];
+      (*root)->values[i] = value;
+      (*root)->count++;
+    }
     else
-      insert(root->childs[i], value);
+    {
+      int i = 0;
+      while (i < (*root)->count && value > (*root)->values[i])
+        i++;
+      insert(&(*root)->childs[i], value);
+    }
   }
 }
 
@@ -68,17 +77,6 @@ void printTreePostOrder(Node *root)
       printf("%d ", root->values[i]);
     for (int i = 0; i < MAX_CHILDREN + 1; i++)
       printTreePostOrder(root->childs[i]);
-  }
-}
-
-void printTreeHeight(Node *root, int height)
-{
-  if (root != NULL)
-  {
-    for (int i = 0; i < MAX_CHILDREN + 1; i++)
-      printTreeHeight(root->childs[i], height + 1);
-
-    printf("Height: %d\n", height);
   }
 }
 
@@ -166,29 +164,33 @@ void nodeCounter(Node *root, int *counter)
   }
 }
 
+int calculateTreeHeight(Node *root)
+{
+  if (root == NULL)
+    return 0;
+
+  int maxChildHeight = 0;
+  for (int i = 0; i < root->count + 1; i++)
+  {
+    int childHeight = calculateTreeHeight(root->childs[i]);
+    if (childHeight > maxChildHeight)
+      maxChildHeight = childHeight;
+  }
+
+  return 1 + maxChildHeight;
+}
+
 int main()
 {
-  Node *root = createNode(0);
-  insert(root, 10);
-  insert(root, 5);
-  insert(root, 15);
-  insert(root, 3);
-  insert(root, 7);
-  insert(root, 12);
-  insert(root, 17);
-  insert(root, 1);
-  insert(root, 4);
-  insert(root, 6);
-  insert(root, 8);
-  insert(root, 11);
-  insert(root, 13);
-  insert(root, 16);
-  insert(root, 18);
-  insert(root, 2);
-  insert(root, 9);
-  insert(root, 14);
-  insert(root, 19);
-  insert(root, 20);
+  Node *root = NULL;
+  insert(&root, 10);
+  insert(&root, 5);
+  insert(&root, 15);
+  insert(&root, 20);
+  insert(&root, 25);
+  insert(&root, 30);
+  insert(&root, 35);
+  insert(&root, 40);
 
   printf("Ordinate: ");
   printTreeOrdinate(root);
@@ -198,9 +200,6 @@ int main()
 
   printf("\nPost-Order: ");
   printTreePostOrder(root);
-
-  printf("\nHeight: ");
-  printTreeHeight(root, 0);
 
   printf("\nNode by level: ");
   printNodeByChildLevel(root, 1);
@@ -213,6 +212,8 @@ int main()
 
   printf("\nSearch min value: ");
   seachMin(root);
+
+  printf("\nTree height: %d", calculateTreeHeight(root));
 
   int counter = 0;
   nodeCounter(root, &counter);

@@ -6,7 +6,8 @@
         jal add5 # call add5
 
     _end:
-        li a7, 10 # exit
+        li a0, 0 # a0 = 0
+        li a7, 93 # exit
         ecall
 
     add5:
