@@ -1,44 +1,42 @@
 .globl _start
 
-num: .word 123
+string:  .asciz "Number: \n"
+number:  .word 120
 
 _start:
-  # Configurar o argumento da função
-  lui a0, %hi(num)        # Carregar os bits mais significativos do endereço de 'num' em a0
-  addi a0, a0, %lo(num)   # Adicionar os bits menos significativos do endereço de 'num' em a0
+    li a0, 1            # file descriptor = 1 (stdout)
+    la a1, string       # buffer
+    li a2, 9            # size
+    li a7, 64           # syscall write (64)
+    ecall
 
-  # Chamar a função print
-  jal print           # Chamar a função 'print' e salvar o endereço de retorno em ra
+    jal print
 
 _end:
-  # Finalizar o programa
-  li a0, 0                # Código de saída 0: sem erros
-  li a7, 93               # Código do sistema para sair (93 para o RISC-V)
-  ecall                   # Fazer a chamada do sistema para encerrar o programa
+    li a0, 0            # exit code
+    li a7, 93           # syscall exit
+    ecall
 
 print:
-  # Alocar espaço para os dígitos na memória
-  li t0, 10               # Divisor (10 para separar os dígitos)
-  lw a0, 4(sp)            # Carregar o argumento (inteiro)
-  li t1, 0                # Inicializar contador
-  li t3, -1               # Inicializar offset na memória
+    la t3, number       # Carrega o endereço base da variável number em t3
 
-  loop:
-    rem t2, a0, t0        # Calcular o resto da divisão (dígito atual)
-    addi t2, t2, 48       # Converter o dígito para o padrão ASCII
-    add t4, a1, t3        # Calcular o endereço de destino
-    sb t2, 0(t4)          # Armazenar o dígito na memória
-    addi t3, t3, -1       # Avançar para o próximo endereço (ordem reversa)
-    addi t1, t1, 1        # Incrementar o contador
+    li t0, 10           # Carrega o valor 10 em t0 (base decimal)
+    li t1, 0            # Inicializa o contador de dígitos em t1
 
-    div a0, a0, t0        # Dividir o número pelo divisor
-    bnez a0, loop         # Repetir o loop enquanto o número não for zero
+loop:
+    rem t2, t3, t0      # Obtém o dígito menos significativo
+    addi t2, t2, 48     # Converte o dígito para o padrão ASCII (48 + dígito = ASCII)
+    li a0, 1            # file descriptor = 1 (stdout)
+    mv a1, t2           # Move o dígito ASCII para a1
+    li a2, 1            # size = 1 byte
+    li a3, 0            # offset = 0
+    li a7, 64           # syscall write (64)
+    ecall 
 
-  # Imprimir os dígitos na saída padrão
-  li a1, 1                # Descritor de arquivo 1: saída padrão
-  mv a0, a1               # Mover o endereço de memória para a saída
-  neg a2, t3              # Calcular o tamanho do buffer negativo
-  li a7, 64               # Código do sistema para escrever
-  ecall                   # Fazer a chamada do sistema para escrever
+    srai t3, t3, 4      # Desloca o número para a direita
+    addi t1, t1, 1      # Incrementa o contador de dígitos
+    bnez t3, loop       # Verifica se chegou ao fim dos dígitos
 
-  ret
+    ret
+
+#Nao consegui fazer imprimir no simulador Ale mas a logica de comversao para ascii esta correta

@@ -124,7 +124,7 @@
                <center>
                   <AnchorPane fx:id="homePanel" prefHeight="554.0" prefWidth="856.0" style="-fx-background-color: #f3f3f3;" BorderPane.alignment="CENTER">
                      <children>
-                        <AnchorPane fx:id="homePanel" layoutX="113.0" layoutY="79.0" prefHeight="607.0" prefWidth="840.0" styleClass="bg-white" stylesheets="@../styles/globalStyles.css" visible="false" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
+                        <AnchorPane fx:id="homePanel" layoutX="113.0" layoutY="79.0" prefHeight="607.0" prefWidth="840.0" styleClass="bg-white" stylesheets="@../styles/globalStyles.css" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
                            <children>
                               <BorderPane layoutX="106.0" layoutY="69.0" prefHeight="591.0" prefWidth="824.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <top>
@@ -326,7 +326,7 @@
                               </BorderPane>
                            </children>
                         </AnchorPane>
-                        <AnchorPane fx:id="proceduresPanel" layoutX="203.0" layoutY="36.0" prefHeight="598.0" prefWidth="840.0" stylesheets="@../styles/globalStyles.css" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
+                        <AnchorPane fx:id="proceduresPanel" layoutX="203.0" layoutY="36.0" prefHeight="598.0" prefWidth="840.0" stylesheets="@../styles/globalStyles.css" visible="false" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
                            <children>
                               <BorderPane layoutX="210.0" layoutY="132.0" prefHeight="607.2" prefWidth="840.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <top>
