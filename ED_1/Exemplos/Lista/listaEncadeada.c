@@ -95,6 +95,34 @@ void insertAtPosition(LinkedList *list, int data, int position)
     }
 }
 
+void insertOrdinante(LinkedList *list, int data)
+{
+    // Aloca dinamicamente um novo nó
+    Node *new_node = (Node *)malloc(sizeof(Node));
+    new_node->data = data;
+
+    // Verifica se a lista encadeada está vazia
+    if (list->head == NULL)
+    {
+        // Se estiver vazia, o novo nó é o nó cabeça
+        new_node->next = NULL;
+        list->head = new_node;
+    }
+    else
+    {
+        // Se não estiver vazia, o novo nó aponta para o nó cabeça atual
+        Node *current = list->head;
+        Node *previous = NULL;
+        while (current->next != NULL && current->data < data)
+        {
+            previous = current;
+            current = current->next;
+        }
+        previous->next = new_node;
+        new_node->next = current;
+    }
+}
+
 void remeveAtStart(LinkedList *list)
 {
     // Verifica se a lista encadeada está vazia
@@ -185,6 +213,8 @@ int main()
     insertAtStart(&list, 4);
     insertAtStart(&list, 5);
     insertAtPosition(&list, 6, 2);
+    insertOrdinante(&list, 7);
+    
 
     // Imprime todos os nós da lista
     print_list(&list);
