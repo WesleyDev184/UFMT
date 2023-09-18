@@ -21,7 +21,7 @@ int main (){
         open("./saida.txt", O_CREAT | O_WRONLY |O_TRUNC, S_IRWXU);
         execlp("/usr/bin/ls","meu-ls", "-l",NULL);
         perror("execlp falhou \n");
-        printf(" nunca vai chegar aqui\n");
+        printf("nunca vai chegar aqui\n");
         return 1;
     }
     else {
