@@ -15,17 +15,19 @@ void *thread1(void *arg)
     }
     pthread_mutex_unlock(&mutex);
     printf("%s: pronto\n", (char *)arg);
-    return NULL;    
+    return NULL;
 }
 
 int main(int argc, char *argv[])
 {
-    pthread_t t1, t2;
+    pthread_t t1, t2, t3;
     printf("counter = %d\n", counter);
     pthread_create(&t1, NULL, thread1, "t1");
     pthread_create(&t2, NULL, thread1, "t2");
+    pthread_create(&t3, NULL, thread1, "t3");
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
+    pthread_join(t3, NULL);
     printf("counter = %d\n", counter);
     return 0;
 }

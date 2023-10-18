@@ -4,3 +4,9 @@ Tempo total de execução: 0.000000 segundos
 Cidade: CAL
 Custo total da árvore geradora mínima: 37
 Tempo total de execução: 0.000000 segundos
+Cidade: NY
+Custo total da árvore geradora mínima: 37
+Tempo total de execução: 0.001000 segundos
+Cidade: CAL
+Custo total da árvore geradora mínima: 37
+Tempo total de execução: 0.000000 segundos

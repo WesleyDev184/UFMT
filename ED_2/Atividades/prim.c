@@ -213,8 +213,8 @@ void geraArquivoSaida(char *nomeArquivo, int custoTotal, double tempoTotal, char
 int main()
 {
   // Substitua o caminho do arquivo pelo caminho correto
-  FILE *arquivoNY = fopen("Path/para/o/Arquivo", "r");
-  FILE *arquivoCAL = fopen("Path/para/o/Arquivo", "r");
+  FILE *arquivoNY = fopen("D:/GitHub/UFMT/ED_2/Atividades/inputs/exemploAula.txt", "r");
+  FILE *arquivoCAL = fopen("D:/GitHub/UFMT/ED_2/Atividades/inputs/exemploAula.txt", "r");
 
   if (!arquivoNY)
   {
