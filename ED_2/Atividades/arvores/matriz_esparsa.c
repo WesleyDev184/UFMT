@@ -95,6 +95,7 @@ int insereMatriz(MATRIZ *m, int lin, int col, float val)
 
   return 1; // Inserção bem-sucedida
 }
+
 // função que retorna o valor
 float ValorMatriz(MATRIZ *m, int lin, int col)
 {
@@ -179,97 +180,48 @@ MATRIZ *soma2Matriz(MATRIZ *m, MATRIZ *n)
   return resultado;
 }
 
-float somatorioMatriz(MATRIZ *m)
-{
-  if (m == NULL)
-  {
-    printf("Erro: Matriz não inicializada.\n");
-    return 0.0;
-  }
-
-  float somatorio = 0.0;
-
-  for (int l = 0; l < m->linhas; l++)
-  {
-    if (m->A[l] != NULL)
-    {
-      PONT c = m->A[l];
-
-      while (c != NULL)
-      {
-        somatorio += c->valor;
-        c = c->prox;
-      }
-    }
-  }
-
-  return somatorio;
-}
-
-MATRIZ *multEscalarMatriz(MATRIZ *m, int x)
-{
-  if (m == NULL)
-  {
-    printf("Erro: Matriz não inicializada.\n");
-    return NULL;
-  }
-
-  MATRIZ *n = inicializarMatriz(m->linhas, m->colunas);
-
-  for (int l = 0; l < m->linhas; l++)
-  {
-    if (m->A[l] != NULL)
-    {
-      PONT c = m->A[l];
-      while (c != NULL)
-      {
-        insereMatriz(n, l, c->coluna, c->valor * x);
-        c = c->prox;
-      }
-    }
-  }
-
-  return n;
-}
-
-// A função main não deve ser alterada quando for enviar
 int main()
 {
-  MATRIZ *m;
+  MATRIZ *m, *n, *soma; // Renomeada a variável "sum" para "soma"
   int col, lin, qtvalores;
-  int linVal, colVal;
+  int colVal, linVal;
   float val;
 
-  qtvalores = 9;
-  lin = 3;
-  col = 3;
+  // ler dados para a primeira matriz
+  scanf("%d", &qtvalores);
+  scanf("%d", &lin);
+  scanf("%d", &col);
 
   m = inicializarMatriz(lin, col);
 
-  insereMatriz(m, 0, 0, 3);
-  insereMatriz(m, 0, 1, 5);
-  insereMatriz(m, 0, 2, 6);
-  insereMatriz(m, 1, 0, 2);
-  insereMatriz(m, 1, 1, 7);
-  insereMatriz(m, 1, 2, 8);
-  insereMatriz(m, 2, 0, 1);
-  insereMatriz(m, 2, 1, 4);
-  insereMatriz(m, 2, 2, 9);
+  for (int i = 0; i < qtvalores; i++)
+  {
+    scanf("%d", &linVal);
+    scanf("%d", &colVal);
+    scanf("%f", &val);
+    insereMatriz(m, linVal, colVal, val);
+  }
 
-  printf("Matriz após a inserção:\n");
-  imprimeMatriz(m);
+  // ler dados para a segunda matriz
+  scanf("%d", &qtvalores);
+  scanf("%d", &lin);
+  scanf("%d", &col);
 
-  printf("Digite a linha e coluna para buscar um valor: ");
-  scanf("%d %d", &linVal, &colVal);
-  float valor = ValorMatriz(m, linVal, colVal);
-  printf("Valor encontrado: %f\n", valor);
+  n = inicializarMatriz(lin, col);
 
-  printf("Digite a linha e coluna para excluir um valor: ");
-  scanf("%d %d", &linVal, &colVal);
-  excluirMatriz(m, linVal, colVal);
+  for (int i = 0; i < qtvalores; i++)
+  {
+    scanf("%d", &linVal);
+    scanf("%d", &colVal);
+    scanf("%f", &val);
+    insereMatriz(n, linVal, colVal, val);
+  }
 
-  printf("Matriz após a exclusão:\n");
-  imprimeMatriz(m);
+  // realiza a soma das duas matrizes
+  soma = soma2Matriz(m, n); // Renomeada a variável "sum" para "soma"
+
+  // imprime a matriz resultante
+  imprimeMatriz(soma);
 
   return 0;
 }

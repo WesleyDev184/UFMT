@@ -2,13 +2,9 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <time.h>
+#include <stdbool.h>
 
-#define true 1
-#define false 0
-
-typedef int bool;
 typedef int TIPOPESO;
-
 typedef struct adjacencia
 {
   int vertice;
@@ -68,6 +64,7 @@ bool criaAresta(GRAFO *gr, int vi, int vf, TIPOPESO ps)
     ant = p;
     p = p->prox;
   }
+  
   if (ant)
   {
     ant->prox = novo; // Insere a nova adjacência na posição correta da lista ordenada

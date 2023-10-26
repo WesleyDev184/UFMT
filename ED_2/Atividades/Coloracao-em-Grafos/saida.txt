@@ -1,0 +1,12 @@
+jean.col
+Valor da cromático: 10
+miles250.col
+Valor da cromático: 9
+miles1000.col
+Valor da cromático: 44
+le450_25a.col
+Valor da cromático: 26
+r1000.1.col
+Valor da cromático: 23
+r250.1c.col
+Valor da cromático: 76

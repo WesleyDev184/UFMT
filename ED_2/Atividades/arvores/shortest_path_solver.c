@@ -2,14 +2,11 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <time.h>
+#include <stdbool.h>
 
-#define INFINITY INT_MAX
-#define TRUE 1
-#define FALSE 0
+#define INFINITY INT_MAX / 2 // Alterado para evitar estouro
 
 typedef int TIPOPESO;
-typedef int bool;
-
 typedef struct adjacencia
 {
   int vertice;
@@ -32,11 +29,21 @@ typedef struct grafo
 GRAFO *criaGrafo(int v)
 {
   GRAFO *g = (GRAFO *)malloc(sizeof(GRAFO));
+  if (!g)
+  {
+    fprintf(stderr, "Erro ao alocar memória para o grafo.\n");
+    exit(EXIT_FAILURE);
+  }
   g->vertices = v;
   g->arestas = 0;
   g->adj = (VERTICE *)malloc(v * sizeof(VERTICE));
-  int i;
-  for (i = 0; i < v; i++)
+  if (!g->adj)
+  {
+    free(g);
+    fprintf(stderr, "Erro ao alocar memória para o vetor de vértices.\n");
+    exit(EXIT_FAILURE);
+  }
+  for (int i = 0; i < v; i++)
   {
     g->adj[i].cab = NULL;
   }
@@ -46,6 +53,11 @@ GRAFO *criaGrafo(int v)
 ADJACENCIA *criaAdj(int v, int peso)
 {
   ADJACENCIA *temp = (ADJACENCIA *)malloc(sizeof(ADJACENCIA));
+  if (!temp)
+  {
+    fprintf(stderr, "Erro ao alocar memória para a adjacência.\n");
+    exit(EXIT_FAILURE);
+  }
   temp->vertice = v;
   temp->peso = peso;
   temp->prox = NULL;
@@ -54,12 +66,10 @@ ADJACENCIA *criaAdj(int v, int peso)
 
 bool criaAresta(GRAFO *gr, int vi, int vf, TIPOPESO ps)
 {
-  if (!gr)
-    return FALSE;
-  if ((vf < 0) || (vf >= gr->vertices))
-    return FALSE;
-  if ((vi < 0) || (vi >= gr->vertices))
-    return FALSE;
+  if (!gr || vf < 0 || vf >= gr->vertices || vi < 0 || vi >= gr->vertices)
+  {
+    return false;
+  }
   ADJACENCIA *novo = criaAdj(vf, ps);
   ADJACENCIA *ant = NULL;
   ADJACENCIA *p = gr->adj[vi].cab;
@@ -78,14 +88,13 @@ bool criaAresta(GRAFO *gr, int vi, int vf, TIPOPESO ps)
   }
   novo->prox = p;
   gr->arestas++;
-  return TRUE;
+  return true;
 }
 
 void imprime(GRAFO *gr)
 {
   printf("Vertices: %d. Arestas: %d.\n", gr->vertices, gr->arestas);
-  int i;
-  for (i = 0; i < gr->vertices; i++)
+  for (int i = 0; i < gr->vertices; i++)
   {
     printf("v%d: ", i);
     ADJACENCIA *ad = gr->adj[i].cab;
@@ -101,6 +110,11 @@ void imprime(GRAFO *gr)
 void dijkstra(GRAFO *gr, int origem, int *distancias)
 {
   int *visitados = (int *)malloc(gr->vertices * sizeof(int));
+  if (!visitados)
+  {
+    fprintf(stderr, "Erro ao alocar memória para o vetor de visitados.\n");
+    exit(EXIT_FAILURE);
+  }
   int i, v, cont;
 
   for (i = 0; i < gr->vertices; i++)
@@ -169,15 +183,8 @@ void bellmanFord(GRAFO *gr, int origem, int *distancias)
   }
 }
 
-void carregarInstancia(GRAFO *gr, const char *nomeArquivo)
+bool leGrafoArquivo(GRAFO **gr, FILE *arquivo)
 {
-  FILE *arquivo = fopen(nomeArquivo, "r");
-  if (!arquivo)
-  {
-    perror("Erro ao abrir o arquivo");
-    exit(EXIT_FAILURE);
-  }
-
   int vertices, arestas;
   char linha[128];
 
@@ -191,11 +198,8 @@ void carregarInstancia(GRAFO *gr, const char *nomeArquivo)
     }
   }
 
-  printf("Número de vértices: %d\n", vertices);
-  printf("Número de arestas: %d\n", arestas);
-
   // Criar o grafo com base no número de vértices
-  gr = criaGrafo(vertices);
+  *gr = criaGrafo(vertices);
 
   // Adicionar arestas ao grafo
   while (fgets(linha, sizeof(linha), arquivo) != NULL)
@@ -204,74 +208,117 @@ void carregarInstancia(GRAFO *gr, const char *nomeArquivo)
     {
       int u, v, peso;
       sscanf(linha, "a %d %d %d", &u, &v, &peso);
-      criaAresta(gr, u - 1, v - 1, peso);
+      criaAresta(*gr, u - 1, v - 1, peso);
     }
   }
 
-  fclose(arquivo);
+  return true;
 }
 
-void salvarResultado(const char *nomeArquivo, int *distancias, clock_t tempo)
+void geraArquivoSaida(char *nomeArquivo, int custoTotal, double tempoTotal, char *cidade, char *destino)
 {
-  FILE *arquivo = fopen(nomeArquivo, "w");
-  if (!arquivo)
+  FILE *arquivoSaida = fopen(nomeArquivo, "a");
+
+  if (!arquivoSaida)
   {
-    perror("Erro ao criar o arquivo de saída");
-    exit(EXIT_FAILURE);
+    fprintf(stderr, "Erro ao abrir o arquivo de saída.\n");
+    return;
   }
 
-  fprintf(arquivo, "Distancias encontradas:\n");
-  for (int i = 0; i < 3; i++)
-  {
-    fprintf(arquivo, "Vertice %d: %d\n", i + 1, distancias[i]);
-  }
+  // Adiciona uma quebra de linha se o arquivo já contiver dados
+  if (ftell(arquivoSaida) > 0)
+    fprintf(arquivoSaida, "\n\n");
 
-  fprintf(arquivo, "\nTempo total de processamento: %f segundos\n", ((double)tempo) / CLOCKS_PER_SEC);
+  fprintf(arquivoSaida, "Cidade: %s\n", cidade);
+  fprintf(arquivoSaida, "Destino: %s\n", destino);
+  fprintf(arquivoSaida, "Custo total da árvore geradora mínima: %d\n", custoTotal);
+  fprintf(arquivoSaida, "Tempo total de execução: %f segundos\n", tempoTotal);
 
-  fclose(arquivo);
+  fclose(arquivoSaida);
 }
 
 int main()
 {
-  GRAFO *gr = NULL;
-  carregarInstancia(&gr, "USA-road-d.CAL.gr");
+  char *nomeArquivo[] = {
+      "D:/GitHub/UFMT/ED_2/Atividades/arvores/inputs/exemploAula.txt",
+      "D:/GitHub/UFMT/ED_2/Atividades/arvores/inputs/exemploAula.txt",
+  };
 
-  int origem = 0;
-  int *distanciasDijkstra = (int *)malloc(gr->vertices * sizeof(int));
-  int *distanciasBellmanFord = (int *)malloc(gr->vertices * sizeof(int));
+  for (int i = 0; i < 2; i++)
+  {
+    FILE *arquivo = fopen(nomeArquivo[i], "r");
 
-  // Carregar instâncias
-  printf("Instância CAL carregada.\n");
+    if (!arquivo)
+    {
+      fprintf(stderr, "Erro ao abrir o arquivo.\n");
+      return 1;
+    }
 
-  // Executar Dijkstra
-  clock_t inicioDijkstra = clock();
-  dijkstra(gr, origem, distanciasDijkstra);
-  clock_t fimDijkstra = clock();
-  double tempoDijkstra = ((double)(fimDijkstra - inicioDijkstra)) / CLOCKS_PER_SEC;
-  printf("Dijkstra concluído em %f segundos.\n", tempoDijkstra);
+    GRAFO *gr = NULL;
+    if (!leGrafoArquivo(&gr, arquivo))
+    {
+      fclose(arquivo);
+      return 1;
+    }
+    fclose(arquivo);
 
-  // Salvar resultados do Dijkstra
-  salvarResultado("output_dijkstra.txt", distanciasDijkstra, fimDijkstra - inicioDijkstra);
+    int *distancias = (int *)malloc(gr->vertices * sizeof(int));
 
-  // Limpar resultados do Dijkstra para reutilização
-  free(distanciasDijkstra);
-  distanciasDijkstra = (int *)malloc(gr->vertices * sizeof(int));
+    if (!distancias)
+    {
+      fprintf(stderr, "Erro ao alocar memória para o vetor de distâncias.\n");
+      return 1;
+    }
 
-  // Executar Bellman-Ford
-  clock_t inicioBellmanFord = clock();
-  bellmanFord(gr, origem, distanciasBellmanFord);
-  clock_t fimBellmanFord = clock();
-  double tempoBellmanFord = ((double)(fimBellmanFord - inicioBellmanFord)) / CLOCKS_PER_SEC;
-  printf("Bellman-Ford concluído em %f segundos.\n", tempoBellmanFord);
+    clock_t inicio, fim;
+    double tempoTotal;
 
-  // Salvar resultados do Bellman-Ford
-  salvarResultado("output_bellman_ford.txt", distanciasBellmanFord, fimBellmanFord - inicioBellmanFord);
+    // Calcular a distância do vértice 1 ao vértice 2 usando Dijkstra
+    inicio = clock();
+    dijkstra(gr, 0, distancias);
+    fim = clock();
+    tempoTotal = (double)(fim - inicio) / CLOCKS_PER_SEC;
+    geraArquivoSaida("dijkstra.txt", distancias[1], tempoTotal, i ? "CAL" : "NY", "v1 -> v2");
 
-  // Limpar resultados do Bellman-Ford
-  free(distanciasBellmanFord);
+    // Calcular a distância do vértice 1 ao vértice 5 usando Dijkstra
+    inicio = clock();
+    dijkstra(gr, 0, distancias);
+    fim = clock();
+    tempoTotal = (double)(fim - inicio) / CLOCKS_PER_SEC;
+    geraArquivoSaida("dijkstra.txt", distancias[4], tempoTotal, i ? "CAL" : "NY", "v1 -> v5");
 
-  // Liberar memória do grafo
-  // ...
+    // Calcular a distância do vértice 1 ao vértice 9 usando Dijkstra
+    inicio = clock();
+    dijkstra(gr, 0, distancias);
+    fim = clock();
+    tempoTotal = (double)(fim - inicio) / CLOCKS_PER_SEC;
+    geraArquivoSaida("dijkstra.txt", distancias[8], tempoTotal, i ? "CAL" : "NY", "v1 -> v9");
+
+    // Calcular a distância do vértice 1 ao vértice 2 usando Bellman-Ford
+    inicio = clock();
+    bellmanFord(gr, 0, distancias);
+    fim = clock();
+    tempoTotal = (double)(fim - inicio) / CLOCKS_PER_SEC;
+    geraArquivoSaida("bellmanFord.txt", distancias[1], tempoTotal, i ? "CAL" : "NY", "v1 -> v2");
+
+    // Calcular a distância do vértice 1 ao vértice 5 usando Bellman-Ford
+    inicio = clock();
+    bellmanFord(gr, 0, distancias);
+    fim = clock();
+    tempoTotal = (double)(fim - inicio) / CLOCKS_PER_SEC;
+    geraArquivoSaida("bellmanFord.txt", distancias[4], tempoTotal, i ? "CAL" : "NY", "v1 -> v5");
+
+    // Calcular a distância do vértice 1 ao vértice 9 usando Bellman-Ford
+    inicio = clock();
+    bellmanFord(gr, 0, distancias);
+    fim = clock();
+    tempoTotal = (double)(fim - inicio) / CLOCKS_PER_SEC;
+    geraArquivoSaida("bellmanFord.txt", distancias[8], tempoTotal, i ? "CAL" : "NY", "v1 -> v9");
+
+    free(distancias);
+    free(gr->adj);
+    free(gr);
+  }
 
   return 0;
 }
