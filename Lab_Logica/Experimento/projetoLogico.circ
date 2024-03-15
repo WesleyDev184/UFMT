@@ -92,9 +92,6 @@ end type_architecture;&#13;
     <a name="circuit" val="main"/>
     <a name="clabelfont" val="SansSerif plain 12"/>
     <a name="simulationFrequency" val="1.0"/>
-    <comp lib="0" loc="(300,260)" name="Clock">
-      <a name="facing" val="south"/>
-    </comp>
     <comp lib="1" loc="(130,380)" name="AND Gate"/>
     <comp lib="1" loc="(130,620)" name="AND Gate"/>
     <comp lib="1" loc="(140,500)" name="XOR Gate"/>
@@ -114,6 +111,9 @@ end type_architecture;&#13;
     <comp lib="4" loc="(330,590)" name="D Flip-Flop">
       <a name="appearance" val="logisim_evolution"/>
     </comp>
+    <comp lib="5" loc="(300,250)" name="Button">
+      <a name="facing" val="south"/>
+    </comp>
     <comp lib="5" loc="(960,370)" name="LED"/>
     <comp lib="5" loc="(960,420)" name="LED"/>
     <comp lib="5" loc="(960,470)" name="LED"/>
@@ -128,7 +128,7 @@ end type_architecture;&#13;
     <wire from="(30,520)" to="(30,540)"/>
     <wire from="(30,520)" to="(80,520)"/>
     <wire from="(30,540)" to="(400,540)"/>
-    <wire from="(300,260)" to="(300,400)"/>
+    <wire from="(300,250)" to="(300,400)"/>
     <wire from="(300,400)" to="(300,520)"/>
     <wire from="(300,400)" to="(320,400)"/>
     <wire from="(300,520)" to="(300,640)"/>
