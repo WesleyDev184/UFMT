@@ -1,11 +1,19 @@
 {
-  "java.project.sourcePaths": ["src"],
+  "java.project.sourcePaths": [
+    "src"
+  ],
   "java.project.outputPath": "bin",
   "java.project.referencedLibraries": {
-    "include": ["lib/**/*.jar"],
+    "include": [
+      "lib/**/*.jar"
+    ],
     "exclude": [
-      "c:\\Program Files\\Java\\javafx-sdk-17.0.7\\lib\\javafx-swt.jar"
+      "c:\\Program Files\\Java\\JavaLibs\\javafx-sdk-17.0.7\\lib\\javafx-swt.jar"
     ]
   },
-  "cSpell.words": ["jdbc", "mysql", "Pharyngoplasty"]
+  "cSpell.words": [
+    "jdbc",
+    "mysql",
+    "Pharyngoplasty"
+  ]
 }

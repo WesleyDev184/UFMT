@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql_database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456" # Defina a senha desejada aqui
+      MYSQL_DATABASE: "hospital"    # Nome da base de dados desejada
+    ports:
+      - "3306:3306" # Mapeamento da porta do contêiner MySQL para a porta do host
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

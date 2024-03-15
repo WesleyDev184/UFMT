@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "App",
+      "request": "launch",
+      "mainClass": "App",
+      "projectName": "ProjetoHospital2_ba35c700"
+    },
+    {
+      "type": "java",
       "name": "Main",
       "request": "launch",
       "mainClass": "screens.home.Main",
@@ -23,7 +30,7 @@
       "request": "launch",
       "mainClass": "App",
       "projectName": "ProjetoHospital2_759c4ff",
-      "vmArgs": "--module-path \"C:/Program Files/Java/javafx-sdk-17.0.7/lib\" --add-modules javafx.controls,javafx.fxml"
+      "vmArgs": "--module-path \"C:/Program Files/Java/JavaLibs/javafx-sdk-17.0.10/lib\" --add-modules javafx.controls,javafx.fxml"
     },
     {
       "type": "java",
