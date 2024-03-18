@@ -52,7 +52,7 @@ public class MedicalProceduresDaoTeste {
       dao.updateMedicalProcedure(retrievedProcedure);
       System.out.println("MedicalProcedure atualizado com sucesso!");
       // Obtém todos os MedicalProcedures
-      List<MedicalProcedures> allProcedures = dao.getAllMedicalProcedures();
+      List<MedicalProcedures> allProcedures = dao.getAll();
       System.out.println("Lista de MedicalProcedures:");
       for (MedicalProcedures procedure : allProcedures) {
         System.out.println(procedure);

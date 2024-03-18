@@ -1,36 +1,21 @@
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import java.sql.Connection;
+import java.sql.SQLException;
 
-public class App extends Application {
-    private double x, y;
+import Connection.CreateConnection;
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("./screens/LoginPage/LoginPage.fxml"));
-        primaryStage.setScene(new Scene(root));
-        // set stage borderless
-        primaryStage.initStyle(StageStyle.UNDECORATED);
-
-        // drag it here
-        root.setOnMousePressed(event -> {
-            x = event.getSceneX();
-            y = event.getSceneY();
-        });
-        root.setOnMouseDragged(event -> {
-
-            primaryStage.setX(event.getScreenX() - x);
-            primaryStage.setY(event.getScreenY() - y);
-
-        });
-        primaryStage.show();
-
-    }
+public class App {
 
     public static void main(String[] args) {
-        launch(args);
+        try {
+            Connection connection = CreateConnection.getConnection();
+            if (connection != null) {
+                System.out.println("Conexão com o banco de dados estabelecida com sucesso!");
+                // Faça as operações necessárias no banco de dados aqui
+            } else {
+                System.out.println("Falha ao estabelecer conexão com o banco de dados.");
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println("Erro ao conectar-se ao banco de dados: " + e.getMessage());
+        }
     }
 }
