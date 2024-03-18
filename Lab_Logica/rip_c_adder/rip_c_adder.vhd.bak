@@ -1,0 +1,17 @@
+-- Implementação comportamentao or_and
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity rip_c_adder is
+	port(
+			A,B: in std_logic;
+			Y: out std_logic
+		 );
+end rip_c_adder;
+
+architecture synth of rip_c_adder is
+begin
+	
+	
+	
+end synth;

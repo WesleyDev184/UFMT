@@ -1,0 +1,161 @@
+m255
+K4
+z2
+!s99 nomlopt
+!s11e vcom 2021.2 2021.04, Apr 14 2021
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/gabri/OneDrive/Área de Trabalho/Wesley/MULTI4_1/simulation/qsim
+T_opt
+!s110 1709658205
+VO45h6l4F_nGRMAIU4N[eT1
+04 20 13 work multi4_1_vhd_vec_tst multi4_1_arch 1
+=1-641c67e8d729-65e7505c-30e-4840
+!s124 OEM10U3 
+o-quiet -auto_acc_if_foreign -work work -L fiftyfivenm -L altera -L altera_mf -L 220model -L sgate -L altera_lnsim
+tCvgOpt 0
+n@_opt
+OL;O;2021.2;73
+Ehard_block
+Z1 w1709658203
+Z2 DPx4 ieee 16 vital_primitives 0 22 G>kiXP8Q9dRClKfK1Zn7j1
+Z3 DPx11 fiftyfivenm 21 fiftyfivenm_atom_pack 0 22 ]8mk3aDoRCnDHLT[?RH@l1
+Z4 DPx4 ieee 12 vital_timing 0 22 J>EBealN09f8GzldA[z2>3
+Z5 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z6 DPx4 ieee 14 std_logic_1164 0 22 cVAk:aDinOX8^VGI1ekP<3
+Z7 DPx11 fiftyfivenm 22 fiftyfivenm_components 0 22 mcV[^`BJd<M<VZ]VT36Jn0
+!i122 0
+R0
+Z8 8Multi4_1.vho
+Z9 FMulti4_1.vho
+l0
+L35 1
+Vhj[i;a0dD85B`o1JPT^cg2
+!s100 3A]XnMhF<;9mKUe5mn3aM1
+Z10 OL;C;2021.2;73
+32
+Z11 !s110 1709658204
+!i10b 1
+Z12 !s108 1709658204.000000
+Z13 !s90 -work|work|Multi4_1.vho|
+Z14 !s107 Multi4_1.vho|
+!i113 0
+Z15 o-work work
+Z16 tExplicit 1 CvgOpt 0
+Astructure
+R2
+R3
+R4
+R5
+R6
+R7
+DEx4 work 10 hard_block 0 22 hj[i;a0dD85B`o1JPT^cg2
+!i122 0
+l76
+L54 28
+Va5ClDYec`9chO`Ne0M1NL2
+!s100 >:Wi^nX[YiN=@>>JC6K_83
+R10
+32
+R11
+!i10b 1
+R12
+R13
+R14
+!i113 0
+R15
+R16
+Emulti4_1
+R1
+R2
+R3
+R4
+R5
+R6
+R7
+!i122 0
+R0
+R8
+R9
+l0
+L89 1
+V]2ilX4Lll13Djf8_aRZc`3
+!s100 Ozd;aablH>[Z0:zWmMlHh1
+R10
+32
+R11
+!i10b 1
+R12
+R13
+R14
+!i113 0
+R15
+R16
+Astructure
+R2
+R3
+R4
+R5
+R6
+R7
+DEx4 work 8 multi4_1 0 22 ]2ilX4Lll13Djf8_aRZc`3
+!i122 0
+l161
+L115 367
+Vnie7maV]3YijeZXzkN:fL3
+!s100 ^h4`TQzl_SSzR9Ij8DWY^0
+R10
+32
+R11
+!i10b 1
+R12
+R13
+R14
+!i113 0
+R15
+R16
+Emulti4_1_vhd_vec_tst
+Z17 w1709658202
+R5
+R6
+!i122 1
+R0
+Z18 8Multi4_1.vwf.vht
+Z19 FMulti4_1.vwf.vht
+l0
+L32 1
+VO<<HIRYDYMlVob`@Nz6no1
+!s100 o?z1:zOel3TfJ@UlH@PZ_1
+R10
+32
+R11
+!i10b 1
+R12
+Z20 !s90 -work|work|Multi4_1.vwf.vht|
+Z21 !s107 Multi4_1.vwf.vht|
+!i113 0
+R15
+R16
+Amulti4_1_arch
+R5
+R6
+DEx4 work 20 multi4_1_vhd_vec_tst 0 22 O<<HIRYDYMlVob`@Nz6no1
+!i122 1
+l53
+L34 144
+V66WWZP0O1jIofUJUzdaoz2
+!s100 X1YJ@@nidX5AaQ0GOdFQz1
+R10
+32
+R11
+!i10b 1
+R12
+R20
+R21
+!i113 0
+R15
+R16

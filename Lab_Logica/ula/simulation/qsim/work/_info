@@ -1,0 +1,162 @@
+m255
+K4
+z2
+Z0 !s99 nomlopt
+R0
+!s11e vcom 2021.2 2021.04, Apr 14 2021
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z1 dC:/Users/Aluno-labB27/Downloads/Wesley/ula/simulation/qsim
+T_opt
+!s110 1710519907
+V>n;Bac:lnO00n?6RXibo=1
+04 15 8 work ula_vhd_vec_tst ula_arch 1
+=1-009eee1a8d04-65f47662-22e-1f24
+!s124 OEM10U3 
+o-quiet -auto_acc_if_foreign -work work -L fiftyfivenm -L altera -L altera_mf -L 220model -L sgate -L altera_lnsim
+tCvgOpt 0
+n@_opt
+OL;O;2021.2;73
+Ehard_block
+Z2 w1710519903
+Z3 DPx4 ieee 16 vital_primitives 0 22 G>kiXP8Q9dRClKfK1Zn7j1
+Z4 DPx11 fiftyfivenm 21 fiftyfivenm_atom_pack 0 22 V?DZRA0G`LGYC2?G[n1A32
+Z5 DPx4 ieee 12 vital_timing 0 22 J>EBealN09f8GzldA[z2>3
+Z6 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z7 DPx4 ieee 14 std_logic_1164 0 22 cVAk:aDinOX8^VGI1ekP<3
+Z8 DPx11 fiftyfivenm 22 fiftyfivenm_components 0 22 d=A79NiYCPJ_Zjmf5;Jmn3
+!i122 2
+R1
+Z9 8ula.vho
+Z10 Fula.vho
+l0
+L35 1
+Vhj[i;a0dD85B`o1JPT^cg2
+!s100 3A]XnMhF<;9mKUe5mn3aM1
+Z11 OL;C;2021.2;73
+32
+Z12 !s110 1710519905
+!i10b 1
+Z13 !s108 1710519905.000000
+Z14 !s90 -work|work|ula.vho|
+Z15 !s107 ula.vho|
+!i113 0
+Z16 o-work work
+Z17 tExplicit 1 CvgOpt 0
+Astructure
+R3
+R4
+R5
+R6
+R7
+R8
+DEx4 work 10 hard_block 0 22 hj[i;a0dD85B`o1JPT^cg2
+!i122 2
+l76
+L54 28
+Va5ClDYec`9chO`Ne0M1NL2
+!s100 >:Wi^nX[YiN=@>>JC6K_83
+R11
+32
+R12
+!i10b 1
+R13
+R14
+R15
+!i113 0
+R16
+R17
+Eula
+R2
+R3
+R4
+R5
+R6
+R7
+R8
+!i122 2
+R1
+R9
+R10
+l0
+L89 1
+VPPfaCDH3]88W2g`8G<M_P1
+!s100 :0ba?7`4QegD5MeVT@7j>1
+R11
+32
+R12
+!i10b 1
+R13
+R14
+R15
+!i113 0
+R16
+R17
+Astructure
+R3
+R4
+R5
+R6
+R7
+R8
+DEx4 work 3 ula 0 22 PPfaCDH3]88W2g`8G<M_P1
+!i122 2
+l173
+L117 535
+VEPQ@W4EFC0LlRfe4_;5I@2
+!s100 IZk9UBnilR5hKeQ>0hBeZ2
+R11
+32
+R12
+!i10b 1
+R13
+R14
+R15
+!i113 0
+R16
+R17
+Eula_vhd_vec_tst
+Z18 w1710519902
+R6
+R7
+!i122 3
+R1
+Z19 8ula.vwf.vht
+Z20 Fula.vwf.vht
+l0
+L32 1
+VKm3Jcgf^fQF4QLG>Z;mfj2
+!s100 >OFVREDf6@nYoG_2QlDQ?1
+R11
+32
+Z21 !s110 1710519906
+!i10b 1
+R13
+Z22 !s90 -work|work|ula.vwf.vht|
+Z23 !s107 ula.vwf.vht|
+!i113 0
+R16
+R17
+Aula_arch
+R6
+R7
+DEx4 work 15 ula_vhd_vec_tst 0 22 Km3Jcgf^fQF4QLG>Z;mfj2
+!i122 3
+l51
+L34 140
+V=U`gni2iMn5AcMd<dPP0=1
+!s100 1AD[_JLVmga6@Ho;XO7>a3
+R11
+32
+R21
+!i10b 1
+R13
+R22
+R23
+!i113 0
+R16
+R17
