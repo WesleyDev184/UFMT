@@ -1,0 +1,17 @@
+-- Implementação comportamentao or_and
+library ieee;
+use ieee.std_logic_1164.all;
+
+-- Definição da entidade
+entity ula is
+	port(
+			a,b: in std_logic;
+			Y1: out std_logic
+		 );
+end ula;
+
+architecture synth of ula is
+begin
+
+	
+end synth;
