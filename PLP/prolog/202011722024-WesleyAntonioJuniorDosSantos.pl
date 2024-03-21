@@ -1,88 +1,48 @@
-progenitor(manuel,fernando).
-progenitor(manuel,marta).
-progenitor(maria,fernando).
-progenitor(maria,marta).
+familia(
+    pessoa(pedro,silva,data(1,abril,1930),empregado(cnn,1000)),
+    pessoa(maria,silva,data(20,maio,1933),empregado(bnpp,1230)),
+    [
+        pessoa(manoel,silva,data(10,setembro,1975),desempregado),
+        pessoa(ana,silva,data(12,novembro,1981),empregado(bcc,800))
+    ]
+).
+familia(
+    pessoa(paulo,santos,data(1,janeiro,1955),empregado(abb,1200)),
+    pessoa(ana,santos,data(1,maio,1955),desempregado),
+    [
+        pessoa(manoela,santos,data(10,setembro,1981),desempregado),
+        pessoa(andre,santos,data(18,novembro,1978),empregado(bb,1100)),
+        pessoa(carlos,santos,data(2,fevereiro,1981),empregado(cc,3200))
+    ]
+).
+familia(
+    pessoa(eddard,stark,data(31,marco,1948),morto),
+    pessoa(catelyn,stark,data(11,agosto,1953),morto),
+    [
+        pessoa(robb,stark,data(9,dezenbro,1977),morto),
+        pessoa(sansa,stark,data(1,junho,1979),empregado(concelheira,11000)),
+        pessoa(arya,stark,data(23,janeiro,1991),empregado(assasina,8800)),
+        pessoa(bran,stark,data(23,outubro,1993),empregado(vidente,1)),
+        pessoa(rickon,stark,data(29,maio,1999),morto)
+    ]
+).
 
-progenitor(anibal,diana).
-progenitor(anibal,francisco).
-progenitor(anibal,alvaro).
-progenitor(alzira,diana).
-progenitor(alzira,francisco).
-progenitor(alzira,alvaro).
+membro(X,[X|C]).
+membro(X, [Y|C]):- membro(X,C).
 
-progenitor(jose,delfina).
-progenitor(marta,delfina).
+marido(X) :- familia(X,_,_).
+esposa(X) :- familia(_,X,_).
+filho(X) :- familia(_,_,Filhos), membro(X,Filhos).
 
-progenitor(fernando,carlos).
-progenitor(fernando,paulo).
-progenitor(diana,carlos).
-progenitor(diana,paulo).
+existe(X) :- marido(X); esposa(X); filho(X).
 
-progenitor(alvaro,sara).
-progenitor(celia,sara).
+dataNascimento(pessoa(_,_,data(_,_,D),_), D).
 
-progenitor(zulmira,ricardo).
-progenitor(zulmira,daniel).
-progenitor(carlos,ricardo).
-progenitor(carlos,daniel).
+data(D) :- existe(X), dataNascimento(X, D).
 
-progenitor(paulo,adriana).
-progenitor(paulo,samuel).
-progenitor(fatima,adriana).
-progenitor(fatima,samuel).
+salario(pessoa(_,_,_,empregado(_,S)),S).
+salario(pessoa(_,_,_,desempregado),0).
 
-homem(manuel).
-homem(anibal).
-homem(jose).
-homem(fernando).
-homem(francisco).
-homem(alvaro).
-homem(carlos).
-homem(paulo).
-homem(ricardo).
-homem(daniel).
-homem(samuel).
-mulher(maria).
-mulher(alzira).
-mulher(marta).
-mulher(diana).
-mulher(celia).
-mulher(delfina).
-mulher(zulmira).
-mulher(fatima).
-mulher(sara).
-mulher(adriana).
+nomes(X):- existe(pessoa(X,_,_,_)),pessoa(X,Y,_,_).
 
-casados(manuel,maria).
-casados(anibal,alzira).
-casados(jose,marta).
-casados(fernando,diana).
-casados(alvaro,celia).
-casados(carlos,zulmira).
-casados(paulo,fatima).
-
-filho(X,Y):- progenitor(Y,X),homem(x).
-filha(X,Y):- progenitor(Y,X),mulher(X).
-mae(X,Y):- progenitor(X,Y),mulher(X).
-pai(X,Y):- progenitor(X,Y),homem(X).
-irma(X,Y):- progenitor(Z,X), progenitor(Z,Y), mulher(X), X \= Y.
-irmao(X,Y):- progenitor(Z,X), progenitor(Z,Y), homem(X), X \= Y.
-irmaos(X,Y):- progenitor(Z,X), progenitor(Z,Y).
-avo(X,Z):- progenitor(X,Y),progenitor(Y,Z),homem(X).
-avoh(X,Z):- progenitor(X,Y),progenitor(Y,Z),mulher(X).
-neto(X,Y):- progenitor(Y,Z),progenitor(Z,X),homem(X).
-neta(X,Y):- progenitor(Y,Z),progenitor(Z,X),mulher(X).
-tio(X,Y):- progenitor(Z,Y),irmao(X,Z),homem(X).
-tia(X,Y):- progenitor(Z,Y),irma(X,Z),mulher(X).
-sobrinho(X,Y):- progenitor(Z,X),irmaos(Z,Y),homem(X).
-sobrinha(X,Y):- progenitor(Z,X),irmaos(Z,Y),mulher(X).
-primo(X,Y):- progenitor(Z,X),progenitor(W,Y),irmaos(Z,W),homem(X).
-prima(X,Y):- progenitor(Z,X),progenitor(W,Y),irmaos(Z,W),mulher(X).
-cunhado(X,Y):- casados(X,Z),irmao(Z,Y),homem(X).
-cunhada(X,Y):- casados(X,Z),irma(Z,Y),mulher(X).
-
-descendente(X,Z):- progenitor(X,Z).
-descendente(X,Z):- progenitor(X,Y),descendente(Y,Z).
-
-ascendente(X,Z):- progenitor(Z,X).
-ascendente(X,Z):- progenitor(Y,X),ascendente(Y,Z).
+filhosBydt(Filho, Ano) :- filho(pessoa(Filho, _, data(_, _, Ano), _)).

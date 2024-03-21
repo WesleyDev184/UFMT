@@ -5,6 +5,14 @@ progenitor(jose,julia).
 progenitor(jose,iris).
 progenitor(iris,jorge).
 
+nasceu(joao,1910).
+nasceu(jose,1930).
+nasceu(ana, 1934).
+nasceu(maria,1914).
+nasceu(julia,1950).
+nasceu(iris,1955).
+nasceu(jorge,1975).
+
 masculino(joao).
 masculino(jose).
 masculino(jorge).
