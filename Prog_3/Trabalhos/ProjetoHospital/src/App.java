@@ -1,30 +1,36 @@
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class App extends Application {
-    public static void main(String[] args) throws Exception {
-        launch(args);
-    }
+    private double x, y;
 
     @Override
-    public void start(Stage arg0) throws Exception {
-        arg0.setTitle("Hello World!");
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction((EventHandler<ActionEvent>) new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent arg0) {
-                System.out.println("Hello World!");
-            }
-        });
+    public void start(Stage primaryStage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource("./screens/LoginPage/LoginPage.fxml"));
+        primaryStage.setScene(new Scene(root));
+        // set stage borderless
+        primaryStage.initStyle(StageStyle.UNDECORATED);
 
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
-        arg0.setScene(new Scene(root, 300, 250));
+        // drag it here
+        root.setOnMousePressed(event -> {
+            x = event.getSceneX();
+            y = event.getSceneY();
+        });
+        root.setOnMouseDragged(event -> {
+
+            primaryStage.setX(event.getScreenX() - x);
+            primaryStage.setY(event.getScreenY() - y);
+
+        });
+        primaryStage.show();
+
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

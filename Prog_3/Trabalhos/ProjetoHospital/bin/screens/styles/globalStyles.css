@@ -1,0 +1,78 @@
+.window {
+  -fx-border-width: 0.4px;
+  -fx-border-radius: 10px;
+}
+
+.close {
+  -fx-background-color: transparent;
+  -fx-background-radius: 5px;
+  -fx-cursor: hand;
+}
+
+.close:hover {
+  -fx-background-color: #ff5c5c;
+}
+
+.minimize {
+  -fx-background-color: transparent;
+  -fx-background-radius: 5px;
+  -fx-cursor: hand;
+}
+
+.minimize:hover {
+  -fx-background-color: #ffbd4c;
+}
+
+.addBtn {
+  -fx-background-color: transparent;
+  -fx-background-radius: 5px;
+  -fx-text-fill: #1b1c22;
+  -fx-cursor: hand;
+}
+
+.addBtn:hover {
+  -fx-background-color: #57bf9c;
+  -fx-text-fill: #fff;
+}
+
+.input {
+  -fx-background-color: linear-gradient(to bottom, #efefef, #eee);
+  -fx-background-radius: 4px;
+  -fx-border-color: #000;
+  -fx-border-width: 0.4px;
+  -fx-border-radius: 4px;
+  -fx-font-size: 13px;
+  -fx-font-family: "Arial";
+}
+.input:focused {
+  -fx-background-color: #fff;
+  -fx-border-color: linear-gradient(to bottom right, #15427e, #c09ff8);
+  -fx-border-width: 0.8px;
+}
+
+.btn-blue {
+  -fx-background-color: linear-gradient(to bottom, #15427e, #c09ff8);
+  -fx-background-radius: 5px;
+  -fx-text-fill: #fff;
+  -fx-font-size: 14px;
+  -fx-cursor: hand;
+}
+.btn-blue:hover {
+  -fx-background-color: linear-gradient(to bottom, #15427e, #c09ff8);
+}
+
+.bg-white {
+  -fx-background-color: #fff;
+  -fx-background-radius: 8px;
+}
+
+.bg-blue {
+  -fx-background-color: linear-gradient(to bottom, #15427e, #c09ff8);
+}
+
+.label-info {
+  -fx-background-color: transparent;
+  -fx-border-color: linear-gradient(to bottom right, #272b3f, #256b51);
+  -fx-border-radius: 4px;
+  -fx-padding: 0px 0px 0px 8px;
+}

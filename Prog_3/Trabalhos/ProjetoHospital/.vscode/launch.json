@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Main",
+      "request": "launch",
+      "mainClass": "screens.home.Main",
+      "projectName": "ProjetoHospital2_759c4ff"
+    },
+    {
+      "type": "java",
       "name": "Current File",
       "request": "launch",
       "mainClass": "${file}"
@@ -15,8 +22,78 @@
       "name": "App",
       "request": "launch",
       "mainClass": "App",
-      "projectName": "ProjetoHospital_9d23ed93",
+      "projectName": "ProjetoHospital2_759c4ff",
       "vmArgs": "--module-path \"C:/Program Files/Java/javafx-sdk-17.0.7/lib\" --add-modules javafx.controls,javafx.fxml"
+    },
+    {
+      "type": "java",
+      "name": "testecon",
+      "request": "launch",
+      "mainClass": "Connection.testecon",
+      "projectName": "ProjetoHospital2_759c4ff"
+    },
+    {
+      "type": "java",
+      "name": "AddressDaoTeste",
+      "request": "launch",
+      "mainClass": "testes.AddressDaoTeste",
+      "projectName": "ProjetoHospital2_759c4ff"
+    },
+    {
+      "type": "java",
+      "name": "CalculadoraSoma",
+      "request": "launch",
+      "mainClass": "testes.CalculadoraSoma",
+      "projectName": "ProjetoHospital2_759c4ff"
+    },
+    {
+      "type": "java",
+      "name": "DoctorDaoTeste",
+      "request": "launch",
+      "mainClass": "testes.DoctorDaoTeste",
+      "projectName": "ProjetoHospital2_759c4ff"
+    },
+    {
+      "type": "java",
+      "name": "HealthInsuranceDaoTeste",
+      "request": "launch",
+      "mainClass": "testes.HealthInsuranceDaoTeste",
+      "projectName": "ProjetoHospital2_759c4ff"
+    },
+    {
+      "type": "java",
+      "name": "HospitalAppointmentDaoTeste",
+      "request": "launch",
+      "mainClass": "testes.HospitalAppointmentDaoTeste",
+      "projectName": "ProjetoHospital2_759c4ff"
+    },
+    {
+      "type": "java",
+      "name": "MedicalProceduresDaoTeste",
+      "request": "launch",
+      "mainClass": "testes.MedicalProceduresDaoTeste",
+      "projectName": "ProjetoHospital2_759c4ff"
+    },
+    {
+      "type": "java",
+      "name": "PatientDaoTeste",
+      "request": "launch",
+      "mainClass": "testes.PatientDaoTeste",
+      "projectName": "ProjetoHospital2_759c4ff"
+    },
+    {
+      "type": "java",
+      "name": "RoomDaoTeste",
+      "request": "launch",
+      "mainClass": "testes.RoomDaoTeste",
+      "projectName": "ProjetoHospital2_759c4ff"
+    },
+    {
+      "type": "java",
+      "name": "SpecialtyDaoTeste",
+      "request": "launch",
+      "mainClass": "testes.SpecialtyDaoTeste",
+      "projectName": "ProjetoHospital2_759c4ff"
     }
   ]
 }
