@@ -43,6 +43,13 @@ data(D) :- existe(X), dataNascimento(X, D).
 salario(pessoa(_,_,_,empregado(_,S)),S).
 salario(pessoa(_,_,_,desempregado),0).
 
-nomes(X):- existe(pessoa(X,_,_,_)),pessoa(X,Y,_,_).
+primeiro_nome(pessoa(Nome, _, _, _), Nome).
+sobrenome(pessoa(_, Sobrenome, _, _), Sobrenome).
+
+imprimir_nome_completo(Nome, Sobrenome) :- write(Nome), write(' '), write(Sobrenome), nl.
+
+nomes(X) :- marido(X), primeiro_nome(X, Nome), sobrenome(X, Sobrenome), imprimir_nome_completo(Nome, Sobrenome).
+nomes(X) :- esposa(X), primeiro_nome(X, Nome), sobrenome(X, Sobrenome), imprimir_nome_completo(Nome, Sobrenome).
+nomes(X) :-familia(_, _, Filhos),membro(Pessoa, Filhos),primeiro_nome(Pessoa, X),sobrenome(Pessoa, Sobrenome),imprimir_nome_completo(X, Sobrenome).
 
 filhosBydt(Filho, Ano) :- filho(pessoa(Filho, _, data(_, _, Ano), _)).
