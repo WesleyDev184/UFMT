@@ -1,1 +1,2 @@
-if case contador int while /*teste*/ +
+if case contador int while /* teste*/ + return
+

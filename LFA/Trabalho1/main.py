@@ -1,5 +1,7 @@
 import json
 
+REPLACE_CHAR = '$'
+
 class State:
     def __init__(self, name, is_final, token):
         self.name = name
@@ -18,6 +20,7 @@ class StateMachine:
     def __init__(self, states, initial_state):
         self.current_state = initial_state
         self.states = states
+        self.tokens = []
 
     def print_Machine(self):
         print("Máquina de estado:")
@@ -27,6 +30,24 @@ class StateMachine:
             print("  Token:", state.token)
             for char, next_state in state.transitions.items():
                 print("  ->", char, ":", next_state.name)
+
+    # Criar o arquvo de saida com os tokens obitidos
+    def exit_file(self, file_path):
+        # Verifica se o arquivo já contém algum conteúdo
+        try:
+            with open(file_path, 'r') as file:
+                if file.read().strip():
+                    # Se o arquivo não estiver vazio, apaga seu conteúdo
+                    open(file_path, 'w').close()
+        except FileNotFoundError:
+            # Se o arquivo não existir, não é necessário fazer nada
+            pass
+    
+        # Escreve os tokens no arquivo
+        with open(file_path, 'a') as file:
+            for token in self.tokens:
+                file.write(token + ' ')
+
 
     def load_Machine(self, file_path):
         with open(file_path, 'r') as file:
@@ -53,14 +74,33 @@ class StateMachine:
     def process_input(self, input_string):
         for char in input_string:
             print(self.current_state.name, "<-", char)
-            self.current_state = self.current_state.get_next_state(char)
-            if self.current_state is None:
-                return "Entrada inválida"
+
+            # Verifica se o caractere atual é o separador
+            if char == REPLACE_CHAR:
+                if self.current_state.is_final and self.current_state.token != "null":
+                    self.tokens.append(self.current_state.token)
+
+            next_state = self.current_state.get_next_state(char)
+
+            if next_state is None:
+                print("entrada inválida\n")
+                self.tokens.append("-1")
+                return self.tokens
+
+            self.current_state = next_state
             print("Próximo estado:", self.current_state.name)
 
+        # Verifica se o estado atual é final ao final da entrada
         if self.current_state.is_final:
-            return self.current_state.token
-        return "Entrada inválida"
+            if self.current_state.token != "null":
+                self.tokens.append(self.current_state.token)
+            print("\nFinal da entrada\n")
+        else:
+            print("entrada inválida\n")
+            self.tokens.append("-1")
+
+        return self.tokens
+
 
 
 def transform_input_from_file(file_path, replace_char):
@@ -84,15 +124,18 @@ def main():
     machine.load_Machine("states.json")
 
     # Imprimindo a máquina de estado carregada
-    machine.print_Machine()
-    print('\n')
+    # machine.print_Machine()
+    # print('\n')
 
     # Testando a máquina de estado carregada
-    # input_str = transform_input_from_file("input.txt", '$')
-    input_str = "abbaab"
+    input_str = transform_input_from_file("input.txt", REPLACE_CHAR)
+    # input_str = "abbaab"
     print("Entrada:", input_str)
     result = machine.process_input(input_str)
-    print("Token:", result)
+    print("\nToken:", result)
+
+    # Escrevendo o resultado no arquivo de saída
+    machine.exit_file("output.txt")
 
 if __name__ == "__main__":
     main()
