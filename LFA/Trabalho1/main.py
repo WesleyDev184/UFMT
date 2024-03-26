@@ -84,8 +84,8 @@ class StateMachine:
 
             if next_state is None:
                 print("entrada inválida\n")
-                self.tokens.append("-1")
-                return self.tokens
+                self.current_state = self.states["qe"]
+                continue
 
             self.current_state = next_state
             print("Próximo estado:", self.current_state.name)
