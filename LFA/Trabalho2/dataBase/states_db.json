@@ -1,0 +1,5341 @@
+{
+  "states": {
+    "1": {
+      "state": "q0",
+      "is_final": true,
+      "token": "null",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "q1"
+        },
+        {
+          "input": "d",
+          "next_state": "q4"
+        },
+        {
+          "input": "e",
+          "next_state": "q32"
+        },
+        {
+          "input": "f",
+          "next_state": "q10"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "q17"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "q42"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "q14"
+        },
+        {
+          "input": "w",
+          "next_state": "q38"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        },
+        {
+          "input": "0",
+          "next_state": "qb"
+        },
+        {
+          "input": "1",
+          "next_state": "qb"
+        },
+        {
+          "input": "2",
+          "next_state": "qb"
+        },
+        {
+          "input": "3",
+          "next_state": "qb"
+        },
+        {
+          "input": "4",
+          "next_state": "qb"
+        },
+        {
+          "input": "5",
+          "next_state": "qb"
+        },
+        {
+          "input": "6",
+          "next_state": "qb"
+        },
+        {
+          "input": "7",
+          "next_state": "qb"
+        },
+        {
+          "input": "8",
+          "next_state": "qb"
+        },
+        {
+          "input": "9",
+          "next_state": "qb"
+        },
+        {
+          "input": "+",
+          "next_state": "q21"
+        },
+        {
+          "input": "-",
+          "next_state": "q49"
+        },
+        {
+          "input": "_",
+          "next_state": "qa"
+        },
+        {
+          "input": "*",
+          "next_state": "q21"
+        },
+        {
+          "input": "/",
+          "next_state": "q36"
+        },
+        {
+          "input": ">",
+          "next_state": "q21"
+        },
+        {
+          "input": "<",
+          "next_state": "q21"
+        },
+        {
+          "input": "(",
+          "next_state": "q22"
+        },
+        {
+          "input": ")",
+          "next_state": "q23"
+        },
+        {
+          "input": "{",
+          "next_state": "q24"
+        },
+        {
+          "input": "}",
+          "next_state": "q25"
+        },
+        {
+          "input": "=",
+          "next_state": "q26"
+        },
+        {
+          "input": "!",
+          "next_state": "q28"
+        }
+      ]
+    },
+    "2": {
+      "state": "q49",
+      "is_final": true,
+      "token": "7",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "0",
+          "next_state": "qb"
+        },
+        {
+          "input": "1",
+          "next_state": "qb"
+        },
+        {
+          "input": "2",
+          "next_state": "qb"
+        },
+        {
+          "input": "3",
+          "next_state": "qb"
+        },
+        {
+          "input": "4",
+          "next_state": "qb"
+        },
+        {
+          "input": "5",
+          "next_state": "qb"
+        },
+        {
+          "input": "6",
+          "next_state": "qb"
+        },
+        {
+          "input": "7",
+          "next_state": "qb"
+        },
+        {
+          "input": "8",
+          "next_state": "qb"
+        },
+        {
+          "input": "9",
+          "next_state": "qb"
+        }
+      ]
+    },
+    "3": {
+      "state": "q47",
+      "is_final": true,
+      "token": "8",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "4": {
+      "state": "q46",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "q47"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "5": {
+      "state": "q45",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "q46"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "6": {
+      "state": "q44",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "q45"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "7": {
+      "state": "q43",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "q44"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "8": {
+      "state": "q42",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "q43"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "9": {
+      "state": "q41",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "q37"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "10": {
+      "state": "q40",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "q41"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "11": {
+      "state": "q39",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "q40"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "12": {
+      "state": "q38",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "q39"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "13": {
+      "state": "q18",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "q9"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "14": {
+      "state": "q20",
+      "is_final": true,
+      "token": "5",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "15": {
+      "state": "q17",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "q20"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "q18"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "16": {
+      "state": "q16",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "q9"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "17": {
+      "state": "q15",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "q16"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "18": {
+      "state": "q14",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "q15"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "19": {
+      "state": "q13",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "q9"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "20": {
+      "state": "q12",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "q13"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "21": {
+      "state": "q11",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "q12"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "22": {
+      "state": "q10",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "q11"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qB"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "23": {
+      "state": "qB",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "q37"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "24": {
+      "state": "q37",
+      "is_final": true,
+      "token": "6",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "25": {
+      "state": "q8",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "q9"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "26": {
+      "state": "q7",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "q8"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "27": {
+      "state": "q6",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "q7"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "28": {
+      "state": "q5",
+      "is_final": true,
+      "token": "6",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "q6"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "29": {
+      "state": "q4",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "q5"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "30": {
+      "state": "q9",
+      "is_final": true,
+      "token": "4",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "31": {
+      "state": "q3",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "q9"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "32": {
+      "state": "q2",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "q3"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "33": {
+      "state": "q1",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qA"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "q29"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "q2"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "34": {
+      "state": "qA",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "q30"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "35": {
+      "state": "q29",
+      "is_final": true,
+      "token": "5",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "36": {
+      "state": "q30",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "q29"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "37": {
+      "state": "q31",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "q30"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "38": {
+      "state": "q32",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "q31"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "39": {
+      "state": "q35",
+      "is_final": false,
+      "token": "-1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q35"
+        },
+        {
+          "input": "*",
+          "next_state": "q34"
+        },
+        {
+          "input": "a",
+          "next_state": "q35"
+        },
+        {
+          "input": "b",
+          "next_state": "q35"
+        },
+        {
+          "input": "c",
+          "next_state": "q35"
+        },
+        {
+          "input": "d",
+          "next_state": "q35"
+        },
+        {
+          "input": "e",
+          "next_state": "q35"
+        },
+        {
+          "input": "f",
+          "next_state": "q35"
+        },
+        {
+          "input": "g",
+          "next_state": "q35"
+        },
+        {
+          "input": "h",
+          "next_state": "q35"
+        },
+        {
+          "input": "i",
+          "next_state": "q35"
+        },
+        {
+          "input": "j",
+          "next_state": "q35"
+        },
+        {
+          "input": "k",
+          "next_state": "q35"
+        },
+        {
+          "input": "l",
+          "next_state": "q35"
+        },
+        {
+          "input": "m",
+          "next_state": "q35"
+        },
+        {
+          "input": "n",
+          "next_state": "q35"
+        },
+        {
+          "input": "o",
+          "next_state": "q35"
+        },
+        {
+          "input": "p",
+          "next_state": "q35"
+        },
+        {
+          "input": "q",
+          "next_state": "q35"
+        },
+        {
+          "input": "r",
+          "next_state": "q35"
+        },
+        {
+          "input": "s",
+          "next_state": "q35"
+        },
+        {
+          "input": "t",
+          "next_state": "q35"
+        },
+        {
+          "input": "u",
+          "next_state": "q35"
+        },
+        {
+          "input": "v",
+          "next_state": "q35"
+        },
+        {
+          "input": "w",
+          "next_state": "q35"
+        },
+        {
+          "input": "x",
+          "next_state": "q35"
+        },
+        {
+          "input": "y",
+          "next_state": "q35"
+        },
+        {
+          "input": "z",
+          "next_state": "q35"
+        },
+        {
+          "input": "0",
+          "next_state": "q35"
+        },
+        {
+          "input": "1",
+          "next_state": "q35"
+        },
+        {
+          "input": "2",
+          "next_state": "q35"
+        },
+        {
+          "input": "3",
+          "next_state": "q35"
+        },
+        {
+          "input": "4",
+          "next_state": "q35"
+        },
+        {
+          "input": "5",
+          "next_state": "q35"
+        },
+        {
+          "input": "6",
+          "next_state": "q35"
+        },
+        {
+          "input": "7",
+          "next_state": "q35"
+        },
+        {
+          "input": "8",
+          "next_state": "q35"
+        },
+        {
+          "input": "9",
+          "next_state": "q35"
+        },
+        {
+          "input": ".",
+          "next_state": "q35"
+        },
+        {
+          "input": "/",
+          "next_state": "q35"
+        },
+        {
+          "input": "+",
+          "next_state": "q35"
+        },
+        {
+          "input": "-",
+          "next_state": "q35"
+        },
+        {
+          "input": ">",
+          "next_state": "q35"
+        },
+        {
+          "input": "<",
+          "next_state": "q35"
+        },
+        {
+          "input": "(",
+          "next_state": "q35"
+        },
+        {
+          "input": ")",
+          "next_state": "q35"
+        },
+        {
+          "input": "{",
+          "next_state": "q35"
+        },
+        {
+          "input": "}",
+          "next_state": "q35"
+        },
+        {
+          "input": "=",
+          "next_state": "q35"
+        },
+        {
+          "input": "!",
+          "next_state": "q35"
+        }
+      ]
+    },
+    "40": {
+      "state": "q33",
+      "is_final": true,
+      "token": "3",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        }
+      ]
+    },
+    "41": {
+      "state": "q34",
+      "is_final": false,
+      "token": "-1",
+      "transitions": [
+        {
+          "input": "/",
+          "next_state": "q33"
+        },
+        {
+          "input": "a",
+          "next_state": "q35"
+        },
+        {
+          "input": "b",
+          "next_state": "q35"
+        },
+        {
+          "input": "c",
+          "next_state": "q35"
+        },
+        {
+          "input": "d",
+          "next_state": "q35"
+        },
+        {
+          "input": "e",
+          "next_state": "q35"
+        },
+        {
+          "input": "f",
+          "next_state": "q35"
+        },
+        {
+          "input": "g",
+          "next_state": "q35"
+        },
+        {
+          "input": "h",
+          "next_state": "q35"
+        },
+        {
+          "input": "i",
+          "next_state": "q35"
+        },
+        {
+          "input": "j",
+          "next_state": "q35"
+        },
+        {
+          "input": "k",
+          "next_state": "q35"
+        },
+        {
+          "input": "l",
+          "next_state": "q35"
+        },
+        {
+          "input": "m",
+          "next_state": "q35"
+        },
+        {
+          "input": "n",
+          "next_state": "q35"
+        },
+        {
+          "input": "o",
+          "next_state": "q35"
+        },
+        {
+          "input": "p",
+          "next_state": "q35"
+        },
+        {
+          "input": "q",
+          "next_state": "q35"
+        },
+        {
+          "input": "r",
+          "next_state": "q35"
+        },
+        {
+          "input": "s",
+          "next_state": "q35"
+        },
+        {
+          "input": "t",
+          "next_state": "q35"
+        },
+        {
+          "input": "u",
+          "next_state": "q35"
+        },
+        {
+          "input": "v",
+          "next_state": "q35"
+        },
+        {
+          "input": "w",
+          "next_state": "q35"
+        },
+        {
+          "input": "x",
+          "next_state": "q35"
+        },
+        {
+          "input": "y",
+          "next_state": "q35"
+        },
+        {
+          "input": "z",
+          "next_state": "q35"
+        },
+        {
+          "input": "+",
+          "next_state": "q35"
+        },
+        {
+          "input": "-",
+          "next_state": "q35"
+        },
+        {
+          "input": "*",
+          "next_state": "q34"
+        },
+        {
+          "input": ">",
+          "next_state": "q35"
+        },
+        {
+          "input": "<",
+          "next_state": "q35"
+        }
+      ]
+    },
+    "42": {
+      "state": "q36",
+      "is_final": true,
+      "token": "7",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "*",
+          "next_state": "q35"
+        }
+      ]
+    },
+    "43": {
+      "state": "q28",
+      "is_final": false,
+      "token": "-1",
+      "transitions": [
+        {
+          "input": "=",
+          "next_state": "q27"
+        }
+      ]
+    },
+    "44": {
+      "state": "q26",
+      "is_final": true,
+      "token": "7",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "=",
+          "next_state": "q27"
+        }
+      ]
+    },
+    "45": {
+      "state": "q27",
+      "is_final": true,
+      "token": "7",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        }
+      ]
+    },
+    "46": {
+      "state": "q25",
+      "is_final": true,
+      "token": "10",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        }
+      ]
+    },
+    "47": {
+      "state": "q24",
+      "is_final": true,
+      "token": "9",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        }
+      ]
+    },
+    "48": {
+      "state": "q23",
+      "is_final": true,
+      "token": "12",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        }
+      ]
+    },
+    "49": {
+      "state": "q22",
+      "is_final": true,
+      "token": "11",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        }
+      ]
+    },
+    "50": {
+      "state": "q21",
+      "is_final": true,
+      "token": "7",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        }
+      ]
+    },
+    "51": {
+      "state": "qa",
+      "is_final": true,
+      "token": "1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qa"
+        },
+        {
+          "input": "b",
+          "next_state": "qa"
+        },
+        {
+          "input": "c",
+          "next_state": "qa"
+        },
+        {
+          "input": "d",
+          "next_state": "qa"
+        },
+        {
+          "input": "e",
+          "next_state": "qa"
+        },
+        {
+          "input": "f",
+          "next_state": "qa"
+        },
+        {
+          "input": "g",
+          "next_state": "qa"
+        },
+        {
+          "input": "h",
+          "next_state": "qa"
+        },
+        {
+          "input": "i",
+          "next_state": "qa"
+        },
+        {
+          "input": "j",
+          "next_state": "qa"
+        },
+        {
+          "input": "k",
+          "next_state": "qa"
+        },
+        {
+          "input": "l",
+          "next_state": "qa"
+        },
+        {
+          "input": "m",
+          "next_state": "qa"
+        },
+        {
+          "input": "n",
+          "next_state": "qa"
+        },
+        {
+          "input": "o",
+          "next_state": "qa"
+        },
+        {
+          "input": "p",
+          "next_state": "qa"
+        },
+        {
+          "input": "q",
+          "next_state": "qa"
+        },
+        {
+          "input": "r",
+          "next_state": "qa"
+        },
+        {
+          "input": "s",
+          "next_state": "qa"
+        },
+        {
+          "input": "t",
+          "next_state": "qa"
+        },
+        {
+          "input": "u",
+          "next_state": "qa"
+        },
+        {
+          "input": "v",
+          "next_state": "qa"
+        },
+        {
+          "input": "w",
+          "next_state": "qa"
+        },
+        {
+          "input": "x",
+          "next_state": "qa"
+        },
+        {
+          "input": "y",
+          "next_state": "qa"
+        },
+        {
+          "input": "z",
+          "next_state": "qa"
+        },
+        {
+          "input": "_",
+          "next_state": "qa"
+        }
+      ]
+    },
+    "52": {
+      "state": "q48",
+      "is_final": false,
+      "token": "-1",
+      "transitions": [
+        {
+          "input": "0",
+          "next_state": "q50"
+        },
+        {
+          "input": "1",
+          "next_state": "q50"
+        },
+        {
+          "input": "2",
+          "next_state": "q50"
+        },
+        {
+          "input": "3",
+          "next_state": "q50"
+        },
+        {
+          "input": "4",
+          "next_state": "q50"
+        },
+        {
+          "input": "5",
+          "next_state": "q50"
+        },
+        {
+          "input": "6",
+          "next_state": "q50"
+        },
+        {
+          "input": "7",
+          "next_state": "q50"
+        },
+        {
+          "input": "8",
+          "next_state": "q50"
+        },
+        {
+          "input": "9",
+          "next_state": "q50"
+        }
+      ]
+    },
+    "53": {
+      "state": "q50",
+      "is_final": true,
+      "token": "2",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "0",
+          "next_state": "q50"
+        },
+        {
+          "input": "1",
+          "next_state": "q50"
+        },
+        {
+          "input": "2",
+          "next_state": "q50"
+        },
+        {
+          "input": "3",
+          "next_state": "q50"
+        },
+        {
+          "input": "4",
+          "next_state": "q50"
+        },
+        {
+          "input": "5",
+          "next_state": "q50"
+        },
+        {
+          "input": "6",
+          "next_state": "q50"
+        },
+        {
+          "input": "7",
+          "next_state": "q50"
+        },
+        {
+          "input": "8",
+          "next_state": "q50"
+        },
+        {
+          "input": "9",
+          "next_state": "q50"
+        }
+      ]
+    },
+    "54": {
+      "state": "qb",
+      "is_final": true,
+      "token": "2",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": ".",
+          "next_state": "q48"
+        },
+        {
+          "input": "0",
+          "next_state": "qb"
+        },
+        {
+          "input": "1",
+          "next_state": "qb"
+        },
+        {
+          "input": "2",
+          "next_state": "qb"
+        },
+        {
+          "input": "3",
+          "next_state": "qb"
+        },
+        {
+          "input": "4",
+          "next_state": "qb"
+        },
+        {
+          "input": "5",
+          "next_state": "qb"
+        },
+        {
+          "input": "6",
+          "next_state": "qb"
+        },
+        {
+          "input": "7",
+          "next_state": "qb"
+        },
+        {
+          "input": "8",
+          "next_state": "qb"
+        },
+        {
+          "input": "9",
+          "next_state": "qb"
+        }
+      ]
+    },
+    "55": {
+      "state": "qe",
+      "is_final": true,
+      "token": "-1",
+      "transitions": [
+        {
+          "input": "$",
+          "next_state": "q0"
+        },
+        {
+          "input": "a",
+          "next_state": "qe"
+        },
+        {
+          "input": "b",
+          "next_state": "qe"
+        },
+        {
+          "input": "c",
+          "next_state": "qe"
+        },
+        {
+          "input": "d",
+          "next_state": "qe"
+        },
+        {
+          "input": "e",
+          "next_state": "qe"
+        },
+        {
+          "input": "f",
+          "next_state": "qe"
+        },
+        {
+          "input": "g",
+          "next_state": "qe"
+        },
+        {
+          "input": "h",
+          "next_state": "qe"
+        },
+        {
+          "input": "i",
+          "next_state": "qe"
+        },
+        {
+          "input": "j",
+          "next_state": "qe"
+        },
+        {
+          "input": "k",
+          "next_state": "qe"
+        },
+        {
+          "input": "l",
+          "next_state": "qe"
+        },
+        {
+          "input": "m",
+          "next_state": "qe"
+        },
+        {
+          "input": "n",
+          "next_state": "qe"
+        },
+        {
+          "input": "o",
+          "next_state": "qe"
+        },
+        {
+          "input": "p",
+          "next_state": "qe"
+        },
+        {
+          "input": "q",
+          "next_state": "qe"
+        },
+        {
+          "input": "r",
+          "next_state": "qe"
+        },
+        {
+          "input": "s",
+          "next_state": "qe"
+        },
+        {
+          "input": "t",
+          "next_state": "qe"
+        },
+        {
+          "input": "u",
+          "next_state": "qe"
+        },
+        {
+          "input": "v",
+          "next_state": "qe"
+        },
+        {
+          "input": "w",
+          "next_state": "qe"
+        },
+        {
+          "input": "x",
+          "next_state": "qe"
+        },
+        {
+          "input": "y",
+          "next_state": "qe"
+        },
+        {
+          "input": "z",
+          "next_state": "qe"
+        },
+        {
+          "input": "0",
+          "next_state": "qe"
+        },
+        {
+          "input": "1",
+          "next_state": "qe"
+        },
+        {
+          "input": "2",
+          "next_state": "qe"
+        },
+        {
+          "input": "3",
+          "next_state": "qe"
+        },
+        {
+          "input": "4",
+          "next_state": "qe"
+        },
+        {
+          "input": "5",
+          "next_state": "qe"
+        },
+        {
+          "input": "6",
+          "next_state": "qe"
+        },
+        {
+          "input": "7",
+          "next_state": "qe"
+        },
+        {
+          "input": "8",
+          "next_state": "qe"
+        },
+        {
+          "input": "9",
+          "next_state": "qe"
+        },
+        {
+          "input": "+",
+          "next_state": "qe"
+        },
+        {
+          "input": "-",
+          "next_state": "qe"
+        },
+        {
+          "input": "_",
+          "next_state": "qe"
+        },
+        {
+          "input": "*",
+          "next_state": "qe"
+        },
+        {
+          "input": "/",
+          "next_state": "qe"
+        },
+        {
+          "input": ">",
+          "next_state": "qe"
+        },
+        {
+          "input": "<",
+          "next_state": "qe"
+        },
+        {
+          "input": "(",
+          "next_state": "qe"
+        },
+        {
+          "input": ")",
+          "next_state": "qe"
+        },
+        {
+          "input": "{",
+          "next_state": "qe"
+        },
+        {
+          "input": "}",
+          "next_state": "qe"
+        },
+        {
+          "input": "=",
+          "next_state": "qe"
+        },
+        {
+          "input": "!",
+          "next_state": "qe"
+        }
+      ]
+    }
+  }
+}
