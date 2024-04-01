@@ -1,0 +1,40 @@
+{
+  "states": {
+    "1": {
+      "name": "q0",
+      "is_final": false,
+      "transitions": [
+        {
+          "input_symbol": "0",
+          "stack_top": "A",
+          "next_state": "q0",
+          "stack_replacement": "AB"
+        },
+        {
+          "input_symbol": "1",
+          "stack_top": "A",
+          "next_state": "q1",
+          "stack_replacement": ""
+        }
+      ]
+    },
+    "2": {
+      "name": "q1",
+      "is_final": true,
+      "transitions": [
+        {
+          "input_symbol": "1",
+          "stack_top": "B",
+          "next_state": "q1",
+          "stack_replacement": ""
+        },
+        {
+          "input_symbol": "0",
+          "stack_top": "A",
+          "next_state": "q1",
+          "stack_replacement": ""
+        }
+      ]
+    }
+  }
+}

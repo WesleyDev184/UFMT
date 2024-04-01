@@ -1,0 +1,6 @@
+int batata = 10
+float batata_dois = 5.4
+
+float res = batata_dois + ( float ) batata
+
+/* teste */

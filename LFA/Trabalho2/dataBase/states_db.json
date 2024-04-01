@@ -1,6 +1,6 @@
 {
-  "states": [
-    {
+  "states": {
+    "1": {
       "state": "q0",
       "is_final": true,
       "token": "null",
@@ -207,7 +207,7 @@
         }
       ]
     },
-    {
+    "2": {
       "state": "q49",
       "is_final": true,
       "token": "7",
@@ -258,7 +258,7 @@
         }
       ]
     },
-    {
+    "3": {
       "state": "q47",
       "is_final": true,
       "token": "8",
@@ -373,7 +373,7 @@
         }
       ]
     },
-    {
+    "4": {
       "state": "q46",
       "is_final": true,
       "token": "1",
@@ -488,7 +488,7 @@
         }
       ]
     },
-    {
+    "5": {
       "state": "q45",
       "is_final": true,
       "token": "1",
@@ -603,7 +603,7 @@
         }
       ]
     },
-    {
+    "6": {
       "state": "q44",
       "is_final": true,
       "token": "1",
@@ -718,7 +718,7 @@
         }
       ]
     },
-    {
+    "7": {
       "state": "q43",
       "is_final": true,
       "token": "1",
@@ -833,7 +833,7 @@
         }
       ]
     },
-    {
+    "8": {
       "state": "q42",
       "is_final": true,
       "token": "1",
@@ -948,7 +948,7 @@
         }
       ]
     },
-    {
+    "9": {
       "state": "q41",
       "is_final": true,
       "token": "1",
@@ -1063,7 +1063,7 @@
         }
       ]
     },
-    {
+    "10": {
       "state": "q40",
       "is_final": true,
       "token": "1",
@@ -1178,7 +1178,7 @@
         }
       ]
     },
-    {
+    "11": {
       "state": "q39",
       "is_final": true,
       "token": "1",
@@ -1293,7 +1293,7 @@
         }
       ]
     },
-    {
+    "12": {
       "state": "q38",
       "is_final": true,
       "token": "1",
@@ -1408,7 +1408,7 @@
         }
       ]
     },
-    {
+    "13": {
       "state": "q18",
       "is_final": true,
       "token": "1",
@@ -1523,7 +1523,7 @@
         }
       ]
     },
-    {
+    "14": {
       "state": "q20",
       "is_final": true,
       "token": "5",
@@ -1638,7 +1638,7 @@
         }
       ]
     },
-    {
+    "15": {
       "state": "q17",
       "is_final": true,
       "token": "1",
@@ -1753,7 +1753,7 @@
         }
       ]
     },
-    {
+    "16": {
       "state": "q16",
       "is_final": true,
       "token": "1",
@@ -1868,7 +1868,7 @@
         }
       ]
     },
-    {
+    "17": {
       "state": "q15",
       "is_final": true,
       "token": "1",
@@ -1983,7 +1983,7 @@
         }
       ]
     },
-    {
+    "18": {
       "state": "q14",
       "is_final": true,
       "token": "1",
@@ -2098,7 +2098,7 @@
         }
       ]
     },
-    {
+    "19": {
       "state": "q13",
       "is_final": true,
       "token": "1",
@@ -2213,7 +2213,7 @@
         }
       ]
     },
-    {
+    "20": {
       "state": "q12",
       "is_final": true,
       "token": "1",
@@ -2328,7 +2328,7 @@
         }
       ]
     },
-    {
+    "21": {
       "state": "q11",
       "is_final": true,
       "token": "1",
@@ -2443,7 +2443,7 @@
         }
       ]
     },
-    {
+    "22": {
       "state": "q10",
       "is_final": true,
       "token": "1",
@@ -2558,7 +2558,7 @@
         }
       ]
     },
-    {
+    "23": {
       "state": "qB",
       "is_final": true,
       "token": "1",
@@ -2673,7 +2673,7 @@
         }
       ]
     },
-    {
+    "24": {
       "state": "q37",
       "is_final": true,
       "token": "6",
@@ -2788,7 +2788,7 @@
         }
       ]
     },
-    {
+    "25": {
       "state": "q8",
       "is_final": true,
       "token": "1",
@@ -2903,7 +2903,7 @@
         }
       ]
     },
-    {
+    "26": {
       "state": "q7",
       "is_final": true,
       "token": "1",
@@ -3018,7 +3018,7 @@
         }
       ]
     },
-    {
+    "27": {
       "state": "q6",
       "is_final": true,
       "token": "1",
@@ -3133,7 +3133,7 @@
         }
       ]
     },
-    {
+    "28": {
       "state": "q5",
       "is_final": true,
       "token": "6",
@@ -3248,7 +3248,7 @@
         }
       ]
     },
-    {
+    "29": {
       "state": "q4",
       "is_final": true,
       "token": "1",
@@ -3363,7 +3363,7 @@
         }
       ]
     },
-    {
+    "30": {
       "state": "q9",
       "is_final": true,
       "token": "4",
@@ -3478,7 +3478,7 @@
         }
       ]
     },
-    {
+    "31": {
       "state": "q3",
       "is_final": true,
       "token": "1",
@@ -3593,7 +3593,7 @@
         }
       ]
     },
-    {
+    "32": {
       "state": "q2",
       "is_final": true,
       "token": "1",
@@ -3708,7 +3708,7 @@
         }
       ]
     },
-    {
+    "33": {
       "state": "q1",
       "is_final": true,
       "token": "1",
@@ -3823,7 +3823,7 @@
         }
       ]
     },
-    {
+    "34": {
       "state": "qA",
       "is_final": true,
       "token": "1",
@@ -3938,7 +3938,7 @@
         }
       ]
     },
-    {
+    "35": {
       "state": "q29",
       "is_final": true,
       "token": "5",
@@ -4053,7 +4053,7 @@
         }
       ]
     },
-    {
+    "36": {
       "state": "q30",
       "is_final": true,
       "token": "1",
@@ -4168,7 +4168,7 @@
         }
       ]
     },
-    {
+    "37": {
       "state": "q31",
       "is_final": true,
       "token": "1",
@@ -4283,7 +4283,7 @@
         }
       ]
     },
-    {
+    "38": {
       "state": "q32",
       "is_final": true,
       "token": "1",
@@ -4398,7 +4398,7 @@
         }
       ]
     },
-    {
+    "39": {
       "state": "q35",
       "is_final": false,
       "token": "-1",
@@ -4572,10 +4572,6 @@
           "next_state": "q35"
         },
         {
-          "input": "/",
-          "next_state": "q35"
-        },
-        {
           "input": ">",
           "next_state": "q35"
         },
@@ -4609,7 +4605,7 @@
         }
       ]
     },
-    {
+    "40": {
       "state": "q33",
       "is_final": true,
       "token": "3",
@@ -4620,7 +4616,7 @@
         }
       ]
     },
-    {
+    "41": {
       "state": "q34",
       "is_final": false,
       "token": "-1",
@@ -4743,7 +4739,7 @@
         },
         {
           "input": "*",
-          "next_state": "q35"
+          "next_state": "q34"
         },
         {
           "input": ">",
@@ -4755,7 +4751,7 @@
         }
       ]
     },
-    {
+    "42": {
       "state": "q36",
       "is_final": true,
       "token": "7",
@@ -4770,7 +4766,7 @@
         }
       ]
     },
-    {
+    "43": {
       "state": "q28",
       "is_final": false,
       "token": "-1",
@@ -4781,7 +4777,7 @@
         }
       ]
     },
-    {
+    "44": {
       "state": "q26",
       "is_final": true,
       "token": "7",
@@ -4796,7 +4792,7 @@
         }
       ]
     },
-    {
+    "45": {
       "state": "q27",
       "is_final": true,
       "token": "7",
@@ -4807,7 +4803,7 @@
         }
       ]
     },
-    {
+    "46": {
       "state": "q25",
       "is_final": true,
       "token": "10",
@@ -4818,7 +4814,7 @@
         }
       ]
     },
-    {
+    "47": {
       "state": "q24",
       "is_final": true,
       "token": "9",
@@ -4829,7 +4825,7 @@
         }
       ]
     },
-    {
+    "48": {
       "state": "q23",
       "is_final": true,
       "token": "12",
@@ -4840,7 +4836,7 @@
         }
       ]
     },
-    {
+    "49": {
       "state": "q22",
       "is_final": true,
       "token": "11",
@@ -4851,7 +4847,7 @@
         }
       ]
     },
-    {
+    "50": {
       "state": "q21",
       "is_final": true,
       "token": "7",
@@ -4862,7 +4858,7 @@
         }
       ]
     },
-    {
+    "51": {
       "state": "qa",
       "is_final": true,
       "token": "1",
@@ -4974,10 +4970,14 @@
         {
           "input": "z",
           "next_state": "qa"
+        },
+        {
+          "input": "_",
+          "next_state": "qa"
         }
       ]
     },
-    {
+    "52": {
       "state": "q48",
       "is_final": false,
       "token": "-1",
@@ -5024,7 +5024,7 @@
         }
       ]
     },
-    {
+    "53": {
       "state": "q50",
       "is_final": true,
       "token": "2",
@@ -5075,7 +5075,7 @@
         }
       ]
     },
-    {
+    "54": {
       "state": "qb",
       "is_final": true,
       "token": "2",
@@ -5130,7 +5130,7 @@
         }
       ]
     },
-    {
+    "55": {
       "state": "qe",
       "is_final": true,
       "token": "-1",
@@ -5337,5 +5337,5 @@
         }
       ]
     }
-  ]
+  }
 }
