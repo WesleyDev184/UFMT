@@ -8,7 +8,7 @@ def main() -> None:
     if len(sys.argv) > 1 and sys.argv[1] == 'dev':
         print("1. Lexico")
         print("2. Sintatico")
-        choise = input("escolha uma opção")
+        choise = input("escolha uma opção: ")
         if choise == '1':
             menu = MenuLex.DevMenu()
             menu.run()
