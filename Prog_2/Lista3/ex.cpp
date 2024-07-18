@@ -33,7 +33,7 @@ void adicionarUsuario(const string& nome) {
 }
 
 shared_ptr<Usuario> encontrarUsuario(const string& nome) {
-    for (const auto& u : usuarios) {
+    for (const auto& u : usuarios) {    
         if (u->nome == nome) {
             return u;
         }
