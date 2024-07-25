@@ -92,10 +92,10 @@ public:
 
 int main()
 {
-  vector<float> notas = {7.5, 8.0, 6.5};
+  vector<float> notas = {7.5, 8.0, 7};
   Aluno a1("Maria Silva", 202345, "Engenharia", notas);
-  a1.mostrarDados();                                                           // Nome : Maria Silva , Matricula : 202345 , Curso :Engenharia, Nota : 7.5
-  cout << " Media : " << a1.calcularMedia() << endl;                           // Media :7.5
-  cout << " Aprovado : " << (a1.verificarAprovacao() ? "Sim" : "No ") << endl; // Aprovado : Sim
+  a1.mostrarDados();                                                          // Nome : Maria Silva , Matricula : 202345 , Curso :Engenharia, Nota : 7.5
+  cout << "Media : " << a1.calcularMedia() << endl;                           // Media :7.5
+  cout << "Aprovado : " << (a1.verificarAprovacao() ? "Sim" : "No ") << endl; // Aprovado : Sim
   return 0;
 }
