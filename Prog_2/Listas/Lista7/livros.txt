@@ -1,0 +1,9 @@
+44;O MorrodosVentosUivantes;true
+55;Dom Casmurro;true
+66;A RevoluçãodosBichos;true
+77;O PequenoPríncipe;true
+88;O Alquimista;true
+99;O Hobbit;true
+101;O CódigoDaVinci;true
+121;O DiárioeAnneFrank;false
+131;A Metamorfose;false
