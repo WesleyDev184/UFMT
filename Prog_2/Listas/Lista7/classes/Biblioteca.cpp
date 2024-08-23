@@ -210,12 +210,12 @@ void Biblioteca::devolverLivro(int idMembro, string ISBN)
   {
     if (this->membros[i].getID() == idMembro)
     {
-      for (int j = 0; j < this->membros[i].getLivrosEmprestados().size(); j++)
+      for (int j = 0; j < this->livros.size(); j++)
       {
-        if (this->membros[i].getLivrosEmprestados()[j].getISBN() == ISBN)
+        if (this->livros[j].getISBN() == ISBN)
         {
-          this->membros[i].getLivrosEmprestados()[j].devolver();
-          this->membros[i].getLivrosEmprestados().erase(this->membros[i].getLivrosEmprestados().begin() + j);
+          this->livros[j].devolver();
+          this->membros[i].removerLivro(ISBN);
         }
       }
     }

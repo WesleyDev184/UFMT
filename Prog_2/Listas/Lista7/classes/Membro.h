@@ -20,6 +20,7 @@ public:
   string getNome();
   void exibirDados();
   void emprestarLivro(Livro livro);
+  void removerLivro(string ISBN);
   vector<Livro> getLivrosEmprestados();
 };
 
