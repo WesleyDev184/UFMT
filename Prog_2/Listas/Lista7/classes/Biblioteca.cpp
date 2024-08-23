@@ -4,136 +4,123 @@
 #include "Livro.h"
 #include "Membro.h"
 #include <sys/stat.h>
+#include <sstream>
 
 using namespace std;
 
-bool arquivoExiste(const string &nomeArquivo)
-{
-  struct stat buffer;
-  return (stat(nomeArquivo.c_str(), &buffer) == 0);
-}
-
 void Biblioteca::carregarLivros(string nomeArquivo)
 {
-  if (!arquivoExiste(nomeArquivo))
+  ifstream arquivo(nomeArquivo);
+
+  if (!arquivo.is_open())
   {
-    cerr << "Arquivo " << nomeArquivo << " não encontrado." << endl;
+    cerr << "Erro ao abrir o arquivo!" << endl;
     return;
   }
 
-  ifstream arquivo(nomeArquivo);
   string linha;
   while (getline(arquivo, linha))
   {
-    // formato da linha: ISBN;titulo;disponivel
-    string ISBN = linha.substr(0, linha.find(';'));
-    linha = linha.substr(linha.find(';') + 1);
-    string titulo = linha.substr(0, linha.find(';'));
-    linha = linha.substr(linha.find(';') + 1);
-    bool disponivel = linha == "true" ? true : false;
+    stringstream ss(linha);
+    string temp;
+    string ISBN;
+    string titulo;
+    bool disponivel;
 
-    Livro livro(ISBN, titulo, disponivel);
-    this->livros.push_back(livro);
+    // Extrair o ISBN
+    getline(ss, ISBN, ';');
+
+    // Extrair o título
+    getline(ss, titulo, ';');
+
+    // Extrair a disponibilidade
+    getline(ss, temp, ';');
+    disponivel = (temp == "true");
+
+    this->livros.push_back(Livro(ISBN, titulo, disponivel));
   }
+
+  arquivo.close();
 }
 
 void Biblioteca::carregarMembros(string nomeArquivo)
 {
-  if (!arquivoExiste(nomeArquivo))
+  ifstream arquivo(nomeArquivo);
+
+  if (!arquivo.is_open())
   {
-    cerr << "Arquivo " << nomeArquivo << " não encontrado." << endl;
+    cerr << "Erro ao abrir o arquivo!" << endl;
     return;
   }
 
-  ifstream arquivo(nomeArquivo);
   string linha;
-
   while (getline(arquivo, linha))
   {
-    // formato da linha: ID1;Nome1;[ISBN1,ISBN2,...]
-    string id = linha.substr(0, linha.find(';'));
-    linha = linha.substr(linha.find(';') + 1);
-    string nome = linha.substr(0, linha.find(';'));
-    linha = linha.substr(linha.find(';') + 1);
+    stringstream ss(linha);
+    string temp;
+    int id;
+    string nome;
+    vector<string> isbns;
 
-    int ID = stoi(id);
+    // Extrair o ID
+    getline(ss, temp, ';');
+    id = stoi(temp);
 
-    // remove os colchetes
-    linha = linha.substr(1, linha.size() - 2);
+    // Extrair o nome
+    getline(ss, nome, ';');
 
-    vector<string> ISBNs; // vetor para armazenar os ISBNs deste membro
-
-    while (linha.find(',') != string::npos)
+    // Extrair os ISBNs e armazenar no vector
+    while (getline(ss, temp, ';'))
     {
-      ISBNs.push_back(linha.substr(0, linha.find(',')));
-      linha = linha.substr(linha.find(',') + 1);
+      isbns.push_back(temp);
     }
 
-    ISBNs.push_back(linha);
+    this->membros.push_back(Membro(id, nome));
 
-    Membro membro(ID, nome);
-
-    for (int j = 0; j < ISBNs.size(); j++)
+    // Emprestar os livros ao membro
+    for (int i = 0; i < isbns.size(); i++)
     {
-      for (int k = 0; k < this->livros.size(); k++)
+      for (int j = 0; j < this->livros.size(); j++)
       {
-        if (this->livros[k].getISBN() == ISBNs[j])
+        if (this->livros[j].getISBN() == isbns[i])
         {
-          this->emprestarLivro(membro.getID(), ISBNs[j]);
+          this->membros[this->membros.size() - 1].emprestarLivro(this->livros[j]);
         }
       }
     }
   }
+
+  arquivo.close();
 }
 
 void Biblioteca::gravarMembros(string nomeArquivo)
 {
-
   ofstream arquivo(nomeArquivo);
-  if (arquivo.is_open())
+
+  if (!arquivo.is_open())
   {
-    for (int i = 0; i < this->membros.size(); i++)
+    cerr << "Erro ao abrir o arquivo!" << endl;
+    return;
+  }
+
+  for (auto &membro : this->membros)
+  {
+    arquivo << membro.getID() << ';' << membro.getNome();
+
+    for (auto &livros : membro.getLivrosEmprestados())
     {
-      // Construir a linha no formato: ID;Nome;[ISBN1,ISBN2,...]
-      arquivo << this->membros[i].getID() << ";"
-              << this->membros[i].getNome() << ";[";
-
-      // Adicionar os ISBNs separados por vírgulas
-      vector<string> ISBNs;
-
-      for (int j = 0; j < this->membros[i].getLivrosEmprestados().size(); ++j)
-      {
-        ISBNs.push_back(this->membros[i].getLivrosEmprestados()[j].getISBN());
-      }
-
-      for (size_t j = 0; j < ISBNs.size(); ++j)
-      {
-        arquivo << ISBNs[j];
-        if (j < ISBNs.size() - 1)
-        {
-          arquivo << ",";
-        }
-      }
-      arquivo << "]\n"; // Fechar a linha com o caractere de nova linha
+      arquivo << ';' << livros.getISBN();
     }
 
-    arquivo.close();
+    arquivo << '\n';
   }
-  else
-  {
-    cerr << "Erro ao abrir o arquivo para escrita: " << nomeArquivo << endl;
-  }
-}
 
-void Biblioteca::registrarMembro(Membro membro)
-{
-  this->membros.push_back(membro);
+  arquivo.close();
 }
 
 void Biblioteca::gravarLivros(string nomeArquivo)
 {
-
-  ofstream arquivo(nomeArquivo);
+  ofstream arquivo(nomeArquivo, ios::trunc); // 'ios::trunc' limpa o conteúdo existente
   if (arquivo.is_open())
   {
     for (int i = 0; i < this->livros.size(); i++)
@@ -150,6 +137,11 @@ void Biblioteca::gravarLivros(string nomeArquivo)
   {
     cerr << "Erro ao abrir o arquivo para escrita: " << nomeArquivo << endl;
   }
+}
+
+void Biblioteca::registrarMembro(Membro membro)
+{
+  this->membros.push_back(membro);
 }
 
 void Biblioteca::registrarLivro(Livro livro)
