@@ -20,10 +20,12 @@ def simulated_annealing_n_queens(n, max_iterations=10000, initial_temperature=10
     current_board = generate_random_board(n)
     current_attacks = num_attacking_pairs(current_board)
     temperature = initial_temperature
+    iteracoes = 0
     
-    for iteration in range(max_iterations):
+    for _ in range(max_iterations):
+        iteracoes += 1
         if current_attacks == 0:
-            print(f"Solucao encontrada para n = {n}: {current_board}")
+            print(f"Solução encontrada para n = {n} com {iteracoes} iterações: {current_board} (ataques: {current_attacks})")
             return
         
         next_board = list(current_board)
@@ -43,4 +45,5 @@ def simulated_annealing_n_queens(n, max_iterations=10000, initial_temperature=10
         
         temperature *= cooling_rate
     
-    print(f"Nao foi encontrada solução para n = {n} depois de {max_iterations} iteracoes.")
+    print(f"Não foi encontrada solução para n = {n} após {iteracoes} iterações.")    
+    print(f"Melhor solução encontrada: {current_board} (Ataques: {current_attacks})")

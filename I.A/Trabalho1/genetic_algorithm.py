@@ -27,12 +27,16 @@ def genetic_algorithm_n_queens(n, population_size=100, generations=10000, mutati
             board[random.randint(0, n - 1)] = random.randint(0, n - 1)
     
     population = [generate_random_board(n) for _ in range(population_size)]
+    current_attacks = num_attacking_pairs(population[0])
+    iteracoes = 0
     
-    for generation in range(generations):
+    for _ in range(generations):
+        iteracoes += 1
         population = sorted(population, key=lambda board: num_attacking_pairs(board))
         
-        if num_attacking_pairs(population[0]) == 0:
-            print(f"Solucao encontrada para n = {n}: {population[0]}")
+        current_attacks = num_attacking_pairs(population[0])
+        if current_attacks == 0:
+            print(f"Solução encontrada para n = {n} com {iteracoes} iterações: {population[0]} (ataques: {current_attacks})")
             return
         
         new_population = []
@@ -45,4 +49,5 @@ def genetic_algorithm_n_queens(n, population_size=100, generations=10000, mutati
         
         population = new_population
     
-    print(f"Nao foi encontrada solução para n = {n} depois de {generations} geracoes.")
+    print(f"Não foi encontrada solução para n = {n} após {iteracoes} iterações.")
+    print(f"Melhor solução encontrada: {population[0]} (Ataques: {current_attacks})")

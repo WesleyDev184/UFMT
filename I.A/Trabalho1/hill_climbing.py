@@ -1,62 +1,43 @@
 import random
 
-def hill_climbing_n_queens(n, max_iterations=10000, max_sideways_moves=100):
-    def generate_random_board(n):
-        return [random.randint(0, n-1) for _ in range(n)]
+def hill_climbing_n_queens(n, max_steps=10000):
     
-    def num_attacking_pairs(board):
-        def is_attacking(i, j):
-            return (board[i] == board[j] or  # same column
-                    abs(board[i] - board[j]) == abs(i - j))  # same diagonal
-        
+    def count_attacks(board):
         count = 0
-        for i in range(len(board)):
-            for j in range(i + 1, len(board)):  
-                if is_attacking(i, j):
+        for row1 in range(n):
+            for row2 in range(row1 + 1, n):
+                if board[row1] == board[row2] or abs(board[row1] - board[row2]) == abs(row1 - row2):
                     count += 1
         return count
     
-    def get_best_neighbor(board):
-        min_attacks = num_attacking_pairs(board)
-        best_board = list(board)
-        
-        for col in range(n):
-            original_row = board[col]
-            for row in range(n):
-                if original_row != row:
-                    board[col] = row
-                    attacks = num_attacking_pairs(board)
-                    if attacks < min_attacks:
-                        min_attacks = attacks
-                        best_board = list(board)
-            board[col] = original_row
-        
-        return best_board, min_attacks
+    def create_neighbor(board):
+        nb = board[:]
+        row1, row2 = random.sample(range(n), 2)
+        nb[row1], nb[row2] = nb[row2], nb[row1]
+        return nb
+
+    board = list(range(n))
+    random.shuffle(board)
+    iteracoes = 0
     
-    current_board = generate_random_board(n)
-    current_attacks = num_attacking_pairs(current_board)
-    iterations = 0
-    sideways_moves = 0
+    attacks = count_attacks(board)
     
-    while current_attacks > 0 and iterations < max_iterations:
-        next_board, next_attacks = get_best_neighbor(current_board)
+    for _ in range(max_steps):
+        iteracoes += 1
+        nb = create_neighbor(board)
+        nb_attacks = count_attacks(nb)
         
-        if next_attacks < current_attacks:
-            current_board = next_board
-            current_attacks = next_attacks
-            sideways_moves = 0  # reset sideways move count
-        elif next_attacks == current_attacks and sideways_moves < max_sideways_moves:
-            current_board = next_board
-            sideways_moves += 1
-        else:
-            # If no improvement and no more sideways moves, restart
-            current_board = generate_random_board(n)
-            current_attacks = num_attacking_pairs(current_board)
-            sideways_moves = 0
+        # Se o vizinho tiver menos conflitos, atualiza o tabuleiro atual
+        if nb_attacks < attacks:
+            board = nb
+            attacks = nb_attacks
         
-        iterations += 1
+        # Se a solução estiver livre de conflitos, termina a busca
+        if attacks == 0:
+            break
     
-    if current_attacks == 0:
-        print(f"Solucao encontrada para n = {n}: {current_board}")
+    if attacks == 0:
+        print(f"Solução encontrada para n = {n} com {iteracoes} iterações: {board} (Ataques: {attacks})")
     else:
-        print(f"Nao foi encontrada solução para n = {n} depois de {max_iterations} iteracoes.")
+        print(f"Não foi encontrada solução para n = {n} após {iteracoes} iterações.")
+        print(f"Melhor solução encontrada: {board} (Ataques: {attacks})")
