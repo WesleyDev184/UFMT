@@ -1,0 +1,50 @@
+# Nome do executável
+TARGET = programa
+
+# Pasta de saída
+OUTPUT_FOLDER = build
+
+# Pasta onde os arquivos .cpp e .h estão localizados
+CLASSES_FOLDER = include
+
+# Compilador
+CXX = g++
+
+# Flags de compilação
+CXXFLAGS = -Wall -std=c++11
+
+# Arquivos de código-fonte
+SRC = main.cpp $(CLASSES_FOLDER)/register.cpp $(CLASSES_FOLDER)/search.cpp
+HEADER = $(CLASSES_FOLDER)/register.h $(CLASSES_FOLDER)/search.h
+
+# Arquivos objeto gerados na pasta de saída
+OBJ = $(patsubst %.cpp, $(OUTPUT_FOLDER)/%.o, $(notdir $(SRC)))
+
+# Regra padrão
+all: $(OUTPUT_FOLDER) $(OUTPUT_FOLDER)/$(TARGET)
+
+# Regra para criar o diretório de saída
+$(OUTPUT_FOLDER):
+	mkdir -p $(OUTPUT_FOLDER)
+
+# Regra para criar o executável dentro da pasta de saída
+$(OUTPUT_FOLDER)/$(TARGET): $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJ)
+
+# Regras para compilar arquivos .cpp em .o dentro da pasta de saída
+$(OUTPUT_FOLDER)/%.o: $(CLASSES_FOLDER)/%.cpp $(HEADER)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OUTPUT_FOLDER)/main.o: main.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Executa o programa
+run: all
+	@./$(OUTPUT_FOLDER)/$(TARGET)
+
+# Limpeza dos arquivos objeto e executável
+clean:
+	rm -rf $(OUTPUT_FOLDER)
+
+# Força recompilação completa
+rebuild: clean all
