@@ -1,0 +1,209 @@
+wesley184@Wesley184:/mnt/c/Github/UFMT/I.A/Trabalho1$ python3 main.py
+
+------ Resolvendo o problema das 32 rainhas ------
+Hill Climbing:
+
+Execução 1:
+Solução encontrada para n = 32 com 878 iterações: Ataques: 0
+
+Execução 2:
+Solução encontrada para n = 32 com 631 iterações: Ataques: 0
+
+Execução 3:
+Solução encontrada para n = 32 com 1310 iterações: Ataques: 0
+
+Execução 4:
+Não foi encontrada solução para n = 32 após 80000 iterações.
+Melhor solução encontrada: Ataques: 1
+
+Execução 5:
+Solução encontrada para n = 32 com 749 iterações: Ataques: 0
+
+Tempo médio: 0.9439 segundos
+
+Simulated Annealing:
+
+Execução 1:
+Solução encontrada para n = 32 com 22733 iterações: Ataques: 0
+
+Execução 2:
+Solução encontrada para n = 32 com 20129 iterações: Ataques: 0
+
+Execução 3:
+Solução encontrada para n = 32 com 3212 iterações: Ataques: 0
+
+Execução 4:
+Solução encontrada para n = 32 com 6617 iterações: Ataques: 0
+
+Execução 5:
+Solução encontrada para n = 32 com 10723 iterações: Ataques: 0
+
+Tempo médio: 0.2313 segundos
+
+Genetic Algorithm:
+
+Execução 1:
+Solução encontrada para n = 32 com 1439 iterações: Ataques: 0
+
+Execução 2:
+Solução encontrada para n = 32 com 749 iterações: Ataques: 0
+
+Execução 3:
+Solução encontrada para n = 32 com 2496 iterações: Ataques: 0
+
+Execução 4:
+Solução encontrada para n = 32 com 5479 iterações: Ataques: 0
+
+Execução 5:
+Solução encontrada para n = 32 com 4275 iterações: Ataques: 0
+
+Tempo médio: 11.3316 segundos
+
+
+Análise do desempenho para 32 rainhas:
+Tempo médio Hill Climbing: 0.9439 segundos
+Tempo médio Simulated Annealing: 0.2313 segundos
+Tempo médio Genetic Algorithm: 11.3316 segundos
+O algoritmo mais rápido foi: Simulated Annealing com tempo de 0.2313 segundos
+
+
+------ Resolvendo o problema das 64 rainhas ------
+Hill Climbing:
+
+Execução 1:
+Solução encontrada para n = 64 com 2944 iterações: Ataques: 0
+
+Execução 2:
+Solução encontrada para n = 64 com 3682 iterações: Ataques: 0
+
+Execução 3:
+Não foi encontrada solução para n = 64 após 80000 iterações.
+Melhor solução encontrada: Ataques: 2
+
+Execução 4:
+Não foi encontrada solução para n = 64 após 80000 iterações.
+Melhor solução encontrada: Ataques: 1
+
+Execução 5:
+Não foi encontrada solução para n = 64 após 80000 iterações.
+Melhor solução encontrada: Ataques: 1
+
+Tempo médio: 10.5696 segundos
+
+Simulated Annealing:
+
+Execução 1:
+Solução encontrada para n = 64 com 18152 iterações: Ataques: 0
+
+Execução 2:
+Solução encontrada para n = 64 com 48234 iterações: Ataques: 0
+
+Execução 3:
+Não foi encontrada solução para n = 64 após 80000 iterações.
+Melhor solução encontrada: Ataques: 1
+
+Execução 4:
+Solução encontrada para n = 64 com 14775 iterações: Ataques: 0
+
+Execução 5:
+Solução encontrada para n = 64 com 20959 iterações: Ataques: 0
+
+Tempo médio: 0.6941 segundos
+
+Genetic Algorithm:
+
+Execução 1:
+Solução encontrada para n = 64 com 7064 iterações: Ataques: 0
+
+Execução 2:
+Solução encontrada para n = 64 com 18519 iterações: Ataques: 0
+
+Execução 3:
+Solução encontrada para n = 64 com 3450 iterações: Ataques: 0
+
+Execução 4:
+Solução encontrada para n = 64 com 6561 iterações: Ataques: 0
+
+Execução 5:
+Solução encontrada para n = 64 com 3911 iterações: Ataques: 0
+
+Tempo médio: 31.5890 segundos
+
+
+Análise do desempenho para 64 rainhas:
+Tempo médio Hill Climbing: 10.5696 segundos
+Tempo médio Simulated Annealing: 0.6941 segundos
+Tempo médio Genetic Algorithm: 31.5890 segundos
+O algoritmo mais rápido foi: Simulated Annealing com tempo de 0.6941 segundos
+
+
+------ Resolvendo o problema das 128 rainhas ------
+Hill Climbing:
+
+Execução 1:
+Não foi encontrada solução para n = 128 após 80000 iterações.
+Melhor solução encontrada: Ataques: 1
+
+Execução 2:
+Solução encontrada para n = 128 com 16820 iterações: Ataques: 0
+
+Execução 3:
+Não foi encontrada solução para n = 128 após 80000 iterações.
+Melhor solução encontrada: Ataques: 1
+
+Execução 4:
+Solução encontrada para n = 128 com 9180 iterações: Ataques: 0
+
+Execução 5:
+Solução encontrada para n = 128 com 7995 iterações: Ataques: 0
+
+Tempo médio: 32.4189 segundos
+
+Simulated Annealing:
+
+Execução 1:
+Solução encontrada para n = 128 com 68189 iterações: Ataques: 0
+
+Execução 2:
+Não foi encontrada solução para n = 128 após 80000 iterações.
+Melhor solução encontrada: Ataques: 1
+
+Execução 3:
+Solução encontrada para n = 128 com 50930 iterações: Ataques: 0
+
+Execução 4:
+Solução encontrada para n = 128 com 67343 iterações: Ataques: 0
+
+Execução 5:
+Não foi encontrada solução para n = 128 após 80000 iterações.
+Melhor solução encontrada: Ataques: 1
+
+Tempo médio: 1.4512 segundos
+
+Genetic Algorithm:
+
+Execução 1:
+Solução encontrada para n = 128 com 14023 iterações: Ataques: 0
+
+Execução 2:
+Solução encontrada para n = 128 com 10832 iterações: Ataques: 0
+
+Execução 3:
+Solução encontrada para n = 128 com 8465 iterações: Ataques: 0
+
+Execução 4:
+Solução encontrada para n = 128 com 20320 iterações: Ataques: 0
+
+Execução 5:
+Solução encontrada para n = 128 com 18475 iterações: Ataques: 0
+
+Tempo médio: 63.5650 segundos
+
+
+Análise do desempenho para 128 rainhas:
+Tempo médio Hill Climbing: 32.4189 segundos
+Tempo médio Simulated Annealing: 1.4512 segundos
+Tempo médio Genetic Algorithm: 63.5650 segundos
+O algoritmo mais rápido foi: Simulated Annealing com tempo de 1.4512 segundos
+
+wesley184@Wesley184:/mnt/c/Github/UFMT/I.A/Trabalho1$
