@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Meu Projeto Flask{% endblock %}</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#eff6ff",
+                100: "#dbeafe",
+                200: "#bfdbfe",
+                300: "#93c5fd",
+                400: "#60a5fa",
+                500: "#3b82f6",
+                600: "#2563eb",
+                700: "#1d4ed8",
+                800: "#1e40af",
+                900: "#1e3a8a",
+                950: "#172554",
+              },
+            },
+          },
+          fontFamily: {
+            body: [
+              "Inter",
+              "ui-sans-serif",
+              "system-ui",
+              "-apple-system",
+              "system-ui",
+              "Segoe UI",
+              "Roboto",
+              "Helvetica Neue",
+              "Arial",
+              "Noto Sans",
+              "sans-serif",
+              "Apple Color Emoji",
+              "Segoe UI Emoji",
+              "Segoe UI Symbol",
+              "Noto Color Emoji",
+            ],
+            sans: [
+              "Inter",
+              "ui-sans-serif",
+              "system-ui",
+              "-apple-system",
+              "system-ui",
+              "Segoe UI",
+              "Roboto",
+              "Helvetica Neue",
+              "Arial",
+              "Noto Sans",
+              "sans-serif",
+              "Apple Color Emoji",
+              "Segoe UI Emoji",
+              "Segoe UI Symbol",
+              "Noto Color Emoji",
+            ],
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="font-sans leading-normal tracking-normal bg-neutral-900 text-white min-h-screen relative"
+  >
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div
+      id="flash-messages"
+      class="absolute bottom-10 right-10 bg-neutral-600 p-6 rounded-lg shadow-lg"
+    >
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+    <div class="flex flex-col items-center justify-center mx-auto md:h-screen">
+      <div class="w-full md:mt-0 sm:max-w-md xl:p-0">
+        <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+          <h1
+            class="text-xl font-bold leading-tight tracking-tight md:text-2xl text-white"
+          >
+            Registre-se
+          </h1>
+          <form class="space-y-4 md:space-y-6" method="POST" action="/register">
+            <div>
+              <label
+                for="username"
+                class="block mb-2 text-sm font-medium text-white"
+                >Seu Username</label
+              >
+              <input
+                type="text"
+                name="username"
+                id="username"
+                class="block rounded-lg w-full p-2.5 bg-gray-700 border-neutral -600 placeholder-neutral -400 text-white focus:ring-blue-500 focus:border-blue-500"
+                placeholder="john_doe"
+                required=""
+              />
+            </div>
+            <div>
+              <label
+                for="Email"
+                class="block mb-2 text-sm font-medium text-white"
+                >Seu Email</label
+              >
+              <input
+                type="email"
+                name="Email"
+                id="Email"
+                class="block rounded-lg w-full p-2.5 bg-gray-700 border-neutral -600 placeholder-neutral -400 text-white focus:ring-blue-500 focus:border-blue-500"
+                placeholder="john_doe@gmail.com"
+                required=""
+              />
+            </div>
+            <div>
+              <label
+                for="password"
+                class="block mb-2 text-sm font-medium text-white"
+                >Password</label
+              >
+              <input
+                type="password"
+                name="password"
+                id="password"
+                placeholder="••••••••"
+                class="block rounded-lg w-full p-2.5 bg-gray-700 border-neutral -600 placeholder-neutral -400 text-white focus:ring-blue-500 focus:border-blue-500"
+                required=""
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            >
+              Logar
+            </button>
+            <p class="text-sm font-light text-neutral-400">
+              Ja tem uma conta?
+              <a
+                href="/login"
+                class="font-medium text-indigo-400 hover:underline dark:text-primary-500"
+                >Login</a
+              >
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script>
+      setTimeout(function () {
+        var flashMessages = document.getElementById("flash-messages");
+        if (flashMessages) {
+          flashMessages.style.display = "none";
+        }
+      }, 5000); // 5000 milliseconds = 5 seconds
+    </script>
+  </body>
+</html>
