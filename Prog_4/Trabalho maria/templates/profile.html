@@ -1,0 +1,77 @@
+{% extends 'base.html' %} {% block title %}Perfil de {{ user.username }}{%
+endblock %} {% block content %}
+<div class="bg-neutral-800 p-6 rounded shadow-md">
+  <h2 class="text-2xl font-semibold mb-4">Perfil de {{ user.username }}</h2>
+  <div class="flex flex-col gap-4">
+    <h3 class="text-xl font-semibold">Informações do Usuário</h3>
+    <p><strong>Nome de Usuário:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+
+    <h3 class="text-xl font-semibold mt-4">Filmes Favoritos</h3>
+    <div id="favorites" class="flex gap-2 flex-wrap">
+      {% for film in user.favorite_films %}
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          border: 1px solid #4b5563;
+          border-radius: 0.5rem;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          background-color: #1f2937;
+          transition: background-color 0.3s;
+          width: 30rem;
+          height: 15rem;
+          overflow: hidden;
+          margin-bottom: 1rem;
+          position: relative;
+        "
+        onmouseover="this.style.backgroundColor='#374151';"
+        onmouseout="this.style.backgroundColor='#1F2937';"
+      >
+        <img
+          style="
+            object-fit: cover;
+            width: 100%;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            height: 15rem;
+            max-height: auto;
+            width: 12rem;
+            border-radius: 0;
+            border-top-left-radius: 0.5rem;
+          "
+          src="{{ film.image_url }}"
+          alt="Pôster de {{ film.name }}"
+        />
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-left: 1rem;
+            padding-right: 0.5rem;
+            line-height: normal;
+          "
+        >
+          <h5
+            style="
+              font-size: 1.5rem;
+              font-weight: bold;
+              letter-spacing: -0.025em;
+              color: white;
+            "
+          >
+            {{ film.name }} ({{ film.year }})
+          </h5>
+          <p
+            style="margin-bottom: 0.75rem; font-weight: normal; color: #9ca3af"
+          >
+            <strong>Atores:</strong> {{ film.actor }}
+          </p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

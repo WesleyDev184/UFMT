@@ -29,19 +29,16 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 train_data = lgb.Dataset(X_train, label=y_train)
 test_data = lgb.Dataset(X_test, label=y_test, reference=train_data)
 
-# Definir os parâmetros do modelo
-params = {
+# Treinar o modelo
+model = lgb.train(
+    {
     'objective': 'regression',
     'metric': 'rmse',
     'boosting_type': 'gbdt',
     'num_leaves': 31,
     'learning_rate': 0.05,
     'feature_fraction': 0.9
-}
-
-# Treinar o modelo
-model = lgb.train(
-    params,
+    },
     train_data,
     valid_sets=[test_data],
     num_boost_round=1000,

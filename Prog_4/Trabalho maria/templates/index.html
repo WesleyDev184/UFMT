@@ -1,11 +1,157 @@
 {% extends 'base.html' %} {% block title %}Página Inicial{% endblock %} {% block
 content %}
 <div class="bg-neutral-800 p-6 rounded shadow-md">
-  <h2 class="text-2xl font-semibold mb-4">
-    Bem-vindo {{ user.username }}!
-  </h2>
-  <p class="text-gray-400">
-    Esta é uma página que usa um template base com Tailwind CSS.
-  </p>
+  <h2 class="text-2xl font-semibold mb-4">Bem-vindo {{ user.username }}!</h2>
+  <div class="flex flex-col gap-4">
+    <h1>Busque seu Filme Favorito!</h1>
+    <form id="filmForm" class="flex gap-2">
+      <input
+        type="text"
+        id="filmInput"
+        placeholder="Digite o nome do filme"
+        class="block rounded-lg w-full p-2.5 bg-gray-700 border-neutral-600 placeholder-neutral-400 text-white focus:ring-blue-500 focus:border-blue-500"
+        required
+      />
+      <button
+        type="submit"
+        class="px-4 py-2 bg-indigo-700 hover:bg-indigo-600 text-neutral-50 rounded-xl flex items-center gap-2"
+      >
+        Buscar
+      </button>
+    </form>
+
+    <div id="result" class="flex gap-2 flex-wrap justify-center"></div>
+  </div>
 </div>
+
+<script>
+  document
+    .getElementById("filmForm")
+    .addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const film = document.getElementById("filmInput").value;
+
+      const response = await fetch("/film", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({ film: film }),
+      });
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = ""; // Limpar resultados anteriores
+
+      if (response.ok) {
+        const data = await response.json();
+        data.films.forEach((film) => {
+          resultDiv.innerHTML += `
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    border: 1px solid #4b5563;
+                    border-radius: 0.5rem;
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                    background-color: #1f2937;
+                    transition: background-color 0.3s;
+                    width: 30rem;
+                    height: 15rem;
+                    overflow: hidden;
+                    margin-bottom: 1rem;
+                    position: relative;
+                  "
+                  onmouseover="this.style.backgroundColor='#374151';"
+                  onmouseout="this.style.backgroundColor='#1F2937';"
+                >
+                  <img
+                    style="
+                      object-fit: cover;
+                      width: 100%;
+                      border-top-left-radius: 0.5rem;
+                      border-top-right-radius: 0.5rem;
+                      height: 15rem;
+                      max-height: auto;
+                      width: 12rem;
+                      border-radius: 0;
+                      border-top-left-radius: 0.5rem;
+                    "
+                    src="${film.poster}"
+                    alt="Pôster de ${film.title}"
+                  />
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: space-between;
+                      padding-left: 1rem;
+                      padding-right: 0.5rem;
+                      line-height: normal;
+                    "
+                  >
+                    <h5
+                      style="
+                        font-size: 1.5rem;
+                        font-weight: bold;
+                        letter-spacing: -0.025em;
+                        color: white;
+                      "
+                    >
+                      ${film.title} (${film.year})
+                    </h5>
+                    <p style="margin-bottom: 0.75rem; font-weight: normal; color: #9ca3af">
+                      <strong>Atores:</strong> ${film.actors}
+                    </p>
+                  </div>
+                  <button
+                    id="favorite-btn-${film.id}"
+                    style="
+                      position: absolute;
+                      top: 0.5rem;
+                      right: 0.5rem;
+                      background-color: #4b5563;
+                      color: white;
+                      border: none;
+                      border-radius: 0.25rem;
+                      padding: 0.5rem;
+                      cursor: pointer;
+                    "
+                    onclick="toggleFavorite(${film.id})"
+                  >
+                    Favoritar
+                  </button>
+                </div>
+              `;
+        });
+      } else {
+        const errorData = await response.json();
+        resultDiv.innerHTML = `<p>${errorData.error}</p>`;
+      }
+    });
+
+  async function toggleFavorite(filmId) {
+    const button = document.getElementById(`favorite-btn-${filmId}`);
+    const isFavorited = button.classList.contains("favorited");
+
+    const response = await fetch(`/toggle_favorite/${filmId}`, {
+      method: "POST",
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (isFavorited) {
+        button.classList.remove("favorited");
+        button.style.backgroundColor = "#4b5563";
+        button.textContent = "Favoritar";
+      } else {
+        button.classList.add("favorited");
+        button.style.backgroundColor = "#2563eb";
+        button.textContent = "Favoritado";
+      }
+      alert(data.message);
+    } else {
+      console.error("Error:", response.statusText);
+    }
+  }
+</script>
 {% endblock %}
