@@ -23,7 +23,10 @@
  
  // Prototipos
  int list();
- int listR();
+ int expression();
+ int expressionR();
+ int term();
+ int termR();
  int digit();
  int match(int token_tag);
  

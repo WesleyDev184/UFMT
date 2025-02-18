@@ -24,62 +24,99 @@ int match(int token_tag) {
 }
 
 /**
- * @brief Regra de derivacao da gramatica: LIST
+ * @brief Regra de derivacao da gramatica: EXPRESSION
+ * EXPRESSION -> TERM EXPRESSION_R
  * 
  * @return int true/false
  */
-int list() {
-    if ( digit() && listR() ) 
+ int expression() {
+    if ( term() && expressionR() )
         return true;
     return false;
 }
 
 /**
- * @brief Regra de derivacao da gramatica: LIST_RECURSIVO
+ * @brief Regra de derivacao da gramatica: EXPRESSION_R
+ * EXPRESSION_R -> '+' TERM EXPRESSION_R
+ *                | '-' TERM EXPRESSION_R
+ *                | ε
  * 
  * @return int true/false
  */
-int listR() {
+int expressionR() {
     int test1, test2;
-    //Verifica ocorrencia de terminal '+'
     if ( lookahead->tag == PLUS ) {
         test1 = match(PLUS);
-        test2 = digit();
-        genAdd(); //Geracao de codigo por meio de funcao do GERADOR
-        if (test1 && test2)
-            return listR();
+        test2 = term();
+        genAdd();
+        if ( test1 && test2 && expressionR() )
+            return true;
         return false;
-    } //Verifica ocorrencia de terminal '-' 
+    }
     else if ( lookahead->tag == MINUS ) {
         test1 = match(MINUS);
-        test2 = digit();
-        genSub(); //Geracao de codigo por meio de funcao do GERADOR
-        if (test1 && test2)
-            return listR();
+        test2 = term();
+        genSub();
+        if ( test1 && test2 && expressionR() )
+            return true;
         return false;
-    } //Verifica se fim de entrada
-    else if ( lookahead->tag == MULT ) {
+    }
+    // Epsilon producao
+    return true;
+}
+
+/**
+ * @brief Regra de derivacao da gramatica: TERM
+ * TERM -> digit() TERM_R
+ * 
+ * @return int true/false
+ */
+int term() {
+    if ( digit() && termR() )
+        return true;
+    return false;
+}
+
+/**
+ * @brief Regra de derivacao da gramatica: TERM_R
+ * TERM_R -> '*' digit() TERM_R
+ *            | '/' digit() TERM_R
+ *            | ε
+ * 
+ * @return int true/false
+ */
+int termR() {
+    int test1, test2;
+    if ( lookahead->tag == MULT ) {
         test1 = match(MULT);
         test2 = digit();
-        genMult(); //Geracao de codigo por meio de funcao do GERADOR
-        if (test1 && test2)
-            return listR();
+        genMult();
+        if ( test1 && test2 && termR() )
+            return true;
         return false;
-    } //Verifica se fim de entrada
+    }
     else if ( lookahead->tag == DIV ) {
         test1 = match(DIV);
         test2 = digit();
-        genDiv(); //Geracao de codigo por meio de funcao do GERADOR
-        if (test1 && test2)
-            return listR();
+        genDiv();
+        if ( test1 && test2 && termR() )
+            return true;
         return false;
     }
-    else {
-        if ( lookahead->tag == ENDTOKEN )
-            return true;
-        //Caso todos os testes falhem, retorna erro (false)
-        return false; 
-    }
+    // Epsilon producao
+    return true;
+}
+
+/**
+ * @brief Regra de derivacao da gramatica: LIST (Entrada)
+ * LIST -> EXPRESSION ENDTOKEN
+ * 
+ * @return int true/false
+ */
+int list() {
+    if ( expression() && lookahead->tag == ENDTOKEN )
+        return true;
+    return false;
 }
 
 /**
