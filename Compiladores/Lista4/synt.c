@@ -58,6 +58,22 @@ int listR() {
             return listR();
         return false;
     } //Verifica se fim de entrada
+    else if ( lookahead->tag == MULT ) {
+        test1 = match(MULT);
+        test2 = digit();
+        genMult(); //Geracao de codigo por meio de funcao do GERADOR
+        if (test1 && test2)
+            return listR();
+        return false;
+    } //Verifica se fim de entrada
+    else if ( lookahead->tag == DIV ) {
+        test1 = match(DIV);
+        test2 = digit();
+        genDiv(); //Geracao de codigo por meio de funcao do GERADOR
+        if (test1 && test2)
+            return listR();
+        return false;
+    }
     else {
         if ( lookahead->tag == ENDTOKEN )
             return true;

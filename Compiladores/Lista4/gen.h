@@ -19,6 +19,8 @@
 // Prototipos
 void genAdd();
 void genSub();
+void genMult();
+void genDiv();
 void genNum(char num_string[MAX_TOKEN]);
 
 #endif //_GEN_H_

@@ -12,6 +12,7 @@
 #define _STRUCT_COMPILER_
 
 // Definicao de constantes para todo o compilador
+#define MAX_SIZE 1024
 #define MAX_CHAR 32
 #define MAX_TOKEN 32
 
@@ -24,6 +25,8 @@
 #define NUM 1
 #define PLUS '+'
 #define MINUS '-'
+#define MULT '*'
+#define DIV '/'
 
 // Definicao da estrutura de dados 'token'
 struct st_token {

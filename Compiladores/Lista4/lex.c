@@ -16,8 +16,16 @@
  * 
  */
 void initLex() {
-    printf("Informe um código para ser avaliado:");
-    gets(string);
+    FILE *fp = fopen("in.txt", "r");
+    if (!fp) {
+        fprintf(stderr, "Erro ao abrir o arquivo in.txt.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    size_t n = fread(string, sizeof(char), MAX_SIZE - 1, fp);
+    string[n] = '\0'; // Garante terminação nula
+
+    fclose(fp);
 }
 
 /**
@@ -26,50 +34,60 @@ void initLex() {
  * 
  * @return type_token* 
  */
-type_token *getToken() {
+ type_token *getToken() {
     char buffer[MAX_CHAR];
-    int pos_buffer;
+    int pos_buffer = 0;
     type_token *token;
-    
-    pos_buffer = 0;
+
     token = (type_token*) malloc(sizeof(type_token));
 
-    // Consome espacos
-    while ( isspace(string[pos]) ) {
+    // Consome espaços
+    while (isspace(string[pos])) {
         pos++;
     }
 
     // Verifica se NUMERO
-    if ( isdigit(string[pos]) ) {
-        // constroi buffer com os digitos
-        while ( isdigit(string[pos]) ) {
+    if (isdigit(string[pos])) {
+        // Constrói buffer com os dígitos
+        while (isdigit(string[pos])) {
             buffer[pos_buffer++] = string[pos++];
         }
         buffer[pos_buffer] = '\0';
         token->tag = NUM;
-        strcpy( token->lexema, buffer ); //copia buffer para lexema
+        strcpy(token->lexema, buffer); // Copia buffer para lexema
     } 
-    //Verifica se PLUS (+)
-    else if (string[pos] == PLUS) {
-        token->tag = PLUS;
-        strcpy(token->lexema, "+");
-        pos++;
-    }
-    //Verifica se MINUS (-)
-    else if (string[pos] == MINUS) {
-        token->tag = MINUS;
-        strcpy(token->lexema, "-");
-        pos++;
-    }
-    //Verifica se FIM DE CADEIA
-    else if (string[pos] == ENDTOKEN) {
-        token->tag = ENDTOKEN;
-        strcpy(token->lexema, "");
-    }
-    //ERRO
     else {
-        token->tag = ERROR;
-        strcpy(token->lexema, "");
+        // Para os demais tokens, use switch
+        switch (string[pos]) {
+            case PLUS:
+                token->tag = PLUS;
+                strcpy(token->lexema, "+");
+                pos++;
+                break;
+            case MINUS:
+                token->tag = MINUS;
+                strcpy(token->lexema, "-");
+                pos++;
+                break;
+            case MULT:
+                token->tag = MULT;
+                strcpy(token->lexema, "*");
+                pos++;
+                break;
+            case DIV:
+                token->tag = DIV;
+                strcpy(token->lexema, "/");
+                pos++;
+                break;
+            case ENDTOKEN:
+                token->tag = ENDTOKEN;
+                strcpy(token->lexema, "");
+                break;
+            default:
+                token->tag = ERROR;
+                strcpy(token->lexema, "");
+                break;
+        }
     }
 
     return token;

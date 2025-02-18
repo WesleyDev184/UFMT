@@ -33,6 +33,30 @@ void genSub() {
 }
 
 /**
+ * @brief Funcao que gera codigo de montagem para MULTIPLICACAO
+ * 
+ */
+void genMult() {
+    printf("pop rax\n");
+    printf("pop rbx\n");
+    printf("imul rax,rbx\n");
+    printf("push rax\n");
+}
+
+/**
+ * @brief Funcao que gera codigo de montagem para DIVISAO
+ * 
+ */
+
+void genDiv() {
+    printf("pop rbx\n");
+    printf("pop rax\n");
+    printf("cqo\n");
+    printf("idiv rbx\n");
+    printf("push rax\n");
+}
+
+/**
  * @brief Funcao que gera codigo de montagem para armazenamento de NUMERAL
  * 
  * @param num_string 
