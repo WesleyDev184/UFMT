@@ -78,9 +78,4 @@ struct st_token
 };
 typedef struct st_token type_token;
 
-// variaveis globais
-type_token *lookahead;
-int pos;
-FILE *input_file;
-
 #endif //_STRUCT_COMPILER_
