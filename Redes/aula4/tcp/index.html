@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exemplo de Loading com Tailwind CSS</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-200 flex items-center justify-center h-screen">
+    <div class="spinner">
+      <div
+        class="dot1 h-24 w-24 rounded-full bg-blue-500 flex items-center justify-center"
+      >
+        <img
+          src="https://imgs.search.brave.com/aHX6f-2BjOWL-hbp_-pIqMBF-Ldn3JBBtSYsQ7HOzVU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jb250/ZXVkby5pbWd1b2wu/Y29tLmJyL2MvZW50/cmV0ZW5pbWVudG8v/NzQvMjAxOC8xMS8w/Mi9iYXRhdGEtMS0x/NTQxMTg1NjkwMjU2/X3YyXzc1MHg0MjEu/anBn"
+          alt="batata"
+        />
+      </div>
+      <div
+        class="dot2 h-24 w-24 rounded-full bg-blue-500 flex items-center justify-center"
+      >
+        <img
+          src="https://imgs.search.brave.com/aHX6f-2BjOWL-hbp_-pIqMBF-Ldn3JBBtSYsQ7HOzVU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jb250/ZXVkby5pbWd1b2wu/Y29tLmJyL2MvZW50/cmV0ZW5pbWVudG8v/NzQvMjAxOC8xMS8w/Mi9iYXRhdGEtMS0x/NTQxMTg1NjkwMjU2/X3YyXzc1MHg0MjEu/anBn"
+          alt="batata"
+        />
+      </div>
+    </div>
+
+    <style>
+      .spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .dot1,
+      .dot2 {
+        animation: bounce 2s infinite ease-in-out;
+      }
+      .dot2 {
+        animation-delay: -1s;
+      }
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: scale(0);
+        }
+        50% {
+          transform: scale(1);
+        }
+      }
+    </style>
+  </body>
+</html>
