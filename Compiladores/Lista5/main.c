@@ -8,6 +8,8 @@
 
 #include "main.h"
 
+extern type_token *lookahead;
+
 /**
  * @brief Funcao principal (main) do compilador
  * 

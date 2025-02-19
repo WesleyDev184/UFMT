@@ -10,6 +10,10 @@
 // Inclusao do cabecalho
 #include "lex.h"
 
+// Definicao de variaveis globais
+int pos;
+FILE *input_file;
+
 // Definicao e inicializacao de estrutura
 type_token key_words[] = {
     {IF, "if", 0},
@@ -95,7 +99,7 @@ type_token *getToken()
     ch = fgetc(input_file);
 
     // Consome espacos, tabulacoes e quebras de linha
-    while (ch == ' ' || ch == '\t' || ch == '\n')
+    while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r')
     {
         ch = fgetc(input_file);
     }
@@ -164,11 +168,13 @@ type_token *getToken()
         {
             token->tag = ENDTOKEN;
             strcpy(token->lexema, "\0");
+            printf("[INFO] Fim do arquivo\n");
         }
         else
         {
             token->tag = ERROR;
             strcpy(token->lexema, "");
+            printf("[ERRO] Caractere não reconhecido: %s\n", buffer);
         }
     }
 

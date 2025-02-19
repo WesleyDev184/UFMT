@@ -132,6 +132,12 @@ type_token *getToken() {
         strcpy(token->lexema, ")");
         token->value = 0;
     }
+    //Verifica se SEMICOLON -> ";"
+    else if (ch == SEMICOLON) {
+        token->tag = SEMICOLON;
+        strcpy(token->lexema, ";");
+        token->value = 0;
+    }
     //Verifica se FIM DE ARQUIVO (EOF)
     else if (ch == EOF) {
         token->tag = ENDTOKEN;

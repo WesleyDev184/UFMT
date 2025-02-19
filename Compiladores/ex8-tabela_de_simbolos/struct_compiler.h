@@ -5,7 +5,7 @@
  *        Compilador de C Simplificado
  * @version 0.3
  * @date 2021-12-09
- * 
+ *
  */
 
 #ifndef _STRUCT_COMPILER_
@@ -15,8 +15,8 @@
 #define MAX_CHAR 32
 #define MAX_TOKEN 32
 
-#define true 1  //por conveniencia, para facilitar leitura de codigo
-#define false 0 //por conveniencia, para facilitar leitura de codigo
+#define true 1  // por conveniencia, para facilitar leitura de codigo
+#define false 0 // por conveniencia, para facilitar leitura de codigo
 
 // Definicao dos codigos dos tokens
 #define ENDTOKEN '\0'
@@ -28,7 +28,8 @@
 #define DIV '/'
 #define OPEN_PAR '('
 #define CLOSE_PAR ')'
-//KeyWords
+#define SEMICOLON ';'
+// KeyWords
 #define ID 256
 #define IF 257
 #define ELSE 258
@@ -39,18 +40,18 @@
 #define WRITE 263
 #define INT 264
 #define STRING 265
-//#define ARROW
-//#define FLOAT
-//#define CHAR
-//#define BEGIN
-//#define END
-//#define EQUAL 
-//#define GE
-//#define LE
-
+// #define ARROW
+// #define FLOAT
+// #define CHAR
+// #define BEGIN
+// #define END
+// #define EQUAL
+// #define GE
+// #define LE
 
 // Definicao da estrutura de dados 'token'
-struct st_token {
+struct st_token
+{
     int tag;
     char lexema[MAX_CHAR];
     int value;

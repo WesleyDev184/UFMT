@@ -18,7 +18,7 @@
 #include "struct_compiler.h"
 
 // Prototipos
-void initLex(char *);
+void initLex(char input_file_name[]);
 type_token *getToken();
 type_token *keyWordFind(char *);
 type_token *specialCharFind(char *);
