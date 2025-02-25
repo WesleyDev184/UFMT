@@ -36,20 +36,30 @@ int match(int token_tag)
 
 /**
  * @brief Regra de derivacao inicial
+ * @return int verdadeiro (1) se a análise foi bem-sucedida ou falso (0) caso contrário
  */
-void program(void)
+int program(void)
 {
-    declarations();
-    // statements();  //Por enquanto nao processa comandos
+    if (!declarations())
+        return false;
+    // Se os comandos forem implementados, descomente e verifique:
+    if (!statements())
+        return false;
+    return true;
 }
 
 /**
  * @brief Regra de derivacao para declaracoes
+ * @return int verdadeiro (1) se todas as declaracoes foram processadas sem erro ou falso (0) caso contrário
  */
-void declarations(void)
+int declarations(void)
 {
-    while (declaration())
-        ; // Laco para processamento continuo das declaracoes
+    while (is_variable_type(lookahead->tag))
+    {
+        if (!declaration())
+            return false;
+    }
+    return true;
 }
 
 /**
@@ -88,7 +98,7 @@ int declaration(void)
             return false;
         }
 
-        ok1 = match(ID);  // Verifica se identificador vem a seguir
+        ok1 = match(ID);        // Verifica se identificador vem a seguir
         ok2 = match(SEMICOLON); // Verifica se ; vem a seguir
 
         if (ok1 && ok2)
@@ -115,11 +125,13 @@ int declaration(void)
 
 /**
  * @brief Regra de derivacao para comandos
+ * @return int verdadeiro (1) se os comandos foram processados sem erro ou falso (0) caso contrário
  */
-void statements(void)
+int statements(void)
 {
     while (statement())
-        ; // processa enquanto houver comandos
+        ;
+    return true;
 }
 
 /**
@@ -141,7 +153,6 @@ int statement(void)
  */
 int main(int argc, char *argv[])
 {
-
     // Inicializa a tabela de simbolo global
     initSymbolTableVariables(&global_symbol_table_variables);
     initSymbolTableString();
@@ -156,14 +167,22 @@ int main(int argc, char *argv[])
     initLex(argv[1]);       // Carrega codigo
     lookahead = getToken(); // Inicializacao do lookahead
 
-    program(); // Chamada da derivacao/funcao inicial da gramatica
+    // Chama a derivacao inicial e verifica se houve erros
+    if (program())
+    {
+        printf("Compilação bem-sucedida.\n");
+        printSTVariables(&global_symbol_table_variables); // Imprime tabela de simbolos
 
-    printSTVariables(&global_symbol_table_variables); // Imprime tabela de simbolos
-
-    strcpy(output_file_name, argv[1]);
-    strcat(output_file_name, ".asm");
-    output_file = fopen(output_file_name, "w+");
-    gen_data_section(); // Gera codigo da secao de dados
-    fclose(output_file);
-    return 1;
+        strcpy(output_file_name, argv[1]);
+        strcat(output_file_name, ".asm");
+        output_file = fopen(output_file_name, "w+");
+        gen_data_section(); // Gera codigo da secao de dados
+        fclose(output_file);
+        return EXIT_SUCCESS;
+    }
+    else
+    {
+        printf("Compilação falhou.\n");
+        return EXIT_FAILURE;
+    }
 }

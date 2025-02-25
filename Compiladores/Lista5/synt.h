@@ -29,9 +29,11 @@
  */
 
 // Prototipos
-void program(void);
-void declarations(void);
-void statements(void);
+int match(int token_tag);
+int program(void);
+int declarations(void);
+int statements(void);
+int is_variable_type(int tag);
 int declaration(void);
 int statement(void);
 
