@@ -168,8 +168,7 @@ type_token *getToken()
         {
             token->tag = ENDTOKEN;
             strcpy(token->lexema, "\0");
-            printf("[INFO] Fim do arquivo\n");
-        }
+            }
         else
         {
             token->tag = ERROR;

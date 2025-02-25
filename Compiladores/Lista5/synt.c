@@ -2,8 +2,8 @@
  * @file synt.c
  * @author Prof. Ivairton M. Santos - UFMT - Computacao
  * @brief Codificacao do modulo do analisador sintatico
- * @version 0.3
- * @date 2021-12-09
+ * @version 0.4
+ * @date 2022-02-04
  *
  */
 
@@ -12,6 +12,10 @@
 
 // Variaveis globais
 type_token *lookahead;
+extern type_symbol_table_variables global_symbol_table_variables;
+extern type_symbol_table_string symbol_table_string;
+extern char output_file_name[MAX_CHAR];
+extern FILE *output_file;
 
 /**
  * @brief Verifica se o proximo caracter (a frente) na cadeia eh o esperado
@@ -26,167 +30,140 @@ int match(int token_tag)
         lookahead = getToken(); // Pega o proximo token por meio do lexico
         return true;
     }
+    printf("[ERRO] Entrada esperada: %s\n", lookahead->lexema);
     return false;
 }
 
 /**
- * @brief Regra de derivacao da gramatica: DIGIT
+ * @brief Regra de derivacao inicial
+ */
+void program(void)
+{
+    declarations();
+    // statements();  //Por enquanto nao processa comandos
+}
+
+/**
+ * @brief Regra de derivacao para declaracoes
+ */
+void declarations(void)
+{
+    while (declaration())
+        ; // Laco para processamento continuo das declaracoes
+}
+
+/**
+ * @brief Verifica se a tag é de um tipo de variável
+ *
+ * @param tag (int) código do token a ser verificado
+ * @return int true/false
+ */
+int is_variable_type(int tag)
+{
+    return (tag == INT || tag == FLOAT || tag == STRING ||
+            tag == CHAR || tag == BOOL);
+}
+
+/**
+ * @brief Regra de derivacao declaracao
+ * @return int true/false
+ */
+int declaration(void)
+{
+    type_symbol_table_entry *search_symbol;
+    int ok1, ok2;
+    char var_name[MAX_CHAR];
+
+    // Verifica se a tag é de um tipo de variável
+    if (is_variable_type(lookahead->tag))
+    {
+        int type_tag = lookahead->tag; // Armazena o tipo da variável
+        match(lookahead->tag);
+        strcpy(var_name, lookahead->lexema);
+        search_symbol = sym_find(var_name, &global_symbol_table_variables);
+
+        if (search_symbol != NULL)
+        {
+            printf("[ERRO] Variável '%s' já declarada.\n", var_name);
+            return false;
+        }
+
+        ok1 = match(ID);  // Verifica se identificador vem a seguir
+        ok2 = match(SEMICOLON); // Verifica se ; vem a seguir
+
+        if (ok1 && ok2)
+        {
+            sym_declare(var_name, type_tag, 0, &global_symbol_table_variables);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else if (lookahead->tag == ENDTOKEN)
+    {
+        // Verifica se fim de arquivo
+        return false;
+    }
+    else
+    {
+        printf("[ERRO] Tipo desconhecido: %d %s.\n", lookahead->tag, lookahead->lexema);
+        return false;
+    }
+}
+
+/**
+ * @brief Regra de derivacao para comandos
+ */
+void statements(void)
+{
+    while (statement())
+        ; // processa enquanto houver comandos
+}
+
+/**
+ * @brief Regra de derivacao que processa um comando
  *
  * @return int true/false
  */
-int digit()
+int statement(void)
 {
-    char aux_lexema[MAX_TOKEN];
-    strcpy(aux_lexema, lookahead->lexema); // armazena temporariamente o lexema
-
-    if (match(NUM))
-    {
-        genNum(aux_lexema); // Geracao de codigo por meio de funcao do GERADOR
-        return true;
-    }
     return false;
 }
 
-/**
- * @brief Regra de derivacao da gramatica: E->TE'
- *
- * @return int true/false
- */
-int E()
-{
-    int test1, test2;
-    test1 = T();
-    if (test1)
-    {
-        test2 = ER();
-    }
-    return test1 && test2;
-}
+//--------------------- MAIN -----------------------
 
 /**
- * @brief Regra de derivacao da gramatica: E'->+TE'
+ * @brief Funcao principal (main) do compilador
  *
- * @return int true/false
+ * @return int
  */
-int ER()
+int main(int argc, char *argv[])
 {
-    int test1, test2;
-    if (lookahead->tag == PLUS)
-    {
-        test1 = match(PLUS);
-        test2 = T();
-        genAdd();
-        if (test1 && test2)
-            return ER();
-        return false;
-    }
-    else if (lookahead->tag == MINUS)
-    {
-        test1 = match(MINUS);
-        test2 = T();
-        genSub();
-        if (test1 && test2)
-            return ER();
-        return false;
-    }
-    else if (lookahead->tag == CLOSE_PAR)
-    {
-        return true;
-    }
-    else if (match('\0'))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
 
-/**
- * @brief Regra de derivacao da gramatica: T->FT'
- *
- * @return int true/false
- */
-int T()
-{
-    int test1, test2;
-    test1 = F();
-    if (test1)
-        test2 = TR();
-    return test1 && test2;
-}
+    // Inicializa a tabela de simbolo global
+    initSymbolTableVariables(&global_symbol_table_variables);
+    initSymbolTableString();
 
-/**
- * @brief Regra de derivacao da gramatica: T'->*FT'
- *
- * @return int true/false
- */
-int TR()
-{
-    int test1, test2;
-    if (lookahead->tag == MULT)
+    // Verifica a passagem de parametro
+    if (argc != 2)
     {
-        test1 = match(MULT);
-        test2 = F();
-        genMult();
-        if (test1 && test2)
-            return TR();
-        return false;
+        printf("[ERRO]\n\tÉ necessário informar um arquivo de entrada (código) como parâmetro.\n\n");
+        exit(EXIT_FAILURE);
     }
-    else if (lookahead->tag == DIV)
-    {
-        test1 = match(DIV);
-        test2 = F();
-        genDiv();
-        if (test1 && test2)
-            return TR();
-        return false;
-    }
-    else if (lookahead->tag == CLOSE_PAR)
-    {
-        return true;
-    }
-    else if (match('\0'))
-    {
-        return true;
-    }
-    else if (lookahead->tag == PLUS)
-    {
-        return true;
-    }
-    else if (lookahead->tag == MINUS)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
 
-/**
- * @brief Regra de derivacao da gramatica: F->(E)
- *
- * @return int true/false
- */
-int F()
-{
-    if (lookahead->tag == OPEN_PAR)
-    {
-        int test1, test2;
-        match(OPEN_PAR);
-        test1 = E();
-        if (test1)
-            test2 = match(CLOSE_PAR);
-        return test1 && test2;
-    }
-    else if (digit())
-    { // Processa o digito e gera codigo
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    initLex(argv[1]);       // Carrega codigo
+    lookahead = getToken(); // Inicializacao do lookahead
+
+    program(); // Chamada da derivacao/funcao inicial da gramatica
+
+    printSTVariables(&global_symbol_table_variables); // Imprime tabela de simbolos
+
+    strcpy(output_file_name, argv[1]);
+    strcat(output_file_name, ".asm");
+    output_file = fopen(output_file_name, "w+");
+    gen_data_section(); // Gera codigo da secao de dados
+    fclose(output_file);
+    return 1;
 }

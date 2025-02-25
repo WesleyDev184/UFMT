@@ -2,8 +2,8 @@
  * @file gen.h
  * @author Ivairton M. Santos - UFMT - Computacao
  * @brief Modulo do gerador de codigo
- * @version 0.1
- * @date 2021-11-24
+ * @version 0.3
+ * @date 2022-02-04
  * 
  */
 #ifndef _GEN_H_
@@ -15,6 +15,7 @@
 #include <ctype.h>
 
 #include "struct_compiler.h"
+#include "symbols.h"
 
 // Prototipos
 void genAdd();
@@ -22,5 +23,6 @@ void genSub();
 void genMult();
 void genDiv();
 void genNum(char num_string[MAX_TOKEN]);
+void gen_data_section(void);
 
 #endif //_GEN_H_
