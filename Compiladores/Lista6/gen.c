@@ -138,7 +138,7 @@ void gen_data_section(void)
             fprintf(output_file, "%s resd 1\n", global_symbol_table_variables.variable[i].name);
             break;
         case FLOAT:
-            fprintf(output_file, "%s resd 1\n", global_symbol_table_variables.variable[i].name);
+            fprintf(output_file, "%s resq 1\n", global_symbol_table_variables.variable[i].name);
             break;
         case BOOL:
             fprintf(output_file, "%s resd 1\n", global_symbol_table_variables.variable[i].name);
