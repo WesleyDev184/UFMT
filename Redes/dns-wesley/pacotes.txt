@@ -1,0 +1,17 @@
+Time           No.     Source                Destination           Protocol Length Info
+1.006366775        156 10.1.17.80            10.1.17.1             DNS      79     Standard query 0x42cf A ietf.org OPT
+
+Frame 156: 79 bytes on wire (632 bits), 79 bytes captured (632 bits) on interface enp2s0f1, id 0
+Ethernet II, Src: ASRockIncorp_17:a6:81 (a8:a1:59:17:a6:81), Dst: Ubiquiti_10:04:eb (ac:8b:a9:10:04:eb)
+Internet Protocol Version 4, Src: 10.1.17.80, Dst: 10.1.17.1
+User Datagram Protocol, Src Port: 49200, Dst Port: 53
+Domain Name System (query)
+
+Time           No.     Source                Destination           Protocol Length Info
+1.028303086        163 10.1.17.1             10.1.17.80            DNS      111    Standard query response 0x42cf A ietf.org A 104.16.45.99 A 104.16.44.99 OPT
+
+Frame 163: 111 bytes on wire (888 bits), 111 bytes captured (888 bits) on interface enp2s0f1, id 0
+Ethernet II, Src: Ubiquiti_10:04:eb (ac:8b:a9:10:04:eb), Dst: ASRockIncorp_17:a6:81 (a8:a1:59:17:a6:81)
+Internet Protocol Version 4, Src: 10.1.17.1, Dst: 10.1.17.80
+User Datagram Protocol, Src Port: 53, Dst Port: 49200
+Domain Name System (response)

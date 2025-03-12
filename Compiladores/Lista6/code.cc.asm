@@ -15,7 +15,7 @@ fmt_i_float db "%f", 0
 fmt_o_float db "%f", 10, 0
 
 section .bss
-a resd 1
+a resq 1
 
 section .text
 	global main,_start
@@ -23,13 +23,13 @@ main:
 _start:
 
 ;le valor inteiro
-  mov rdi, fmt_i_int
+  mov rdi, fmt_i_float
   lea rsi, [a]
   xor eax, eax
   call scanf
 
 ;escreve valor inteiro
-  mov rdi, fmt_o_int
+  mov rdi, fmt_o_float
   mov esi, [a]
   xor eax, eax
   call printf

@@ -79,7 +79,8 @@ void genNum(char num_string[MAX_TOKEN])
  * @brief Funcao que gera um preambulo que permite o uso das funcoes do C (scanf e printf)
  *
  */
-void gen_preambule(void) {
+void gen_preambule(void)
+{
     fprintf(output_file, "; UFMT-Compiladores\n");
     fprintf(output_file, "; Prof. Ivairton\n");
     fprintf(output_file, "; Procedimento para geracao do executavel apos compilacao (em Linux 64):\n");
@@ -147,13 +148,14 @@ void gen_data_section(void)
             break;
         }
     }
-}   
+}
 
 /**
  * @brief Funcao que gera a marcacao do inicio da secao de codigo
  *
  */
-void gen_preambule_code(void) {
+void gen_preambule_code(void)
+{
     // Secao .text
     fprintf(output_file, "\nsection .text\n");
     fprintf(output_file, "\tglobal main,_start\n");
@@ -163,9 +165,10 @@ void gen_preambule_code(void) {
 
 /**
  * @brief Funcao que encerra o codigo inserindo comandos de fechamento
- * 
+ *
  */
-void gen_epilog_code(void) {
+void gen_epilog_code(void)
+{
     // Encerramento do programa, com retorno zero
     fprintf(output_file, "\n;encerra programa\n");
     fprintf(output_file, "\tmov ebx,0\n");
@@ -187,7 +190,7 @@ void gen_epilog_code(void) {
 void gen_read(char *lexeme_of_id)
 {
     fprintf(output_file, "\n;le valor inteiro\n");
-    fprintf(output_file, "  mov rdi, fmt_i_int\n");
+    fprintf(output_file, "  mov rdi, fmt_i_float\n");
     fprintf(output_file, "  lea rsi, [%s]\n", lexeme_of_id);
     fprintf(output_file, "  xor eax, eax\n");
     fprintf(output_file, "  call scanf\n");
@@ -201,7 +204,7 @@ void gen_read(char *lexeme_of_id)
 void gen_write(char *lexeme_of_id)
 {
     fprintf(output_file, "\n;escreve valor inteiro\n");
-    fprintf(output_file, "  mov rdi, fmt_o_int\n");
+    fprintf(output_file, "  mov rdi, fmt_o_float\n");
     fprintf(output_file, "  mov esi, [%s]\n", lexeme_of_id);
     fprintf(output_file, "  xor eax, eax\n");
     fprintf(output_file, "  call printf\n");
