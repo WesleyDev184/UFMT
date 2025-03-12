@@ -1,0 +1,44 @@
+1. Qual o número de sequência do segmento TCP SYN usado para iniciar a
+conexão do cliente para o servidor? Como saber se um segmento é do tipo SYN?
+
+2.Qual o número de sequência do segmento SYNACK enviado pelo servidor?
+
+3.Qual o número de sequência do segmento TCP que contém o comando HTTP POST?
+(procure pelo campo de Dados no segmento TCP)
+
+4. Considerando que o segmento contendo a sequência "HTTP POST" seja o
+primeiro, quais os números de sequência dos seis primeiros segmentos? Quando
+(tempo) os ACKS para cada segmento foram recebidos? Qual o RTT para cada
+um desses pacotes?
+(O cálculo do RTT pode ser obtido diretamente do wireshark: Statistics->TCP
+Stream Graph- >Round Trip Time Graph.)
+
+5. Qual o comprimento de cada um dos seis primeiros segmentos?
+
+6. Qual a quantidade mínima de buffer disponível informada pelo servidor?
+
+7. Há pacotes retransmitidos? como saber?
+
+Respostas:
+
+1. O primeiro segmento enviado pelo cliente (frame 103) tem número de sequência 609975691. Dá pra saber que é um SYN porque a flag “[SYN]” aparece na coluna “Info”.  
+
+2. O servidor responde no frame 116 com o número de sequência 3266939790, e a gente sabe que é um SYN-ACK porque tem as flags “[SYN, ACK]”.  
+
+3. O comando HTTP POST aparece no primeiro segmento que carrega dados. No conjunto analisado, esse segmento é o frame 118, com número de sequência 609975692.  
+
+4. Os seis primeiros segmentos e seus números de sequência:  
+   - 1º segmento: Seq = 609975692, tamanho 231 bytes (frame 118)  
+   - 2º segmento: Seq = 609975923, tamanho 1448 bytes (frame 119)  
+   - 3º segmento: Seq = 609977371, tamanho 1448 bytes (frame 120)  
+   - 4º segmento: Seq = 609978819, tamanho 1448 bytes (frame 121)  
+   - 5º segmento: Seq = 609980267, tamanho 1448 bytes (frame 122)  
+   - 6º segmento: Seq = 609981715, tamanho 1448 bytes (frame 123)   
+
+5. Tamanhos dos segmentos:  
+   - O 1º segmento tem 231 bytes.  
+   - Os demais (2º ao 6º) têm 1448 bytes cada.  
+
+6. No segmento SYN-ACK (frame 116), o campo “Win” vale 28960. Esse é o menor valor de buffer disponível informado pelo servidor.  
+
+7. Não houve retransmissões nem perda de pacotes no Wireshark. Tudo fluiu direitinho. 
