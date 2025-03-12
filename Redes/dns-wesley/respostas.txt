@@ -1,0 +1,34 @@
+Exercício 1:
+
+A. Localize as mensagens DNS de consulta e resposta. Elas são enviadas via UDP ou TCP?
+Justifique.
+B. Qual a porta de destino da mensagem DNS de consulta? Qual a porta de origem da
+mensagem DNS de resposta?
+C. Para qual endereço IP a mensagem DNS de consulta é enviada? É o mesmo endereço
+localizado em /etc/resolv.conf ?
+D. Essencialmente, como a mensagem de consulta se diferencia da de resposta (observe os
+Flags )?
+E. Qual o tipo ( Type ) da mensagem DNS de consulta? O que significa este tipo?
+F. A mensagem de consulta contém alguma "resposta"?
+G. Examine a mensagem DNS de resposta. Quantas "respostas" ela contém? O que contém
+cada uma dessas respostas?
+H. Antes de recuperar as imagens presentes na página, o host envia novas consultas DNS?
+
+Respostas:
+Claro, aqui estão as respostas de forma mais casual:
+
+A. Mensagens DNS de consulta e resposta são enviadas via UDP. Isso porque o DNS tradicionalmente usa UDP para ser mais rápido e menos complicado, bom para mensagens curtas como consultas e respostas.
+
+B. A porta de destino da consulta DNS é 53. A porta de origem da resposta DNS também é 53.
+
+C. A consulta DNS é enviada para um endereço IP específico. Geralmente é o mesmo endereço listado no arquivo /etc/resolv.conf.
+
+D. A mensagem de consulta é diferente da resposta principalmente pelos "Flags". No Wireshark, você vê "Standard query" para consultas e "Standard query response" para respostas, o que ajuda a distinguir rapidamente.
+
+E. O tipo da consulta DNS é "A", o que significa que está pedindo o registro de endereço IPv4 para o nome de domínio.
+
+F. Não, a consulta DNS (por exemplo, Frame 156) só tem a pergunta (query) sem nenhuma resposta. As respostas são enviadas separadamente (por exemplo, Frame 163).
+
+G. A resposta DNS tem duas respostas. Cada uma é um registro "A", que associa "ietf.org" aos endereços IPv4 104.16.45.99 e 104.16.44.99.
+
+H. Não, antes de recuperar as imagens na página, não há novas consultas DNS nos pacotes capturados.
