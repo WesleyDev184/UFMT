@@ -69,6 +69,6 @@ int 0x80
 	section .data
 nota: dd "%lf", 16
 nome: db "                " 
-str0: db "Informe seu nome"
-str1: db "Infome sua nota"
-str2: db "sua nota e:"
+str0: db "Informe seu nome:"
+str1: db "Infome sua nota:"
+str2: db "sua nota e: "
