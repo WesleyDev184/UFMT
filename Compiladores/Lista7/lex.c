@@ -98,7 +98,7 @@ type_token *getToken()
     strcpy(buffer, "");
     ch = fgetc(input_file);
 
-    // Consome espacos, tabulacoes e quebras de linha
+    // Consome espaços, tabulações e quebras de linha
     while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r')
     {
         ch = fgetc(input_file);
@@ -107,23 +107,39 @@ type_token *getToken()
     // Verifica se NUMERO
     if (isdigit(ch))
     {
-        // constroi buffer com os digitos
+        // Constrói buffer com os dígitos
         while (isdigit(ch))
         {
+            if (pos_buffer >= MAX_CHAR - 1)
+            {
+                printf("[ERRO] Tamanho do número excede a capacidade do buffer (%d).\n", MAX_CHAR);
+                exit(EXIT_FAILURE);
+            }
             buffer[pos_buffer++] = ch;
             ch = fgetc(input_file);
         }
         ungetc(ch, input_file);
         buffer[pos_buffer] = '\0';
         token->tag = NUM;
-        strcpy(token->lexema, buffer); // copia buffer para lexema
-    } // Verifica se entrada eh um alfa-numerico (palavra reservada ou identificador)
+        strcpy(token->lexema, buffer);
+    }
+    // Verifica se entrada é alfanumérica (palavra reservada ou identificador)
     else if (isalpha(ch))
     {
+        if (pos_buffer >= MAX_CHAR - 1)
+        {
+            printf("[ERRO] Tamanho da palavra excede a capacidade do buffer (%d).\n", MAX_CHAR);
+            exit(EXIT_FAILURE);
+        }
         buffer[pos_buffer++] = ch;
         ch = fgetc(input_file);
         while (isalnum(ch))
         {
+            if (pos_buffer >= MAX_CHAR - 1)
+            {
+                printf("[ERRO] Tamanho da palavra excede a capacidade do buffer (%d).\n", MAX_CHAR);
+                exit(EXIT_FAILURE);
+            }
             buffer[pos_buffer++] = ch;
             ch = fgetc(input_file);
         }
@@ -135,7 +151,6 @@ type_token *getToken()
             token->tag = key_found->tag;
             strcpy(token->lexema, key_found->lexema);
             token->value = key_found->value;
-            // o token sera retornado no final da funcao
         }
         else
         { // Identificador
@@ -146,27 +161,53 @@ type_token *getToken()
     }
     else if (ch == DOUBLE_QUOTES)
     {
+        // Adiciona a aspa de abertura
+        if (pos_buffer >= MAX_CHAR - 1)
+        {
+            printf("[ERRO] Tamanho da string excede a capacidade do buffer (%d).\n", MAX_CHAR);
+            exit(EXIT_FAILURE);
+        }
         buffer[pos_buffer++] = ch;
         ch = fgetc(input_file);
-        // Consome toda a string, ateh encotrar o " seguinte
-        while ((ch != DOUBLE_QUOTES) && (pos_buffer - 1 < MAX_CHAR))
+        // Consome toda a string até encontrar a aspa dupla final
+        while (ch != DOUBLE_QUOTES)
         {
+            if (pos_buffer >= MAX_CHAR - 1)
+            {
+                printf("[ERRO] Tamanho da string excede a capacidade do buffer (%d).\n", MAX_CHAR);
+                exit(EXIT_FAILURE);
+            }
             buffer[pos_buffer++] = ch;
             ch = fgetc(input_file);
         }
-        // Fecha a string
-        buffer[pos_buffer - 1] = DOUBLE_QUOTES;
-        buffer[pos_buffer] = ENDTOKEN; // insere \0 no final da string
+        // Fecha a string com a aspa dupla final
+        if (pos_buffer >= MAX_CHAR - 1)
+        {
+            printf("[ERRO] Tamanho da string excede a capacidade do buffer (%d).\n", MAX_CHAR);
+            exit(EXIT_FAILURE);
+        }
+        buffer[pos_buffer++] = DOUBLE_QUOTES;
+        buffer[pos_buffer] = ENDTOKEN; // insere '\0' no final
         token->tag = STRING;
         strcpy(token->lexema, buffer);
         token->value = 0;
     }
     else
     {
+        if (pos_buffer >= MAX_CHAR - 1)
+        {
+            printf("[ERRO] Tamanho do símbolo excede a capacidade do buffer (%d).\n", MAX_CHAR);
+            exit(EXIT_FAILURE);
+        }
         buffer[pos_buffer++] = ch;
         ch = fgetc(input_file);
         if ((buffer[0] == '>' && ch == '=') || (buffer[0] == '<' && ch == '='))
         {
+            if (pos_buffer >= MAX_CHAR - 1)
+            {
+                printf("[ERRO] Tamanho do símbolo excede a capacidade do buffer (%d).\n", MAX_CHAR);
+                exit(EXIT_FAILURE);
+            }
             buffer[pos_buffer++] = ch;
         }
         else
