@@ -636,6 +636,8 @@ int main(int argc, char *argv[])
         printf("[SUCESSO] Compilacao realizada com sucesso.\n");
         // imprime a tabela de simbolos
         printSTVariables(&global_symbol_table_variables);
+
+        printf("\n\n");
         printSTString();
     }
     else
