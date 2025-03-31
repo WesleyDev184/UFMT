@@ -43,9 +43,10 @@ int declarations(void);
 int statements(void);
 int declaration(void);
 int statement(void);
+int logic_expr(void);
 
 int B(void);
-int boolOperator(int *);
+int boolOperator(int *operator);
 
 int E();
 int ER();
@@ -56,6 +57,6 @@ int F();
 int processExpression();
 int boolOperatorVerify();
 
-int main();
+int main(int argc, char *argv[]);
 
 #endif //_SYNT_H_

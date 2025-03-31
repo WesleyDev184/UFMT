@@ -131,11 +131,12 @@ int declaration(void)
             return ok1 && ok2;
         }
     }
+
     else if (lookahead->tag == ENDTOKEN ||
              lookahead->tag == READ ||
-             lookahead->tag == WRITE)
+             lookahead->tag == WRITE ||
+             lookahead->tag == IF)
     {
-        // Verifica se fim de arquivo
         return false;
     }
     else
@@ -288,34 +289,45 @@ int statement(void)
         char label_else[MAX_CHAR];
         char label_end[MAX_CHAR];
         int flag_bool;
+
         gen_label_name(label_else);
         gen_label_name(label_end);
 
-        match(IF);
-        match(OPEN_PAR);
-        flag_bool = B(); // Expressao booleana
-        if (flag_bool == false)
+        if (!match(IF))
+            return ERROR;
+        if (!match(OPEN_PAR))
+            return ERROR;
+        // Utiliza a nova função logic_expr() para suportar '&&' e '||'
+        flag_bool = logic_expr();
+        if (!flag_bool)
         {
             printf("[ERRO] Expressao booleana mal formada.\n");
             return ERROR;
         }
-        gen_cond_jump(label_else);
-        match(CLOSE_PAR);
+        if (!match(CLOSE_PAR))
+            return ERROR;
 
-        match(BEGIN);
-        statements();
-        match(END);
+        gen_cond_jump(label_else);
+        if (!match(BEGIN))
+            return ERROR;
+        if (!statements())
+            return ERROR;
+        if (!match(END))
+            return ERROR;
 
         gen_incond_jump(label_end);
         gen_label(label_else);
 
-        // Verifica se ocorre um ELSE
         if (lookahead->tag == ELSE)
         {
-            match(ELSE);
-            match(BEGIN);
-            statements();
-            match(END);
+            if (!match(ELSE))
+                return ERROR;
+            if (!match(BEGIN))
+                return ERROR;
+            if (!statements())
+                return ERROR;
+            if (!match(END))
+                return ERROR;
         }
         gen_label(label_end);
         return true;
@@ -332,20 +344,56 @@ int statement(void)
 }
 
 /**
+ * @brief Regra que processa expressões lógicas, permitindo o uso dos operadores '&&' e '||'
+ *
+ * A produção é:
+ *    logic_expr -> B { (AND | OR) B }
+ *
+ * @return int true/false conforme o processamento sintático
+ */
+int logic_expr(void)
+{
+    int flag = B();
+    while (lookahead->tag == AND || lookahead->tag == OR)
+    {
+        int op = lookahead->tag;
+        match(op);
+        int flag2 = B();
+        if (!flag2)
+        {
+            flag = false;
+        }
+        // Gera o código adequado para o operador lógico
+        if (op == AND)
+        {
+            gen_and();
+        }
+        else // OR
+        {
+            gen_or();
+        }
+    }
+    return flag;
+}
+
+/**
  * @brief Regra de derivação que analisa expressoes booleanas
  *        no padrao '[id | expr] op_rel [id | expr]'
  *
  */
-////// TODO
 int B()
 {
     int operator, flag_left, flag_right;
     int expression = false;
+    char id_lexeme[MAX_CHAR]; // buffer para armazenar o lexema do id
 
     if (lookahead->tag == ID)
     {
-        genId(lookahead->lexema);
+        strcpy(id_lexeme, lookahead->lexema);
+        genId(id_lexeme);
         match(ID);
+        // Armazena o valor da variável na pilha de memória
+        gen_store_on_stack(id_lexeme);
         if (boolOperatorVerify() == false)
         {
             return false;
@@ -370,8 +418,11 @@ int B()
         {
             if (lookahead->tag == ID)
             {
-                genId(lookahead->lexema);
+                strcpy(id_lexeme, lookahead->lexema);
+                genId(id_lexeme);
                 match(ID);
+                // Armazena também o valor da variável do lado direito
+                gen_store_on_stack(id_lexeme);
                 flag_right = true;
             }
             else
