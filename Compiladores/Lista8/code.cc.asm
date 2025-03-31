@@ -52,10 +52,24 @@ main:
 	cmp rax, 0
 	jz label0
 
+	;escreve valor string
+
+	mov rdi, fmt_output_string
+	mov rsi, str1
+	xor eax, eax
+	call printf
+
 	;jump incondicional
 
 	jmp label1
 label0:
+
+	;escreve valor string
+
+	mov rdi, fmt_output_string
+	mov rsi, str2
+	xor eax, eax
+	call printf
 label1:
 
 ;encerra programa
@@ -76,3 +90,5 @@ section .data
 
 	;valor: dd "%d", 4
 	str0: db "Informe um valor:", 0
+	str1: db "O valor do teste eh VERDADEIRO!, 0
+	str2: db "O valor do teste eh FALSO!", 0

@@ -288,6 +288,30 @@ void gen_incond_jump(char *label)
 }
 
 /**
+ * @brief Gera código para o operador lógico AND (&&)
+ */
+void gen_and(void)
+{
+    fprintf(output_file, "\n\t;Operador lógico AND");
+    fprintf(output_file, "\n\tpop rbx");
+    fprintf(output_file, "\n\tpop rax");
+    fprintf(output_file, "\n\tand rax, rbx");
+    fprintf(output_file, "\n\tpush rax");
+}
+
+/**
+ * @brief Gera código para o operador lógico OR (||)
+ */
+void gen_or(void)
+{
+    fprintf(output_file, "\n\t;Operador lógico OR");
+    fprintf(output_file, "\n\tpop rbx");
+    fprintf(output_file, "\n\tpop rax");
+    fprintf(output_file, "\n\tor rax, rbx");
+    fprintf(output_file, "\n\tpush rax");
+}
+
+/**
  * @brief Funcao que gera codigo a partir do processamento da expressao logica
  *
  * @param oper
@@ -338,6 +362,17 @@ void gen_bool_label_name(char *name)
     static int nbool_labels = 0;
     sprintf(name, "label_bool_%d", nbool_labels);
     nbool_labels++;
+}
+
+/**
+ * @brief Funcao que gera codigo para armazenar o valor de uma variavel na pilha
+ *
+ * @param var Nome da variavel a ser armazenada na pilha
+ */
+void gen_store_on_stack(const char *var)
+{
+    fprintf(output_file, "\n\t;Armazenamento do valor da variavel %s na pilha\n", var);
+    fprintf(output_file, "\tpush qword [%s]\n", var);
 }
 
 /**

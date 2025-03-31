@@ -17,7 +17,6 @@ FILE *input_file;
 // Definicao e inicializacao de estrutura
 type_token key_words[] = {
     {IF, "if", 0},
-    {THEN, "then", 0},
     {ELSE, "else", 0},
     {WHILE, "while", 0},
     {DO, "do", 0},
@@ -41,6 +40,10 @@ type_token key_words[] = {
     {CHAR, "char", 0},
     {BOOL, "bool", 0},
     {VOID, "void", 0},
+    {BEGIN, "begin", 0},
+    {END, "end", 0},
+    {OR, "||", 0},
+    {AND, "&&", 0},
 };
 
 // Definicao e inicializacao da tabela de caracteres especiais

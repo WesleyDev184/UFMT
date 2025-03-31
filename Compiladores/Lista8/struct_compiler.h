@@ -37,7 +37,6 @@
 #define ID 256
 #define IF 257
 #define ELSE 258
-#define THEN 259
 #define WHILE 260
 #define DO 261
 #define READ 262
@@ -65,6 +64,8 @@
 #define LE 271
 #define ARROWLEFT '<'
 #define ARROWRIGHT '>'
+#define AND 272
+#define OR 273
 
 // Tipos de Variáveis
 #define INT 265
