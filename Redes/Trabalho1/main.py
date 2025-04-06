@@ -49,12 +49,12 @@ class App:
 
         self.player = (160, 80, 1, 0)  # (x, y, u, v)
         self.cars = [
-            (128, 104, -2, 0),
-            (288, 104, -2, 1),
-            (416, 112, -2, 2),
-            (32, 144, 2, 3),
-            (64, 136, 2, 4),
-            (96, 136, 2, 4),
+            (128, 253, -2, 0),
+            (288, 253, -2, 1),
+            (416, 260, -2, 2),
+            (32, 283, 2, 3),
+            (64, 275, 2, 4),
+            (96, 275, 2, 4),
         ]
         pyxel.run(self.update, self.draw)
 
@@ -124,6 +124,13 @@ class App:
             HUMAN_IMAGE[3],
             0,
         )
+
+        # Draw cars
+        for car in self.cars:
+            x, y, _, image = car
+            u, v, w, h = CAR_IMAGES[image]
+            pyxel.blt(x, y, 0, u, v, w, h, 0)
+
         pyxel.camera()
 
 
