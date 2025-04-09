@@ -32,5 +32,5 @@ while True:
         "status": "vivo"
     }
 
-    send_sock.sendto(json.dumps(player_state).encode(), ('127.0.0.1', 5000))
+    send_sock.sendto(json.dumps(player_state).encode(), ('10.1.17.122', 5000))
     time.sleep(1)
