@@ -297,7 +297,6 @@ int statement(void)
             return ERROR;
         if (!match(OPEN_PAR))
             return ERROR;
-        // Utiliza a nova função logic_expr() para suportar '&&' e '||'
         flag_bool = logic_expr();
         if (!flag_bool)
         {
@@ -329,6 +328,43 @@ int statement(void)
             if (!match(END))
                 return ERROR;
         }
+        gen_label(label_end);
+        return true;
+    }
+    else if (lookahead->tag == WHILE)
+    {
+        char label_start[MAX_CHAR];
+        char label_end[MAX_CHAR];
+        int flag_bool;
+
+        gen_label_name(label_start);
+        gen_label_name(label_end);
+
+        // Marca o início do loop
+        gen_label(label_start);
+        if (!match(WHILE))
+            return ERROR;
+        if (!match(OPEN_PAR))
+            return ERROR;
+
+        flag_bool = logic_expr();
+        if (!flag_bool)
+        {
+            printf("[ERRO] Expressao booleana mal formada no while.\n");
+            return ERROR;
+        }
+        if (!match(CLOSE_PAR))
+            return ERROR;
+
+        gen_cond_jump(label_end);
+        if (!match(BEGIN))
+            return ERROR;
+        if (!statements())
+            return ERROR;
+        if (!match(END))
+            return ERROR;
+
+        gen_incond_jump(label_start);
         gen_label(label_end);
         return true;
     }
