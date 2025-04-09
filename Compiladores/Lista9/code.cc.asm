@@ -71,6 +71,42 @@ label0:
 	xor eax, eax
 	call printf
 label1:
+label2:
+
+	;Armazenamento de numero
+
+	mov rax,2
+	push rax
+
+	;Armazenamento de numero
+
+	mov rax,1
+	push rax
+
+	;Subtracao
+
+	pop rbx
+	pop rax
+	sub rax,rbx
+	push rax
+
+	;jump condicional
+
+	pop rax
+	cmp rax, 0
+	jz label3
+
+	;escreve valor string
+
+	mov rdi, fmt_output_string
+	mov rsi, str3
+	xor eax, eax
+	call printf
+
+	;jump incondicional
+
+	jmp label2
+label3:
 
 ;encerra programa
 
@@ -90,5 +126,6 @@ section .data
 
 	;valor: dd "%d", 4
 	str0: db "Informe um valor:", 0
-	str1: db "O valor do teste eh VERDADEIRO!, 0
-	str2: db "O valor do teste eh FALSO!", 0
+	str1: db "Valor diferente de zero!", 0
+	str2: db "Valor eh zero!", 0
+	str3: db "Contador: ", 0
