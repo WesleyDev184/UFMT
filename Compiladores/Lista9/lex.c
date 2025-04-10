@@ -57,6 +57,7 @@ type_token special_chars[] = {
     {BRACKET_OPEN, "{", 0},
     {BRACKET_CLOSE, "}", 0},
     {EQUAL, "==", 0},
+    {ASSIGN, "=", 0},
     {SEMICOLON, ";", 0},
     {COMMA, ",", 0},
     {ARROWLEFT, "<", 0},

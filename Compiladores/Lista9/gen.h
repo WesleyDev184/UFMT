@@ -38,6 +38,7 @@ void gen_incond_jump(char *);
 void gen_bool(int);
 void gen_bool_label_name(char *);
 void gen_store_on_stack(const char *);
+void gen_assign(char *id);
 void gen_and(void); // Adicionado: operador lógico AND
 void gen_or(void);  // Adicionado: operador lógico OR
 

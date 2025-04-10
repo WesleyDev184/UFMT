@@ -257,29 +257,38 @@ int statement(void)
         }
         else if (lookahead->tag == ID)
         {
+            char lexeme_of_id[MAX_CHAR];
             strcpy(lexeme_of_id, lookahead->lexema);
             match(ID);
-            search_symbol = sym_find(lexeme_of_id, &global_symbol_table_variables);
-            if (search_symbol != NULL)
+            if (lookahead->tag == ASSIGN)
             {
-                type = search_symbol->type;
-                gen_write(lexeme_of_id, type);
+                // Consome o token de atribuição
+                match(ASSIGN);
+                // Processa o valor (por enquanto usando a regra E para expressões aritméticas)
+                int flag = E();
+                if (!flag)
+                {
+                    printf("[ERRO] Expressao invalida na atribuicao.\n");
+                    return ERROR;
+                }
+                // Verifica se há ponto e vírgula final
                 if (lookahead->tag != SEMICOLON)
                 {
-                    printf("[ERRO] Comando de escrita sem ponto e virgula.\n");
-                    return false;
+                    printf("[ERRO] Atribuicao sem ponto e virgula.\n");
+                    return ERROR;
                 }
                 else
                 {
                     match(SEMICOLON);
-                    return true;
                 }
-
+                // Gera o codigo de atribuicao
+                gen_assign(lexeme_of_id);
                 return true;
             }
             else
             {
-                printf("[ERRO] Simbolo desconhecido (Variavel nao declarada): %s\n", lexeme_of_id);
+                // Se não for atribuição, pode ser um uso de variavel em outra producao (ou sinal de erro)
+                printf("[ERRO] Comando desconhecido apos identificador: %s\n", lexeme_of_id);
                 return ERROR;
             }
         }
@@ -508,7 +517,7 @@ int boolOperator(int *operator)
     lookahead_tag = lookahead->tag;
     *operator= - 1;
 
-    if (lookahead_tag == EQUAL ||
+    if (lookahead_tag == ASSIGN ||
         lookahead_tag == NE ||
         lookahead_tag == ARROWLEFT ||
         lookahead_tag == ARROWRIGHT ||
@@ -528,10 +537,9 @@ int boolOperator(int *operator)
 
 int boolOperatorVerify()
 {
-    int lookahead_tag;
-    lookahead_tag = lookahead->tag;
+    int lookahead_tag = lookahead->tag;
 
-    if (lookahead_tag == EQUAL ||
+    if (lookahead_tag == ASSIGN ||
         lookahead_tag == NE ||
         lookahead_tag == ARROWLEFT ||
         lookahead_tag == ARROWRIGHT ||
