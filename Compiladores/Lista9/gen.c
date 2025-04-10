@@ -375,6 +375,13 @@ void gen_store_on_stack(const char *var)
     fprintf(output_file, "\tpush qword [%s]\n", var);
 }
 
+void gen_assign(char *id)
+{
+    fprintf(output_file, "\n\t;Atribuicao de valor a variavel %s\n", id);
+    fprintf(output_file, "\n\tpop rax\n");
+    fprintf(output_file, "\tmov [ %s ], rax\n", id);
+}
+
 /**
  * @brief Gera codigo para o comando READ
  *

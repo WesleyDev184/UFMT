@@ -58,7 +58,8 @@
 #define MINUS '-'
 #define MULT '*'
 #define DIV '/'
-#define EQUAL '='
+#define EQUAL '=='
+#define ASSIGN '='
 #define NE 274
 #define GE 270
 #define LE 271
