@@ -1,4 +1,5 @@
 // filepath: /home/wesley/www/github/UFMT/tcc/project_rotary/lib/features/auth/domain/dto/signup_dto.dart
+
 class SignUpDTO {
   final String name;
   final String email;
