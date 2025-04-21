@@ -1,6 +1,6 @@
+import random
 import pyxel
-import sys
-import subprocess  # Adicionado para reinício com F5
+from multplayer import MultiplayerClient
 
 HUMAN_IMAGE = (368, 8, 16, 16)
 CAR_IMAGES = [
@@ -99,16 +99,22 @@ class Car:
 
 class App:
     def __init__(self):
-        pyxel.init(231, 128, title="Tank Game", fps=30)
+        # Inicializa multiplayer
+        self.mp_client = MultiplayerClient()
 
+        # Dicionário para armazenar os jogadores remotos
+        self.remote_players = {}
+
+        pyxel.init(231, 128, title="Tank Game", fps=30)
         pyxel.images[0] = pyxel.Image.from_image("assets/urban_rpg.png", incl_colors=True)
         for i in range(3):
             pyxel.tilemaps[i] = pyxel.Tilemap.from_tmx("assets/mapa.tmx", i)
 
         # Inicializa player e carros como objetos
-        # self.player = Player(183, 10) #spawn 1
-        # self.player = Player(15, 355) #spawn 2
-        self.player = Player(512, 355) #spawn 3
+        spawns = [(183, 10), (15, 355), (512, 355)]
+        spawn_x, spawn_y = random.choice(spawns)
+        self.player = Player(spawn_x, spawn_y)
+        
         self.cars = [
             Car(128, 253, -2, 0),
             Car(288, 253, -2, 1),
@@ -120,10 +126,10 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def update(self):
-        # Reiniciar o jogo ao pressionar F5
         if pyxel.btnp(pyxel.KEY_F5):
+            import sys, subprocess
             subprocess.Popen(
-                f'"{sys.executable}" {" ".join([f"{arg}" for arg in sys.argv])}', shell=True
+                f'"{sys.executable}" {" ".join(sys.argv)}', shell=True
             )
             sys.exit()
 
@@ -133,6 +139,25 @@ class App:
         self.player.update(map_width, map_height)
         for car in self.cars:
             car.update(map_width)
+
+        self.mp_client.send_player_state(
+            int(self.player.x),
+            int(self.player.y),
+            u=self.player.u,
+            v=self.player.v
+        )
+
+        # Atualiza ou instancia os jogadores remotos
+        for pid, pdata in self.mp_client.players.items():
+            if pid != self.mp_client.player_id:
+                if pid not in self.remote_players:
+                    self.remote_players[pid] = Player(pdata["x"], pdata["y"])
+                else:
+                    remote_player = self.remote_players[pid]
+                    remote_player.x = pdata["x"]
+                    remote_player.y = pdata["y"]
+                    remote_player.u = pdata.get("u", remote_player.u)
+                    remote_player.v = pdata.get("v", remote_player.v)
 
     def draw(self):
         cam_x = self.player.x - pyxel.width // 2 + 8
@@ -145,10 +170,15 @@ class App:
         pyxel.cls(1)
         pyxel.bltm(0, 0, 0, 0, 0, map_width, map_height, 0)
         pyxel.bltm(0, 0, 1, 0, 0, map_width, map_height, 0)
+        
 
-        self.player.draw()
+        # Desenha os carros
         for car in self.cars:
             car.draw()
+
+        # Desenha os jogadores remotos
+        for _, remote_player in self.remote_players.items():
+            remote_player.draw()
 
         pyxel.camera()
 
