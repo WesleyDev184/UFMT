@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
-import '../widgets/signup_form.dart';
+
 import '../widgets/header_logo.dart';
+import '../widgets/signup_form.dart';
 
 class SignUpPage extends StatelessWidget {
   const SignUpPage({super.key});
@@ -25,8 +25,8 @@ class SignUpPage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Stack(
-          children: const [
-            Positioned(top: 70, left: 0, right: 0, child: HeaderLogo()),
+          children: [
+            const Positioned(top: 70, left: 0, right: 0, child: HeaderLogo()),
             Positioned(bottom: 0, left: 0, right: 0, child: SignUpForm()),
           ],
         ),

@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:project_rotary/core/components/button.dart';
 import 'package:project_rotary/core/components/input_field.dart';
 import 'package:project_rotary/core/components/password_field.dart';
+import 'package:project_rotary/features/auth/controller/auth_controller.dart';
+import 'package:project_rotary/features/auth/data/fake_auth_repository.dart';
+import 'package:project_rotary/features/auth/domain/dto/signup_dto.dart';
 
 class SignUpForm extends StatelessWidget {
-  const SignUpForm({super.key});
+  SignUpForm({super.key});
+
+  final authController = AuthController(FakeAuthRepository());
 
   @override
   Widget build(BuildContext context) {
@@ -68,8 +73,28 @@ class SignUpForm extends StatelessWidget {
 
             const SizedBox(height: 16),
             Button(
-              onPressed: () {
-                debugPrint("Name: ${nameController.text}");
+              onPressed: () async {
+                bool success = await authController.signup(
+                  signUpDTO: SignUpDTO(
+                    email: emailController.text,
+                    password: passwordController.text,
+                    confirmPassword: confirmPasswordController.text,
+                    name: nameController.text,
+                    phone: phoneController.text,
+                  ),
+                );
+
+                if (success) {
+                  Navigator.pushReplacementNamed(context, '/');
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        authController.error ?? 'Erro ao fazer login',
+                      ),
+                    ),
+                  );
+                }
               },
               text: "Criar conta",
               backgroundColor: Colors.green,
