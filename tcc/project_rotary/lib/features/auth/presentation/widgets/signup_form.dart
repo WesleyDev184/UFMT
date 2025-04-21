@@ -85,7 +85,7 @@ class SignUpForm extends StatelessWidget {
                 );
 
                 if (success) {
-                  Navigator.pushReplacementNamed(context, '/');
+                  Navigator.pushReplacementNamed(context, '/signup');
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

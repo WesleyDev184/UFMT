@@ -22,7 +22,6 @@ class FakeAuthRepository implements AuthRepository {
       throw Exception('As senhas não coincidem');
     }
     
-    
   }
 
   @override
