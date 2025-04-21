@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:project_rotary/core/components/button.dart';
 import 'package:project_rotary/core/components/input_field.dart';
 import 'package:project_rotary/core/components/password_field.dart';
+import 'package:project_rotary/features/auth/controller/auth_controller.dart';
+import 'package:project_rotary/features/auth/data/fake_auth_repository.dart';
+import 'package:project_rotary/features/auth/domain/dto/signin_dto.dart';
 
 class SingInForm extends StatelessWidget {
   SingInForm({super.key});
+
+  final authController = AuthController(FakeAuthRepository());
 
   @override
   Widget build(BuildContext context) {
@@ -60,9 +65,25 @@ class SingInForm extends StatelessWidget {
 
             const SizedBox(height: 10),
             Button(
-              onPressed: () {
-                debugPrint("Email : ${emailController.text}");
-                debugPrint("Password : ${passwordController.text}");
+              onPressed: () async {
+                bool success = await authController.signin(
+                  signInDTO: SignInDTO(
+                    email: emailController.text,
+                    password: passwordController.text,
+                  ),
+                );
+
+                if (success) {
+                  Navigator.pushReplacementNamed(context, '/signup');
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        authController.error ?? 'Erro ao fazer login',
+                      ),
+                    ),
+                  );
+                }
               },
               text: "Entrar",
               icon: Icon(Icons.login, color: Colors.white),
