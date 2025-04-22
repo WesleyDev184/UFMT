@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:project_rotary/features/auth/domain/auth_repository.dart';
-import 'package:project_rotary/features/auth/domain/dto/signin_dto.dart';
-import 'package:project_rotary/features/auth/domain/dto/signup_dto.dart';
+import 'package:project_rotary/app/auth/domain/auth_repository.dart';
+import 'package:project_rotary/app/auth/domain/dto/signin_dto.dart';
+import 'package:project_rotary/app/auth/domain/dto/signup_dto.dart';
 
 class AuthController extends ChangeNotifier {
   final AuthRepository _authRepository;

@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:project_rotary/features/auth/domain/dto/signin_dto.dart';
-import 'package:project_rotary/features/auth/domain/dto/signup_dto.dart';
+import 'package:project_rotary/app/auth/domain/dto/signin_dto.dart';
+import 'package:project_rotary/app/auth/domain/dto/signup_dto.dart';
 
 import '../domain/auth_repository.dart';
 
