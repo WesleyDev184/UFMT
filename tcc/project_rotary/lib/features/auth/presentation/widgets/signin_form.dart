@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project_rotary/core/components/button.dart';
 import 'package:project_rotary/core/components/input_field.dart';
 import 'package:project_rotary/core/components/password_field.dart';
-import 'package:project_rotary/features/auth/controller/auth_controller.dart';
+import 'package:project_rotary/features/auth/presentation/controller/auth_controller.dart';
 import 'package:project_rotary/features/auth/data/fake_auth_repository.dart';
 import 'package:project_rotary/features/auth/domain/dto/signin_dto.dart';
 
