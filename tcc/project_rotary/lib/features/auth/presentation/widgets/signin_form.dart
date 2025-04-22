@@ -6,16 +6,36 @@ import 'package:project_rotary/features/auth/controller/auth_controller.dart';
 import 'package:project_rotary/features/auth/data/fake_auth_repository.dart';
 import 'package:project_rotary/features/auth/domain/dto/signin_dto.dart';
 
-class SingInForm extends StatelessWidget {
-  SingInForm({super.key});
+class SingInForm extends StatefulWidget {
+  const SingInForm({super.key});
 
-  final authController = AuthController(FakeAuthRepository());
+  @override
+  _SingInFormState createState() => _SingInFormState();
+}
+
+class _SingInFormState extends State<SingInForm> {
+  late final AuthController authController;
+  late final TextEditingController emailController;
+  late final TextEditingController passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    authController = AuthController(FakeAuthRepository());
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
 
     return Card(
       shape: const RoundedRectangleBorder(
@@ -62,7 +82,6 @@ class SingInForm extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 10),
             Button(
               onPressed: () async {
@@ -73,16 +92,18 @@ class SingInForm extends StatelessWidget {
                   ),
                 );
 
-                if (success) {
-                  Navigator.pushReplacementNamed(context, '/signup');
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        authController.error ?? 'Erro ao fazer login',
+                if (context.mounted) {
+                  if (success) {
+                    Navigator.pushReplacementNamed(context, '/signup');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          authController.error ?? 'Erro ao fazer login',
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 }
               },
               text: "Entrar",
@@ -90,7 +111,6 @@ class SingInForm extends StatelessWidget {
               backgroundColor: Colors.green,
               isFullWidth: true,
             ),
-
             const SizedBox(height: 10),
             Align(
               alignment: Alignment.center,
