@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:project_rotary/features/auth/presentation/pages/singin_page.dart';
-import 'package:project_rotary/features/auth/presentation/pages/signup_page.dart';
+import 'package:project_rotary/app/auth/presentation/pages/singin_page.dart';
+import 'package:project_rotary/app/auth/presentation/pages/signup_page.dart';
 
 void main() {
   runApp(const MyApp());
