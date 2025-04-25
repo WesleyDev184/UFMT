@@ -2,7 +2,9 @@ import random
 import pyxel
 from multplayer import MultiplayerClient
 
-# Constantes e imagens
+# -------------------------------
+# Constantes e recursos visuais
+# -------------------------------
 HUMAN_IMAGE = (368, 8, 16, 16)
 CAR_IMAGES = [
     (240, 272, 32, 24),
@@ -12,8 +14,11 @@ CAR_IMAGES = [
     (288, 240, 32, 24),
 ]
 
-# Função para detecção de colisão
+# ----------------------------------
+# Funcoes utilitarias de colisao
+# ----------------------------------
 def is_colliding(x, y):
+    """Verifica colisao com tiles do mapa de colisao (tilemap 2)."""
     x1 = pyxel.floor(x) // 8
     y1 = pyxel.floor(y) // 8
     x2 = (pyxel.ceil(x) + 15) // 8
@@ -24,8 +29,8 @@ def is_colliding(x, y):
                 return True
     return False
 
-# Função para empurrar de volta em caso de colisão
 def push_back(x, y, dx, dy):
+    """Ajusta a posicao do jogador caso haja colisao com o mapa."""
     for _ in range(pyxel.ceil(abs(dy))):
         step = max(-1, min(1, dy))
         if is_colliding(x, y + step):
@@ -40,35 +45,39 @@ def push_back(x, y, dx, dy):
         dx -= step
     return x, y
 
+# -------------------------------
+# Classe do jogador local
+# -------------------------------
 class Player:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.u = 1
-        self.v = 0
+        self.u = 1  # direcao
+        self.v = 0  # animacao
+        self.status = "vivo"  # <-- Adiciona esta linha
 
     def update(self, map_width, map_height):
         dx, dy = 0, 0
-        if pyxel.btn(pyxel.KEY_UP):
+        if pyxel.btn(pyxel.KEY_W):
             dy = -5
             self.u, self.v = 2, 1
-        if pyxel.btn(pyxel.KEY_DOWN):
+        if pyxel.btn(pyxel.KEY_S):
             dy = 5
             self.u, self.v = 1, 1
-        if pyxel.btn(pyxel.KEY_LEFT):
+        if pyxel.btn(pyxel.KEY_A):
             dx = -5
             self.u, self.v = 0, 1
-        if pyxel.btn(pyxel.KEY_RIGHT):
+        if pyxel.btn(pyxel.KEY_D):
             dx = 5
             self.u, self.v = 3, 1
+
+        # Animacao
         if self.v == 1:
             self.v += [-1, 0, -1, 1][pyxel.frame_count // 5 % 4]
 
         new_x, new_y = push_back(self.x, self.y, dx, dy)
-        new_x = min(max(new_x, 0), map_width - 16)
-        new_y = min(max(new_y, 0), map_height - 16)
-        self.x = new_x
-        self.y = new_y
+        self.x = min(max(new_x, 0), map_width - 16)
+        self.y = min(max(new_y, 0), map_height - 16)
 
     def draw(self):
         pyxel.blt(
@@ -82,6 +91,9 @@ class Player:
             0,
         )
 
+# -------------------------------
+# Classe de projeteis
+# -------------------------------
 class Bullet:
     def __init__(self, x, y, dx, dy):
         self.x = x
@@ -99,6 +111,9 @@ class Bullet:
     def draw(self):
         pyxel.circ(self.x, self.y, 2, pyxel.COLOR_YELLOW)
 
+# -------------------------------
+# Classe de carros no mapa
+# -------------------------------
 class Car:
     def __init__(self, x, y, dx, image):
         self.x = x
@@ -117,22 +132,20 @@ class Car:
         u, v, w, h = CAR_IMAGES[self.image]
         pyxel.blt(self.x, self.y, 0, u, v, w, h, 0)
 
+# -------------------------------
+# Classe principal do jogo
+# -------------------------------
 class App:
     def __init__(self):
-        # Define o estado inicial do jogo
-        self.game_state = "inicio"  # "inicio" ou "jogando"
-
-        # Inicializa multiplayer
+        self.game_state = "inicio"
         self.mp_client = MultiplayerClient()
-
-        # Dicionário para armazenar jogadores remotos e balas
         self.remote_players = {}
-        self.bullets = []
         self.remote_bullets = {}
-
+        self.bullets = []
         self.shoot_cooldown = 0
         self.player_status = "vivo"
         self.spawns = [(183, 10), (15, 355), (512, 355)]
+        self.score = 0  # Score do player
 
         pyxel.init(231, 128, title="Tank Game", fps=30)
         pyxel.images[0] = pyxel.Image.from_image("assets/urban_rpg.png", incl_colors=True)
@@ -141,7 +154,7 @@ class App:
 
         spawn_x, spawn_y = random.choice(self.spawns)
         self.player = Player(spawn_x, spawn_y)
-        
+
         self.cars = [
             Car(128, 253, -2, 0),
             Car(288, 253, -2, 1),
@@ -158,21 +171,16 @@ class App:
         self.bullets.clear()
         self.player_status = "vivo"
         self.mp_client.send_player_state(
-            int(self.player.x),
-            int(self.player.y),
-            u=self.player.u,
-            v=self.player.v,
-            status=self.player_status,
-            bullets=[]
+            int(self.player.x), int(self.player.y),
+            u=self.player.u, v=self.player.v,
+            status=self.player_status, bullets=[]
         )
 
     def check_player_hit(self, bullet):
-        if (self.player.x < bullet.x < self.player.x + 16) and (self.player.y < bullet.y < self.player.y + 16):
-            return True
-        return False
+        return (self.player.x < bullet.x < self.player.x + 16) and \
+               (self.player.y < bullet.y < self.player.y + 16)
 
     def update(self):
-        # Tela inicial: aguarda o início do jogo
         if self.game_state == "inicio":
             if pyxel.btnp(pyxel.KEY_SPACE):
                 self.game_state = "jogando"
@@ -180,21 +188,15 @@ class App:
 
         if pyxel.btnp(pyxel.KEY_F5):
             import sys, subprocess
-            subprocess.Popen(
-                f'"{sys.executable}" {" ".join(sys.argv)}', shell=True
-            )
+            subprocess.Popen(f'"{sys.executable}" {" ".join(sys.argv)}', shell=True)
             sys.exit()
 
         map_width = pyxel.tilemaps[0].width * 8
         map_height = pyxel.tilemaps[0].height * 8
 
         if self.player_status == "morto":
-            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
-                mx, my = pyxel.mouse_x, pyxel.mouse_y
-                button_x = (pyxel.width - 80) // 2
-                button_y = (pyxel.height - 20) // 2 + 20
-                if button_x <= mx <= button_x + 80 and button_y <= my <= button_y + 20:
-                    self.revive()
+            if pyxel.btnp(pyxel.KEY_RETURN):
+                self.revive()
             return
 
         self.player.update(map_width, map_height)
@@ -205,16 +207,8 @@ class App:
             self.shoot_cooldown -= 1
 
         if pyxel.btnp(pyxel.KEY_SPACE) and self.shoot_cooldown == 0:
-            if self.player.u == 0:
-                dx, dy = -10, 0
-            elif self.player.u == 1:
-                dx, dy = 0, 10
-            elif self.player.u == 2:
-                dx, dy = 0, -10
-            elif self.player.u == 3:
-                dx, dy = 10, 0
-            else:
-                dx, dy = 0, 0
+            directions = [(-10, 0), (0, 10), (0, -10), (10, 0)]
+            dx, dy = directions[self.player.u] if self.player.u < 4 else (0, 0)
             self.bullets.append(Bullet(self.player.x + 8, self.player.y + 8, dx, dy))
             self.shoot_cooldown = 30
 
@@ -222,11 +216,16 @@ class App:
             bullet.update(map_width, map_height)
         self.bullets = [b for b in self.bullets if b.active]
 
+        for bullet in self.bullets:
+            for pid, remote_player in self.remote_players.items():
+                if (remote_player.x < bullet.x < remote_player.x + 16) and \
+                   (remote_player.y < bullet.y < remote_player.y + 16):
+                    bullet.active = False
+                    self.score += 1
+
         self.mp_client.send_player_state(
-            int(self.player.x),
-            int(self.player.y),
-            u=self.player.u,
-            v=self.player.v,
+            int(self.player.x), int(self.player.y),
+            u=self.player.u, v=self.player.v,
             status=self.player_status,
             bullets=[{"x": b.x, "y": b.y, "dx": b.dx, "dy": b.dy} for b in self.bullets]
         )
@@ -247,32 +246,46 @@ class App:
             for bullet in bullets:
                 if self.check_player_hit(bullet):
                     self.player_status = "morto"
-                    break
-            if self.player_status == "morto":
-                break
+                    return
 
     def draw(self):
         if self.game_state == "inicio":
-            pyxel.cls(0)
-            text = "Press SPACE to start"
-            pyxel.text((pyxel.width - len(text)*4) // 2, pyxel.height // 2, text, pyxel.COLOR_WHITE)
+            pyxel.cls(pyxel.COLOR_NAVY)  # Fundo azul marinho
+            msg = "Press SPACE to start"
+            pyxel.text((pyxel.width - len(msg)*4)//2, pyxel.height//2, msg, pyxel.COLOR_WHITE)
+            return
+        
+
+        if len(self.mp_client.players) <= 1:
+            pyxel.cls(pyxel.COLOR_NAVY)  # Fundo azul marinho
+            msg = "Waiting for players..."
+            pyxel.text((pyxel.width - len(msg) * 4) // 2, pyxel.height//2 - 20, msg, pyxel.COLOR_WHITE)
+            pyxel.text((pyxel.width - len("Como jogar:") * 4) // 2, pyxel.height//2 + 10, "Como jogar:", pyxel.COLOR_YELLOW)
+            arrow_keys = "andar: W A S D"
+            pyxel.text((pyxel.width - len(arrow_keys)*4)//2, pyxel.height//2 + 20, arrow_keys, pyxel.COLOR_WHITE)
+            pyxel.text((pyxel.width - len("atirar: espaco") * 4)//2, pyxel.height//2 + 30, "atirar: espaco", pyxel.COLOR_WHITE)
             return
 
-        cam_x = self.player.x - pyxel.width // 2 + 8
-        cam_y = self.player.y - pyxel.height // 2 + 8
-        map_width = pyxel.tilemaps[0].width * 8
-        map_height = pyxel.tilemaps[0].height * 8
-        cam_x = min(max(cam_x, 0), map_width - pyxel.width)
-        cam_y = min(max(cam_y, 0), map_height - pyxel.height)
+        # Se o jogador estiver morto, exibe a tela de Game Over
+        if self.player_status == "morto":
+            pyxel.cls(pyxel.COLOR_NAVY)
+            game_over_msg = "Geme Over"
+            pyxel.text((pyxel.width - len(game_over_msg) * 4) // 2, pyxel.height//2 - 20, game_over_msg, pyxel.COLOR_BLACK)
+            msg = "Press ENTER to revive"
+            pyxel.text((pyxel.width - len(msg)*4)//2, (pyxel.height//2) + 10, msg, pyxel.COLOR_WHITE)
+            return
+
+        cam_x = min(max(self.player.x - pyxel.width//2 + 8, 0), pyxel.tilemaps[0].width * 8 - pyxel.width)
+        cam_y = min(max(self.player.y - pyxel.height//2 + 8, 0), pyxel.tilemaps[0].height * 8 - pyxel.height)
         pyxel.camera(cam_x, cam_y)
         pyxel.cls(1)
+        map_width = pyxel.tilemaps[0].width * 8
+        map_height = pyxel.tilemaps[0].height * 8
         pyxel.bltm(0, 0, 0, 0, 0, map_width, map_height, 0)
         pyxel.bltm(0, 0, 1, 0, 0, map_width, map_height, 0)
-        
+
         for car in self.cars:
             car.draw()
-        for bullet in self.bullets:
-            bullet.draw()
         for _, remote_player in self.remote_players.items():
             remote_player.draw()
         for bullets in self.remote_bullets.values():
@@ -281,13 +294,14 @@ class App:
 
         pyxel.camera()
 
-        if self.player_status == "morto":
-            pyxel.cls(0)
-            pyxel.text((pyxel.width // 2) - 30, (pyxel.height // 2) - 20, "GAME OVER", pyxel.COLOR_RED)
-            button_x = (pyxel.width - 80) // 2
-            button_y = (pyxel.height - 20) // 2 + 20
-            pyxel.rect(button_x, button_y, 80, 20, pyxel.COLOR_GRAY)
-            pyxel.rectb(button_x, button_y, 80, 20, pyxel.COLOR_WHITE)
-            pyxel.text(button_x + 15, button_y + 7, "Reviver", pyxel.COLOR_WHITE)
+        score_text = f"Score: {self.score}"
+        padding = 4
+        text_width = len(score_text) * 4
+        rect_x = 5 - padding//2
+        rect_y = 5 - padding//2
+        rect_width = text_width + padding
+        rect_height = 10
+        pyxel.rect(rect_x, rect_y, rect_width, rect_height, pyxel.COLOR_NAVY)
+        pyxel.text(5, 5, score_text, pyxel.COLOR_WHITE)
 
-App() 
+App()
