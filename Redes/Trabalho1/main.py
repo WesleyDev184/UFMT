@@ -52,9 +52,10 @@ class Player:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.u = 1  # direcao
-        self.v = 0  # animacao
-        self.status = "vivo"  # <-- Adiciona esta linha
+        self.u = 1  # direção
+        self.v = 0  # animação
+        self.status = "vivo"  # 'vivo' ou 'morto'
+        self.score = 0       # score do player
 
     def update(self, map_width, map_height):
         dx, dy = 0, 0
@@ -71,7 +72,7 @@ class Player:
             dx = 5
             self.u, self.v = 3, 1
 
-        # Animacao
+        # Animação
         if self.v == 1:
             self.v += [-1, 0, -1, 1][pyxel.frame_count // 5 % 4]
 
@@ -143,9 +144,7 @@ class App:
         self.remote_bullets = {}
         self.bullets = []
         self.shoot_cooldown = 0
-        self.player_status = "vivo"
         self.spawns = [(183, 10), (15, 355), (512, 355)]
-        self.score = 0  # Score do player
 
         pyxel.init(231, 128, title="Tank Game", fps=30)
         pyxel.images[0] = pyxel.Image.from_image("assets/urban_rpg.png", incl_colors=True)
@@ -165,15 +164,18 @@ class App:
         ]
         pyxel.run(self.update, self.draw)
 
+
+    
     def revive(self):
         spawn_x, spawn_y = random.choice(self.spawns)
         self.player = Player(spawn_x, spawn_y)
         self.bullets.clear()
-        self.player_status = "vivo"
         self.mp_client.send_player_state(
             int(self.player.x), int(self.player.y),
             u=self.player.u, v=self.player.v,
-            status=self.player_status, bullets=[]
+            status=self.player.status,
+            bullets=[],
+            score=self.player.score
         )
 
     def check_player_hit(self, bullet):
@@ -194,7 +196,7 @@ class App:
         map_width = pyxel.tilemaps[0].width * 8
         map_height = pyxel.tilemaps[0].height * 8
 
-        if self.player_status == "morto":
+        if self.player.status == "morto":
             if pyxel.btnp(pyxel.KEY_RETURN):
                 self.revive()
             return
@@ -216,20 +218,25 @@ class App:
             bullet.update(map_width, map_height)
         self.bullets = [b for b in self.bullets if b.active]
 
+        # Verifica colisão da bala com jogadores remotos:
         for bullet in self.bullets:
             for pid, remote_player in self.remote_players.items():
                 if (remote_player.x < bullet.x < remote_player.x + 16) and \
                    (remote_player.y < bullet.y < remote_player.y + 16):
                     bullet.active = False
-                    self.score += 1
+                    self.player.score += 1
+                    remote_player.status = "morto"
+                    
 
         self.mp_client.send_player_state(
             int(self.player.x), int(self.player.y),
             u=self.player.u, v=self.player.v,
-            status=self.player_status,
-            bullets=[{"x": b.x, "y": b.y, "dx": b.dx, "dy": b.dy} for b in self.bullets]
+            status=self.player.status,
+            bullets=[{"x": b.x, "y": b.y, "dx": b.dx, "dy": b.dy} for b in self.bullets],
+            score=self.player.score
         )
 
+        # Atualiza os jogadores remotos e suas balas
         for pid, pdata in self.mp_client.players.items():
             if pid != self.mp_client.player_id:
                 if pid not in self.remote_players:
@@ -240,37 +247,45 @@ class App:
                     remote_player.y = pdata["y"]
                     remote_player.u = pdata.get("u", remote_player.u)
                     remote_player.v = pdata.get("v", remote_player.v)
+                    remote_player.status = pdata.get("status", remote_player.status)
                 self.remote_bullets[pid] = [Bullet(b["x"], b["y"], b["dx"], b["dy"]) for b in pdata.get("bullets", [])]
 
+        # Verifica colisão das balas dos outros com o player local
         for bullets in self.remote_bullets.values():
             for bullet in bullets:
                 if self.check_player_hit(bullet):
-                    self.player_status = "morto"
+                    self.player.status = "morto"
+                    # Após ser atingido, envie o estado atualizado para o servidor
+                    self.mp_client.send_player_state(
+                        int(self.player.x), int(self.player.y),
+                        u=self.player.u, v=self.player.v,
+                        status=self.player.status,
+                        bullets=[{"x": b.x, "y": b.y, "dx": b.dx, "dy": b.dy} for b in self.bullets],
+                        score=self.player.score
+                    )
                     return
-
+   
     def draw(self):
         if self.game_state == "inicio":
-            pyxel.cls(pyxel.COLOR_NAVY)  # Fundo azul marinho
+            pyxel.cls(pyxel.COLOR_NAVY)
             msg = "Press SPACE to start"
             pyxel.text((pyxel.width - len(msg)*4)//2, pyxel.height//2, msg, pyxel.COLOR_WHITE)
             return
-        
 
         if len(self.mp_client.players) <= 1:
-            pyxel.cls(pyxel.COLOR_NAVY)  # Fundo azul marinho
+            pyxel.cls(pyxel.COLOR_NAVY)
             msg = "Waiting for players..."
-            pyxel.text((pyxel.width - len(msg) * 4) // 2, pyxel.height//2 - 20, msg, pyxel.COLOR_WHITE)
-            pyxel.text((pyxel.width - len("Como jogar:") * 4) // 2, pyxel.height//2 + 10, "Como jogar:", pyxel.COLOR_YELLOW)
+            pyxel.text((pyxel.width - len(msg)*4)//2, pyxel.height//2 - 20, msg, pyxel.COLOR_WHITE)
+            pyxel.text((pyxel.width - len("Como jogar:")*4)//2, pyxel.height//2 + 10, "Como jogar:", pyxel.COLOR_YELLOW)
             arrow_keys = "andar: W A S D"
             pyxel.text((pyxel.width - len(arrow_keys)*4)//2, pyxel.height//2 + 20, arrow_keys, pyxel.COLOR_WHITE)
-            pyxel.text((pyxel.width - len("atirar: espaco") * 4)//2, pyxel.height//2 + 30, "atirar: espaco", pyxel.COLOR_WHITE)
+            pyxel.text((pyxel.width - len("atirar: espaco")*4)//2, pyxel.height//2 + 30, "atirar: espaco", pyxel.COLOR_WHITE)
             return
 
-        # Se o jogador estiver morto, exibe a tela de Game Over
-        if self.player_status == "morto":
+        if self.player.status == "morto":
             pyxel.cls(pyxel.COLOR_NAVY)
-            game_over_msg = "Geme Over"
-            pyxel.text((pyxel.width - len(game_over_msg) * 4) // 2, pyxel.height//2 - 20, game_over_msg, pyxel.COLOR_BLACK)
+            game_over_msg = "GAME OVER"
+            pyxel.text((pyxel.width - len(game_over_msg)*4)//2, pyxel.height//2 - 20, game_over_msg, pyxel.COLOR_RED)
             msg = "Press ENTER to revive"
             pyxel.text((pyxel.width - len(msg)*4)//2, (pyxel.height//2) + 10, msg, pyxel.COLOR_WHITE)
             return
@@ -287,16 +302,17 @@ class App:
         for car in self.cars:
             car.draw()
         for _, remote_player in self.remote_players.items():
-            remote_player.draw()
+            if remote_player.status == "vivo":
+                remote_player.draw()
         for bullets in self.remote_bullets.values():
             for bullet in bullets:
                 bullet.draw()
 
         pyxel.camera()
 
-        score_text = f"Score: {self.score}"
+        score_text = f"Score: {self.player.score}"
         padding = 4
-        text_width = len(score_text) * 4
+        text_width = len(score_text)*4
         rect_x = 5 - padding//2
         rect_y = 5 - padding//2
         rect_width = text_width + padding

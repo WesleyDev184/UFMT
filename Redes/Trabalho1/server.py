@@ -20,6 +20,8 @@ while True:
     player_id = player_data["id"]
     players[player_id] = player_data  # Atualiza estado do jogador
 
+    # print(players)
+
     # Envia o estado de todos os jogadores via broadcast
     broadcast_message = json.dumps(players).encode()
     sock.sendto(broadcast_message, ('255.255.255.255', 5001))  # Broadcast na porta 5001
