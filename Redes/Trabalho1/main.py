@@ -289,7 +289,7 @@ class App:
 
         # Verifica se há mais de um jogador conectado e inicia a música
         if len(self.mp_client.players) > 1 and not self.music_playing:
-            # self.setup_music()
+            self.setup_music()
             self.music_playing = True
 
         map_width = pyxel.tilemaps[0].width * 8
