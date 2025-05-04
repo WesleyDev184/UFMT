@@ -251,7 +251,7 @@ class App:
                 self.game_state = "jogando"
             return
 
-        # Se o jogo já acabou, aguarda 10 segundos para reiniciar e reviva o player local se necessário
+        # Se o jogo já acabou, aguarda 10 segundos para reiniciar e remaneja os jogadores vivos
         if self.game_state == "fim":
             # Revive o player local se ainda não foi revivido
             if self.player.status == "morto":
@@ -261,9 +261,20 @@ class App:
             else:
                 self.end_timer -= 1
                 if self.end_timer <= 0:
-                    # Reset local player score
+                    # Remaneja o player local se estiver vivo
+                    if self.player.status == "vivo":
+                        spawn_x, spawn_y = random.choice(self.spawns)
+                        self.player.x = spawn_x
+                        self.player.y = spawn_y
+                    # Remaneja os jogadores remotos que estiverem vivos
+                    for remote_player in self.remote_players.values():
+                        if remote_player.status == "vivo":
+                            spawn_x, spawn_y = random.choice(self.spawns)
+                            remote_player.x = spawn_x
+                            remote_player.y = spawn_y
+
+                    # Reinicia as pontuações e estados
                     self.player.score = 0
-                    # Reset score from all remote players
                     for remote_player in self.remote_players.values():
                         remote_player.score = 0
                         remote_player.status = "vivo"
