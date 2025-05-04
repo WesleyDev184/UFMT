@@ -5,12 +5,7 @@ from multplayer import MultiplayerClient
 # -------------------------------
 # Constantes e recursos visuais
 # -------------------------------
-HUMAN_IMAGES = [
-    (368, 56, 16, 16),
-    (368, 152, 16, 16),
-    (368, 200, 16, 16),
-]
-
+HUMAN_IMAGE = (368, 8, 16, 16)
 CAR_IMAGES = [
     (240, 272, 32, 24),
     (240, 240, 32, 24),
@@ -57,7 +52,6 @@ class Player:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.human_image = random.choice(HUMAN_IMAGES)  # Seleciona um sprite aleatório
         self.u = 1  # direção
         self.v = 0  # animação
         self.status = "vivo"  # 'vivo' ou 'morto'
@@ -91,10 +85,10 @@ class Player:
             self.x,
             self.y - 1,
             0,
-            self.human_image[0] + self.u * 16,
-            self.human_image[1] + self.v * 16,
-            self.human_image[2],
-            self.human_image[3],
+            HUMAN_IMAGE[0] + self.u * 16,
+            HUMAN_IMAGE[1] + self.v * 16,
+            HUMAN_IMAGE[2],
+            HUMAN_IMAGE[3],
             0,
         )
 
@@ -169,6 +163,7 @@ class App:
             Car(64, 275, 2, 4),
             Car(96, 275, 2, 4),
         ]
+
         pyxel.run(self.update, self.draw)
 
     def setup_music(self):
@@ -216,7 +211,7 @@ class App:
         pyxel.play(0, [0], loop=True)
         pyxel.play(1, [1], loop=True)
         pyxel.play(2, [2, 3], loop=True)
-    
+
     def revive(self):
         spawn_x, spawn_y = random.choice(self.spawns)
         self.player = Player(spawn_x, spawn_y)
@@ -226,8 +221,7 @@ class App:
             u=self.player.u, v=self.player.v,
             status=self.player.status,
             bullets=[],
-            score=self.player.score,
-            human_image=self.player.human_image  # Envia o personagem escolhido
+            score=self.player.score
         )
 
     def check_player_hit(self, bullet):
@@ -238,23 +232,6 @@ class App:
         if self.game_state == "inicio":
             if pyxel.btnp(pyxel.KEY_SPACE):
                 self.game_state = "jogando"
-            return
-
-        # Se o jogo já acabou, aguarda 10 segundos para reiniciar
-        if self.game_state == "fim":
-            if not hasattr(self, "end_timer"):
-                self.end_timer = 300  # 10 segundos a 30 FPS
-            else:
-                self.end_timer -= 1
-                if self.end_timer <= 0:
-                    # Reset local player score
-                    self.player.score = 0
-                    # Reset score from all remote players
-                    for remote_player in self.remote_players.values():
-                        remote_player.score = 0
-                        remote_player.status = "vivo"
-                    self.game_state = "inicio"
-                    del self.end_timer
             return
 
         if pyxel.btnp(pyxel.KEY_F5):
@@ -295,8 +272,7 @@ class App:
         # Verifica colisão da bala com jogadores remotos:
         for bullet in self.bullets:
             for pid, remote_player in self.remote_players.items():
-                if remote_player.status == "vivo" and \
-                   (remote_player.x < bullet.x < remote_player.x + 16) and \
+                if (remote_player.x < bullet.x < remote_player.x + 16) and \
                    (remote_player.y < bullet.y < remote_player.y + 16):
                     bullet.active = False
                     self.player.score += 1
@@ -307,18 +283,14 @@ class App:
             u=self.player.u, v=self.player.v,
             status=self.player.status,
             bullets=[{"x": b.x, "y": b.y, "dx": b.dx, "dy": b.dy} for b in self.bullets],
-            score=self.player.score,
-            human_image=self.player.human_image  # Envia o personagem escolhido
+            score=self.player.score
         )
 
         # Atualiza os jogadores remotos e suas balas
         for pid, pdata in self.mp_client.players.items():
             if pid != self.mp_client.player_id:
                 if pid not in self.remote_players:
-                    # Cria um novo jogador remoto e força o uso do human_image enviado
-                    player = Player(pdata["x"], pdata["y"])
-                    player.human_image = tuple(pdata["human_image"]) if "human_image" in pdata else player.human_image
-                    self.remote_players[pid] = player
+                    self.remote_players[pid] = Player(pdata["x"], pdata["y"])
                 else:
                     remote_player = self.remote_players[pid]
                     remote_player.x = pdata["x"]
@@ -326,8 +298,6 @@ class App:
                     remote_player.u = pdata.get("u", remote_player.u)
                     remote_player.v = pdata.get("v", remote_player.v)
                     remote_player.status = pdata.get("status", remote_player.status)
-                    if "human_image" in pdata:
-                        remote_player.human_image = tuple(pdata["human_image"])
                 self.remote_bullets[pid] = [Bullet(b["x"], b["y"], b["dx"], b["dy"]) for b in pdata.get("bullets", [])]
 
         # Verifica colisão das balas dos outros com o player local
@@ -345,35 +315,11 @@ class App:
                     )
                     return
 
-        # Checar se local ou algum jogador remoto atingiu 5 pontos:
-        if self.player.score >= 1:
-            self.game_state = "fim"
-            return
-
-        for pid, pdata in self.mp_client.players.items():
-            if pdata.get("score", 0) >= 1:
-                self.game_state = "fim"
-                return
-   
     def draw(self):
         if self.game_state == "inicio":
             pyxel.cls(pyxel.COLOR_NAVY)
             msg = "Press SPACE to start"
             pyxel.text((pyxel.width - len(msg)*4)//2, pyxel.height//2, msg, pyxel.COLOR_WHITE)
-            return
-
-        if self.game_state == "fim":
-            pyxel.cls(pyxel.COLOR_NAVY)
-            title = "Fim de Jogo"
-            pyxel.text((pyxel.width - len(title)*4)//2, 10, title, pyxel.COLOR_WHITE)
-            y = 30
-           
-            # Lista os jogadores remotos:
-            sorted_players = sorted(self.mp_client.players.items(), key=lambda item: item[1].get("score", 0), reverse=True)
-            for pid, pdata in sorted_players:
-                score = pdata.get("score", 0)
-                pyxel.text(10, y, f"Player {pid}: {score}", pyxel.COLOR_WHITE)
-                y += 10
             return
 
         if len(self.mp_client.players) <= 1:

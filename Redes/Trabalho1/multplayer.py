@@ -30,7 +30,7 @@ class MultiplayerClient:
             except Exception as e:
                 print("Erro ao receber atualizações:", e)
 
-    def send_player_state(self, x, y, u=1, v=0, status="vivo", bullets=None, score=None):
+    def send_player_state(self, x, y, u=1, v=0, status="vivo", bullets=None, score=None, human_image=None):
         player_state = {
             "id": self.player_id,
             "x": x,
@@ -43,4 +43,6 @@ class MultiplayerClient:
             player_state["bullets"] = bullets
         if score is not None:
             player_state["score"] = score
+        if human_image is not None:
+            player_state["human_image"] = human_image
         self.send_sock.sendto(json.dumps(player_state).encode(), (self.server_ip, self.send_port))
