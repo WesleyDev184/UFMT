@@ -169,7 +169,18 @@ class App:
             Car(64, 275, 2, 4),
             Car(96, 275, 2, 4),
         ]
+        self.setup_sounds()  # Configura os sons do jogo
         pyxel.run(self.update, self.draw)
+
+    def setup_sounds(self):
+        # Configura o som de tiro
+        pyxel.sounds[4].set(
+            "c2 r e2",  # Notas curtas para o som de tiro
+            "p",        # Tipo de som (piano)
+            "7",        # Volume
+            "n",        # Efeito
+            10          # Velocidade
+        )
 
     def setup_music(self):
         # Canal 0 - Melodia principal (15s loop)
@@ -177,7 +188,7 @@ class App:
             "g2 d2 f2 a2 a#2 r g2 d2 g2 d#2 r g2 f2 c3 d#2 r "
             "a2 f2 d#2 r g2 a#2 c3 d3 r g2 r f2 g2 r",
             "p",
-            "66666666 66556655 65556666 66665566",
+            "22222222 22222222 22222222 22222222",  # Volume reduzido
             "nfnfnnnn nnnnffff vnnnffvv ffffnnff",
             25,
         )
@@ -187,7 +198,7 @@ class App:
             "r a1 r a#1 r d2 r f2 r g2 r f2 r e2 r f2 r "
             "r f2 r e2 r d2 r a#1 r f2 r d2 r",
             "s",
-            "55443322 55667777 66554433 55443322",
+            "11111111 11111111 11111111 11111111",  # Volume reduzido
             "vnnnvnnn vnnnvnnn vnnnvnnn vnnnvnnn",
             25,
         )
@@ -197,7 +208,7 @@ class App:
             "c1 g0 c1 g0 a0 e0 a0 e0 f0 d0 f0 d0 c1 g0 c1 g0 "
             "d1 a0 d1 a0 e1 b0 e1 b0",
             "t",
-            "7777",
+            "1111",  # Volume reduzido
             "n",
             25,
         )
@@ -207,7 +218,7 @@ class App:
             "f0r r f0r r f0r f0r r r f0r f0r r r f0r r f0r r "
             "f0r f0r r r f0r f0r r r",
             "n",
-            "6644",
+            "1111",  # Volume reduzido
             "f",
             25,
         )
@@ -240,8 +251,11 @@ class App:
                 self.game_state = "jogando"
             return
 
-        # Se o jogo já acabou, aguarda 10 segundos para reiniciar
+        # Se o jogo já acabou, aguarda 10 segundos para reiniciar e reviva o player local se necessário
         if self.game_state == "fim":
+            # Revive o player local se ainda não foi revivido
+            if self.player.status == "morto":
+                self.revive()
             if not hasattr(self, "end_timer"):
                 self.end_timer = 300  # 10 segundos a 30 FPS
             else:
@@ -264,7 +278,7 @@ class App:
 
         # Verifica se há mais de um jogador conectado e inicia a música
         if len(self.mp_client.players) > 1 and not self.music_playing:
-            self.setup_music()
+            # self.setup_music()
             self.music_playing = True
 
         map_width = pyxel.tilemaps[0].width * 8
@@ -287,6 +301,9 @@ class App:
             dx, dy = directions[self.player.u] if self.player.u < 4 else (0, 0)
             self.bullets.append(Bullet(self.player.x + 8, self.player.y + 8, dx, dy))
             self.shoot_cooldown = 90  # 3 segundos de cooldown
+
+            # Reproduz o som de tiro
+            pyxel.play(0, 4)
 
         for bullet in self.bullets:
             bullet.update(map_width, map_height)
