@@ -38,6 +38,9 @@ while True:
     for pid in disconnected:
         del players[pid]
 
+    for pid, pdata in players.items():
+        print(f"ID: {pid}, Dados: {pdata}")
+
     # Envia o estado de todos os jogadores via broadcast
     broadcast_message = json.dumps(players).encode()
     sock.sendto(broadcast_message, ('255.255.255.255', 5001))  # Broadcast na porta 5001
