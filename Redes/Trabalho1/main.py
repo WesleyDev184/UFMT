@@ -286,7 +286,7 @@ class App:
             directions = [(-10, 0), (0, 10), (0, -10), (10, 0)]
             dx, dy = directions[self.player.u] if self.player.u < 4 else (0, 0)
             self.bullets.append(Bullet(self.player.x + 8, self.player.y + 8, dx, dy))
-            self.shoot_cooldown = 30
+            self.shoot_cooldown = 90  # 3 segundos de cooldown
 
         for bullet in self.bullets:
             bullet.update(map_width, map_height)
