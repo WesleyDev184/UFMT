@@ -12,11 +12,10 @@ HUMAN_IMAGES = [
 ]
 
 CAR_IMAGES = [
-    (240, 272, 32, 24),
-    (240, 240, 32, 24),
-    (336, 264, 32, 16),
-    (336, 280, 32, 16),
-    (288, 240, 32, 24),
+    (240, 272, 27, 24),
+    (240, 240, 27, 24),
+
+    (288, 240, 27, 24),
 ]
 
 # ----------------------------------
@@ -66,16 +65,16 @@ class Player:
     def update(self, map_width, map_height):
         dx, dy = 0, 0
         if pyxel.btn(pyxel.KEY_W):
-            dy = -5
+            dy = -2.5  # Reduzido de -5 para -2.5
             self.u, self.v = 2, 1
         if pyxel.btn(pyxel.KEY_S):
-            dy = 5
+            dy = 2.5  # Reduzido de 5 para 2.5
             self.u, self.v = 1, 1
         if pyxel.btn(pyxel.KEY_A):
-            dx = -5
+            dx = -2.5  # Reduzido de -5 para -2.5
             self.u, self.v = 0, 1
         if pyxel.btn(pyxel.KEY_D):
-            dx = 5
+            dx = 2.5  # Reduzido de 5 para 2.5
             self.u, self.v = 3, 1
 
         # Animação
@@ -85,7 +84,6 @@ class Player:
         new_x, new_y = push_back(self.x, self.y, dx, dy)
         self.x = min(max(new_x, 0), map_width - 16)
         self.y = min(max(new_y, 0), map_height - 16)
-
     def draw(self):
         pyxel.blt(
             self.x,
@@ -102,11 +100,12 @@ class Player:
 # Classe de projeteis
 # -------------------------------
 class Bullet:
-    def __init__(self, x, y, dx, dy):
+    def __init__(self, x, y, dx, dy, owner):
         self.x = x
         self.y = y
         self.dx = dx
         self.dy = dy
+        self.owner = owner  # Identificador do jogador que disparou a bala
         self.active = True
 
     def update(self, map_width, map_height):
@@ -128,17 +127,32 @@ class Car:
         self.dx = dx
         self.image = image
 
-    def update(self, map_width):
+    def update(self, map_width, player):
+        # Atualiza a posição do carro
         self.x += self.dx
         if self.x <= -32:
             self.x = map_width
         elif self.x >= map_width:
             self.x = -32
 
+        # Verifica colisão com o jogador
+        if self.check_collision_with_player(player):
+            player.status = "morto"
+
     def draw(self):
         u, v, w, h = CAR_IMAGES[self.image]
         pyxel.blt(self.x, self.y, 0, u, v, w, h, 0)
 
+    def check_collision_with_player(self, player):
+        """Verifica se o jogador colidiu com o carro."""
+        car_width, car_height = 32, 24  # Dimensões do carro
+        player_width, player_height = 16, 16  # Dimensões do jogador
+        return (
+            self.x < player.x + player_width and
+            self.x + car_width > player.x and
+            self.y < player.y + player_height and
+            self.y + car_height > player.y
+        )
 # -------------------------------
 # Classe principal do jogo
 # -------------------------------
@@ -153,7 +167,7 @@ class App:
         self.spawns = [(183, 10), (15, 355), (512, 355)]
         self.music_playing = False  # Variável de controle para a música
 
-        pyxel.init(231, 128, title="Tank Game", fps=30)
+        pyxel.init(231, 128, title="BULLET GAME OFICIAL", fps=30)
         pyxel.images[0] = pyxel.Image.from_image("assets/urban_rpg.png", incl_colors=True)
         for i in range(3):
             pyxel.tilemaps[i] = pyxel.Tilemap.from_tmx("assets/mapa.tmx", i)
@@ -162,15 +176,20 @@ class App:
         self.player = Player(spawn_x, spawn_y)
 
         self.cars = [
-            Car(128, 253, -2, 0),
-            Car(288, 253, -2, 1),
-            Car(416, 260, -2, 2),
-            Car(32, 283, 2, 3),
-            Car(64, 275, 2, 4),
-            Car(96, 275, 2, 4),
+            Car(128, 254, -2, 0),
+            Car(288, 254, -2, 1),
+            Car(416, 254, -2, 1),
+            Car(32, 274, 2, 2),
+            Car(64, 274, 2, 2),
+            Car(96, 274, 2, 2),
         ]
         self.setup_sounds()  # Configura os sons do jogo
         pyxel.run(self.update, self.draw)
+
+# -------------------------------
+# Classe de musicas manuais do jogo
+# -------------------------------
+
 
     def setup_sounds(self):
         # Configura o som de tiro
@@ -242,8 +261,11 @@ class App:
         )
 
     def check_player_hit(self, bullet):
+    # Ignora balas disparadas pelo próprio jogador
+        if bullet.owner == "local":
+            return False
         return (self.player.x < bullet.x < self.player.x + 16) and \
-               (self.player.y < bullet.y < self.player.y + 16)
+            (self.player.y < bullet.y < self.player.y + 16)
 
     def update(self):
         if self.game_state == "inicio":
@@ -301,8 +323,10 @@ class App:
             return
 
         self.player.update(map_width, map_height)
+
+        # Atualiza os carros e verifica colisão com o jogador
         for car in self.cars:
-            car.update(map_width)
+            car.update(map_width, self.player)
 
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
@@ -310,7 +334,14 @@ class App:
         if pyxel.btnp(pyxel.KEY_SPACE) and self.shoot_cooldown == 0:
             directions = [(-10, 0), (0, 10), (0, -10), (10, 0)]
             dx, dy = directions[self.player.u] if self.player.u < 4 else (0, 0)
-            self.bullets.append(Bullet(self.player.x + 8, self.player.y + 8, dx, dy))
+
+            # Ajusta a posição inicial da bala para fora do corpo do jogador
+            offset_x = dx if dx != 0 else 0
+            offset_y = dy if dy != 0 else 0
+            bullet_x = self.player.x + 8 + offset_x
+            bullet_y = self.player.y + 8 + offset_y
+
+            self.bullets.append(Bullet(bullet_x, bullet_y, dx, dy, owner="local"))
             self.shoot_cooldown = 90  # 3 segundos de cooldown
 
             # Reproduz o som de tiro
@@ -324,8 +355,8 @@ class App:
         for bullet in self.bullets:
             for pid, remote_player in self.remote_players.items():
                 if remote_player.status == "vivo" and \
-                   (remote_player.x < bullet.x < remote_player.x + 16) and \
-                   (remote_player.y < bullet.y < remote_player.y + 16):
+                (remote_player.x < bullet.x < remote_player.x + 16) and \
+                (remote_player.y < bullet.y < remote_player.y + 16):
                     bullet.active = False
                     self.player.score += 1
                     remote_player.status = "morto"
@@ -356,7 +387,7 @@ class App:
                     remote_player.status = pdata.get("status", remote_player.status)
                     if "human_image" in pdata:
                         remote_player.human_image = tuple(pdata["human_image"])
-                self.remote_bullets[pid] = [Bullet(b["x"], b["y"], b["dx"], b["dy"]) for b in pdata.get("bullets", [])]
+                self.remote_bullets[pid] = [Bullet(b["x"], b["y"], b["dx"], b["dy"], owner=pid) for b in pdata.get("bullets", [])]
 
         # Verifica colisão das balas dos outros com o player local
         for bullets in self.remote_bullets.values():
@@ -373,46 +404,87 @@ class App:
                     )
                     return
 
-        # Checar se local ou algum jogador remoto atingiu 5 pontos:
-        if self.player.score >= 1:
+        # Checar se local ou algum jogador remoto atingiu 4 pontos:
+        if self.player.score >= 2:
             self.game_state = "fim"
             return
 
         for pid, pdata in self.mp_client.players.items():
-            if pdata.get("score", 0) >= 1:
+            if pdata.get("score", 0) >= 2:
                 self.game_state = "fim"
                 return
    
     def draw(self):
+        
         if self.game_state == "inicio":
             pyxel.cls(pyxel.COLOR_NAVY)
-            msg = "Press SPACE to start"
-            pyxel.text((pyxel.width - len(msg)*4)//2, pyxel.height//2, msg, pyxel.COLOR_WHITE)
-            return
 
+            # Título principal "BULLET GAME" (simulando fonte maior e centralizado)
+            title = "BULLET GAME"
+            title_width = len(title) * 4  # Largura simulada do texto (16 pixels por caractere)
+            title_x = (pyxel.width - title_width) // 2  # Centraliza horizontalmente
+            title_y = pyxel.height // 2 - 50  # Posiciona no topo
+            for dx in range(-2, 3):  # Simula borda ao redor do texto
+                for dy in range(-2, 3):
+                    if dx != 0 or dy != 0:
+                        pyxel.text(title_x + dx, title_y + dy, title, pyxel.COLOR_BLACK)
+            pyxel.text(title_x, title_y, title, pyxel.COLOR_PINK)  # Texto principal
+
+            subtitle = "Um jogo de Wesley e Lucas"
+            subtitle_width = len(subtitle) * 4  # Largura simulada do texto (4 pixels por caractere)
+            subtitle_x = (pyxel.width - subtitle_width) // 2  # Centraliza horizontalmente
+            subtitle_y = title_y + 30  # Posiciona abaixo do título
+            pyxel.text(subtitle_x, subtitle_y, subtitle, pyxel.COLOR_ORANGE)  # Cor alterada para branco
+
+            # Mensagem para começar o jogo
+            msg = "Press SPACE to start"
+            msg_width = len(msg) * 4  # Largura simulada do texto (4 pixels por caractere)
+            msg_x = (pyxel.width - msg_width) // 2  # Centraliza horizontalmente
+            msg_y = subtitle_y + 40
+            pyxel.text(msg_x, msg_y, msg, pyxel.COLOR_CYAN)
+
+            return
+        
+        # Se o jogo já acabou, exibe a tela de fim de jogo
         if self.game_state == "fim":
             pyxel.cls(pyxel.COLOR_NAVY)
             title = "Fim de Jogo"
-            pyxel.text((pyxel.width - len(title)*4)//2, 10, title, pyxel.COLOR_WHITE)
-            y = 30
-           
-            # Lista os jogadores remotos:
+            pyxel.text((pyxel.width - len(title) * 4) // 2, 10, title, pyxel.COLOR_WHITE)
+
+            # Determina o campeão com base no maior score
             sorted_players = sorted(self.mp_client.players.items(), key=lambda item: item[1].get("score", 0), reverse=True)
+            champion = sorted_players[0][0] if sorted_players else "N/A"
+            champion_score = sorted_players[0][1].get("score", 0) if sorted_players else 0
+            champion_msg = f"Campeão: Player {champion} com {champion_score} pontos"
+
+            # Centraliza a mensagem do campeão
+            pyxel.text((pyxel.width - len(champion_msg) * 4) // 2, pyxel.height // 2 - 10, champion_msg, pyxel.COLOR_YELLOW)
+
+            # Lista os jogadores e seus scores
+            y = pyxel.height // 2 + 10
             for pid, pdata in sorted_players:
                 score = pdata.get("score", 0)
                 pyxel.text(10, y, f"Player {pid}: {score}", pyxel.COLOR_WHITE)
                 y += 10
             return
+    
 
         if len(self.mp_client.players) <= 1:
-            pyxel.cls(pyxel.COLOR_NAVY)
-            msg = "Waiting for players..."
-            pyxel.text((pyxel.width - len(msg)*4)//2, pyxel.height//2 - 20, msg, pyxel.COLOR_WHITE)
-            pyxel.text((pyxel.width - len("Como jogar:")*4)//2, pyxel.height//2 + 10, "Como jogar:", pyxel.COLOR_YELLOW)
-            arrow_keys = "andar: W A S D"
-            pyxel.text((pyxel.width - len(arrow_keys)*4)//2, pyxel.height//2 + 20, arrow_keys, pyxel.COLOR_WHITE)
-            pyxel.text((pyxel.width - len("atirar: espaco")*4)//2, pyxel.height//2 + 30, "atirar: espaco", pyxel.COLOR_WHITE)
-            return
+                pyxel.cls(pyxel.COLOR_NAVY)
+                msg = "Waiting for players..."
+                pyxel.text((pyxel.width - len(msg)*4)//2, pyxel.height//2 - 20, msg, pyxel.COLOR_WHITE)
+                pyxel.text((pyxel.width - len("Como jogar:")*4)//2, pyxel.height//2 + 10, "Como jogar:", pyxel.COLOR_YELLOW)
+                arrow_keys = "andar: W A S D"
+                pyxel.text((pyxel.width - len(arrow_keys)*4)//2, pyxel.height//2 + 20, arrow_keys, pyxel.COLOR_WHITE)
+                pyxel.text((pyxel.width - len("atirar: espaco")*4)//2, pyxel.height//2 + 30, "atirar: espaco", pyxel.COLOR_WHITE)
+                hint1 = "HINT: Tome cuidado com os carros"
+                pyxel.text((pyxel.width - len(hint1)*4)//2, pyxel.height//2 + 40, hint1, pyxel.COLOR_ORANGE)
+                hint2 = "HINT: Mate 2 player sem morrer para vencer"
+                pyxel.text((pyxel.width - len(hint2)*4)//2, pyxel.height//2 + 50, hint2, pyxel.COLOR_ORANGE)
+                return
+# -------------------------------
+# Verificação para o game over
+# -------------------------------
 
         if self.player.status == "morto":
             pyxel.cls(pyxel.COLOR_NAVY)
@@ -433,6 +505,7 @@ class App:
 
         for car in self.cars:
             car.draw()
+            
         for _, remote_player in self.remote_players.items():
             if remote_player.status == "vivo":
                 remote_player.draw()
