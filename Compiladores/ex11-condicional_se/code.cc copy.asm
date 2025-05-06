@@ -9,25 +9,20 @@ extern scanf
 extern exit
 
 section .bss
-	valor: resd 1
+	valor: resq 1
 
 section .text
 	global main
 
 main:
-	;Armazenamento de valor de variavel
-
-	push qword [valor]
-
-	;Armazenamento de inteiro
-
-	mov rax,9
-	push rax
-
-	;Atribuicao de valor a variavel
-
-	pop rax
-	mov [valor], rax
+  ;Armazenamento de valor de variavel
+  push qword [valor]
+  ;Armazenamento de inteiro
+  mov rax,9
+  push rax
+  ;Atribuicao de valor a variavel
+  pop rax
+ 	mov [valor], rax
 label0:
 
 	;Armazenamento de valor de variavel
@@ -52,18 +47,20 @@ label_bool_0:
 	mov rax, rcx
 	push rax
 
-	;jump condicional
+  ;jump condicional
+	
+  pop rax
+  ; Antes de chamar printf, ajustar alinhamento:
+  ; Como há um push extra, some 8 para restaurar alinhamento
+  add rsp, 8
+  cmp rax, 0
+  jz label1
 
-	pop rax
-	cmp rax, 0
-	jz label1
-
-	;escreve valor string
-
-	mov rdi, fmt_output_string
-	mov rsi, str0
-	xor eax, eax
-	call printf
+  ;escreve valor string
+  mov rdi, fmt_output_string
+  mov rsi, str0
+  xor eax, eax
+  call printf
 
 	;Armazenamento de valor de variavel
 

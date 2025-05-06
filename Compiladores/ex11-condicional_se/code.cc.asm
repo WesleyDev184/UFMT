@@ -15,40 +15,29 @@ section .text
 	global main
 
 main:
-	;escreve valor string
+	;Armazenamento de valor de variavel
 
-	mov rdi, fmt_output_string
-	mov rsi, str0
-	xor eax, eax
-	call printf
+	push qword [valor]
 
-	;le valor inteiro
+	;Armazenamento de inteiro
 
-	mov rdi, fmt_input_int
-	lea rsi, [valor]
-	xor eax, eax
-	call scanf
-
-	;Armazenamento de numero
-
-	mov rax,2
+	mov rax,13
 	push rax
 
-	;Armazenamento de numero
+	;Atribuicao de valor a variavel
 
-	mov rax,1
-	push rax
-
-	;Subtracao
-
-	pop rbx
 	pop rax
-	sub rax,rbx
-	push rax
+	mov [valor], rax
+label0:
 
 	;Armazenamento de valor de variavel
 
 	push qword [valor]
+
+	;Armazenamento de inteiro
+
+	mov rax,10
+	push rax
 
 	;Aplica operador booleano/exp.logica
 
@@ -56,7 +45,7 @@ main:
 	pop rax
 	mov rcx,1
 	cmp rax,rbx
-	jg label_bool_0
+	jl label_bool_0
 	mov rcx, 0
 
 label_bool_0:
@@ -66,8 +55,35 @@ label_bool_0:
 	;jump condicional
 
 	pop rax
+	add rsp, 8
 	cmp rax, 0
-	jz label0
+	jz label1
+
+	;escreve valor string
+
+	mov rdi, fmt_output_string
+	mov rsi, str0
+	xor eax, eax
+	call printf
+
+	;Armazenamento de valor de variavel
+
+	push qword [valor]
+
+	;Armazenamento de inteiro
+
+	mov rax,11
+	push rax
+
+	;Atribuicao de valor a variavel
+
+	pop rax
+	mov [valor], rax
+
+	;jump incondicional
+
+	jmp label0
+label1:
 
 	;escreve valor string
 
@@ -75,19 +91,6 @@ label_bool_0:
 	mov rsi, str1
 	xor eax, eax
 	call printf
-
-	;jump incondicional
-
-	jmp label1
-label0:
-
-	;escreve valor string
-
-	mov rdi, fmt_output_string
-	mov rsi, str2
-	xor eax, eax
-	call printf
-label1:
 
 ;encerra programa
 
@@ -106,6 +109,5 @@ section .data
 	fmt_output_string db "%s", 10, 0
 
 	;valor: dd "%d", 4
-	str0: db "Informe um valor:", 0
-	str1: db "O valor do teste eh VERDADEIRO!", 0
-	str2: db "O valor do teste eh FALSO!", 0
+	str0: db "print do while", 0
+	str1: db "fim", 0
