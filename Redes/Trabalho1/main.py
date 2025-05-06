@@ -14,7 +14,6 @@ HUMAN_IMAGES = [
 CAR_IMAGES = [
     (240, 272, 27, 24),
     (240, 240, 27, 24),
-
     (288, 240, 27, 24),
 ]
 
@@ -84,6 +83,7 @@ class Player:
         new_x, new_y = push_back(self.x, self.y, dx, dy)
         self.x = min(max(new_x, 0), map_width - 16)
         self.y = min(max(new_y, 0), map_height - 16)
+
     def draw(self):
         pyxel.blt(
             self.x,
@@ -153,6 +153,7 @@ class Car:
             self.y < player.y + player_height and
             self.y + car_height > player.y
         )
+    
 # -------------------------------
 # Classe principal do jogo
 # -------------------------------
@@ -404,7 +405,7 @@ class App:
                     )
                     return
 
-        # Checar se local ou algum jogador remoto atingiu 4 pontos:
+        # Checar se local ou algum jogador remoto atingiu 2 pontos:
         if self.player.score >= 2:
             self.game_state = "fim"
             return
@@ -455,7 +456,7 @@ class App:
             sorted_players = sorted(self.mp_client.players.items(), key=lambda item: item[1].get("score", 0), reverse=True)
             champion = sorted_players[0][0] if sorted_players else "N/A"
             champion_score = sorted_players[0][1].get("score", 0) if sorted_players else 0
-            champion_msg = f"Campeão: Player {champion} com {champion_score} pontos"
+            champion_msg = f"Campeão da porra toda: Player {champion} com {champion_score} pontos"
 
             # Centraliza a mensagem do campeão
             pyxel.text((pyxel.width - len(champion_msg) * 4) // 2, pyxel.height // 2 - 10, champion_msg, pyxel.COLOR_YELLOW)
