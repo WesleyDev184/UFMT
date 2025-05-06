@@ -7,7 +7,7 @@ import random  # Biblioteca para gerar números aleatórios
 # Classe para gerenciar o cliente multiplayer
 # -------------------------------
 class MultiplayerClient:
-    def __init__(self, server_ip='127.0.1.1', send_port=5000, recv_port=5001):
+    def __init__(self, server_ip='10.1.17.122', send_port=5000, recv_port=5001):
         """
         Inicializa o cliente multiplayer.
         :param server_ip: Endereço IP do servidor.
