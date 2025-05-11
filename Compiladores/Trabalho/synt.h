@@ -47,7 +47,6 @@ int declarationV(char *var_name, int var_type);
 int declarationF(char *func_name, int func_type);
 int statement(void);
 int func_code(void);
-int func_call_cmd(char *func_name);
 
 int B(void);
 int B_and(void);

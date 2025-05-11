@@ -62,7 +62,6 @@ int program (void) {
 
         if (lookahead->tag == END) {
             match(END);
-            func_code();
             gen_epilog_code();
             gen_data_section(); //Chamada do gerador de codigo para declaracao de variaveis
         } else {
@@ -513,8 +512,6 @@ int statement (void) {
                 match(SEMICOLON);
                 return true;
             }
-        } else if (lookahead->tag == OPEN_PAR) {
-            return func_call_cmd(lexeme_of_id);
         } else {
             printf("[ERRO] Comando de atribuicao sem '=' ou função mal declarada.\n");
             return ERROR;
@@ -556,54 +553,17 @@ int statement (void) {
     }
 }
 
-/**
- * @brief Chama uma funçao que exista
- * 
- * @param func_name nome da função
- * @return int 
- */
-int func_call_cmd(char *func_name) {
-    type_symbol_table_entry *search_symbol;
-    type_symbol_function_entry *search_symbol_func;
-    search_symbol_func = sym_func_find(func_name);
-    if (search_symbol_func == NULL) {
-        printf("[ERRO] A funcao chamada não existe na tabela de funcoes.\n");
-        return ERROR;
-    } else {
-        match(OPEN_PAR);
-        int i = 0; 
-        int nparams = search_symbol_func->nparams;
-        while ( (lookahead->tag != CLOSE_PAR) && (i < nparams) ) {
-            search_symbol = sym_find(lookahead->lexema, &global_symbol_table_variables);
-            if (search_symbol == NULL) {
-                printf("[ERRO] A variavel passada no parametro não foi declarada.\n");
-                return ERROR;
-            } else {
-                if ( search_symbol_func->params[i++].type == search_symbol->type ) {
-                    match(ID);
-                    match(COMMA);
-                } else {
-                    printf("[ERRO] Parametro não é do mesmo tipo que o declarado no protótipo.\n");
-                    return ERROR;
-                }
-            }
-        }
-        return ( match(CLOSE_PAR) ) && ( match(SEMICOLON) );
-    }
-}
-
-int func_code(){
-    char func_name[MAX_CHAR];
-    strcpy(func_name, lookahead->lexema);
-    match(ID);
-    match(OPEN_PAR);
-    match(CLOSE_PAR);
-    match(BEGIN);
-    statements();
-    match(END);
-    return true;
-}
-
+// int func_code(){
+//     char func_name[MAX_CHAR];
+//     strcpy(func_name, lookahead->lexema);
+//     match(ID);
+//     match(OPEN_PAR);
+//     match(CLOSE_PAR);
+//     match(BEGIN);
+//     statements();
+//     match(END);
+//     return true;
+// }
 
 /**
  * @brief Regra de derivação que analisa expressoes booleanas
