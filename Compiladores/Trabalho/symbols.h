@@ -58,6 +58,7 @@ struct st_sym_func_entry {
     char name[MAX_TOKSZ];
     type_symbol_table_entry params[MAX_PARAMS];
     int nparams;
+    int implemented; // 0 = não implementada, 1 = implementada
 };
 typedef struct st_sym_func_entry type_symbol_function_entry;
 
