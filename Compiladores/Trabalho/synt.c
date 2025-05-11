@@ -118,9 +118,6 @@ int declaration (void) {
         if ( search_symbol != NULL) {
             printf ("[ERRO] Variavel '%s' ja declarada.\n", var_name); 
             return ERROR;
-        } else if ( (search_symbol_func != NULL) ) {
-            printf ("[ERRO] Funcao '%s' ja declarada.\n", var_name); 
-            return ERROR;
         } else {
             if ( match(ID) ) {
                 if (lookahead->tag == SEMICOLON){
@@ -167,53 +164,91 @@ int declarationV(char *var_name, int var_type) {
  */
 int declarationF(char *func_name, int func_type) {
     int nparams = 0;
-    int ok1, ok2;
     type_symbol_table_entry params[MAX_PARAMS];
 
-    if ( match(OPEN_PAR) ) {
-        int fim = false;
-        while ( (fim != true) && (nparams < MAX_PARAMS) ) {
-            int var_type;
-            char var_name[MAX_CHAR];
-            var_type = lookahead->tag;
-            if (var_type == INT || var_type == FLOAT || var_type == CHAR || var_type == STRING) {
-                match(var_type);
-                strcpy(var_name, lookahead->lexema);
-
-                if(lookahead->tag == ID){
-                    match(ID);
-                    strncpy(params[nparams].name, var_name, MAX_TOKSZ);
-                    params[nparams].type = var_type;
-                    nparams++;
-
-                    if (lookahead->tag == COMMA) {
-                        match(COMMA);
-                        if (lookahead->tag == INT || lookahead->tag == FLOAT || lookahead->tag == CHAR || lookahead->tag == STRING){
-                            fim = false;
-                        } else
-                            fim = true;
-                    } else {
-                        printf("[ERRO] Esperado ',' apos a declaracao de variavel.\n");
-                        return ERROR;
-                    }
-                } else {
-                    printf("[ERROR] Esperado ID identificador da variavel da funcao"); 
-                    return ERROR;
-                }
-            } else {
-                fim = true;
+    // Inicia a leitura dos parâmetros
+    if (!match(OPEN_PAR)) {
+        printf("[ERRO] Esperado '(' apos o nome da funcao.\n");
+        return ERROR;
+    }
+    
+    // Processa os parâmetros, se houver
+    while (lookahead->tag != CLOSE_PAR && nparams < MAX_PARAMS) {
+        int var_type = lookahead->tag;
+        if (var_type == INT || var_type == FLOAT || var_type == CHAR || var_type == STRING) {
+            match(var_type);
+            if (lookahead->tag != ID) {
+                printf("[ERRO] Esperado identificador do parametro.\n");
+                return ERROR;
             }
-        }
-    } 
-    if (lookahead->tag == CLOSE_PAR) {
-        ok1 = match(CLOSE_PAR);
-        ok2 = match(SEMICOLON);
-        if ( ok1 && ok2) {
-            if (sym_func_declare(func_name, func_type, params, nparams) != NULL) 
-                return true;
+            char var_name[MAX_CHAR];
+            strcpy(var_name, lookahead->lexema);
+            match(ID);
+            strncpy(params[nparams].name, var_name, MAX_TOKSZ);
+            params[nparams].type = var_type;
+            nparams++;
+
+            // Se houver vírgula, continua a declaração de outro parâmetro
+            if (lookahead->tag == COMMA) {
+                match(COMMA);
+                continue;
+            } else {
+                break;
+            }
+        } else {
+            break;
         }
     }
-    return false;
+    
+    if (!match(CLOSE_PAR)) {
+        printf("[ERRO] Esperado ')' apos os parametros da funcao.\n");
+        return ERROR;
+    }
+    
+    // Diferencia se é somente a declaracao (prototype) ou a implementacao completa.
+    if (lookahead->tag == SEMICOLON) {
+        // Prototype: declara a funcao sem corpo
+        match(SEMICOLON);
+        // Verifica se a funcao ja foi declarada
+        if (sym_func_find(func_name) != NULL) {
+            printf("[ERRO] Funcao '%s' ja declarada.\n", func_name);
+            return ERROR;
+        }
+        sym_func_declare(func_name, func_type, params, nparams);
+        return true;
+    } else if (lookahead->tag == BEGIN) {
+        // Definicao: implementacao completa da funcao
+        match(BEGIN);
+        type_symbol_function_entry *f = sym_func_find(func_name);
+        if (f != NULL) {
+            if (f->implemented) {
+                printf("[ERRO] Funcao '%s' ja implementada.\n", func_name);
+                return ERROR;
+            }
+        } else {
+            // Se ainda nao foi declarada, declara a funcao
+            f = sym_func_declare(func_name, func_type, params, nparams);
+            if (f == NULL)
+                return ERROR;
+        }
+        
+        // Processa os comandos (corpo) da funcao
+        int flag = statements();
+        if (flag == ERROR) {
+            printf("[ERRO] Problemas na implementacao da funcao '%s'.\n", func_name);
+            return ERROR;
+        }
+        if (!match(END)) {
+            printf("[ERRO] Fim de corpo da funcao ausente.\n");
+            return ERROR;
+        }
+        // Marca a funcao como implementada
+        f->implemented = 1;
+        return true;
+    } else {
+        printf("[ERRO] Esperado ';' (declaracao) ou 'BEGIN' (implementacao) apos os parametros da funcao.\n");
+        return ERROR;
+    }
 }
 
 /**
@@ -268,7 +303,7 @@ int statement (void) {
             }
             
         } else {
-            printf("[ERRO] Simbolo desconhecido (Variavel nao declarada): %s\n", lexeme_of_id);
+            printf("[ERRO] Simbolo desconhecido (Variavel nao declarada - read): %s\n", lexeme_of_id);
             return ERROR;
         }
     } else if (lookahead->tag == WRITE) {
@@ -316,7 +351,7 @@ int statement (void) {
 
                 return true;
             } else {
-                printf("[ERRO] Simbolo desconhecido (Variavel nao declarada): %s\n", lexeme_of_id);
+                printf("[ERRO] Simbolo desconhecido (Variavel nao declarada - write): %s\n", lexeme_of_id);
                 return ERROR;
             }
         }
@@ -483,8 +518,31 @@ int statement (void) {
             return ERROR;
         }
     } else {
-        printf("[ERRO] Simbolo desconhecido (Variavel nao declarada): %s\n", lexeme_of_id);
-        return ERROR;
+        // Se não encontrou como variável, verifica se é uma função declarada
+        type_symbol_function_entry *search_symbol_func = sym_func_find(lexeme_of_id);
+        if (search_symbol_func != NULL) {
+            // Verifica se a chamada está correta: deve abrir e fechar parênteses
+            if (lookahead->tag == OPEN_PAR) {
+            match(OPEN_PAR);
+            if (lookahead->tag != CLOSE_PAR) {
+                printf("[ERRO] Chamada de função '%s' sem fechamento de parênteses.\n", lexeme_of_id);
+                return ERROR;
+            }
+            match(CLOSE_PAR);
+            if (lookahead->tag != SEMICOLON) {
+                printf("[ERRO] Chamada de função '%s' sem ponto e vírgula.\n", lexeme_of_id);
+                return ERROR;
+            }
+            match(SEMICOLON);
+            return true;
+            } else {
+            printf("[ERRO] Chamada de função '%s' sem abertura de parênteses.\n", lexeme_of_id);
+            return ERROR;
+            }
+        } else {
+            printf("[ERRO] Simbolo desconhecido (Variavel ou Funcao nao declarada - id): %s\n", lexeme_of_id);
+            return ERROR;
+        }
     }
 }
     else if (lookahead->tag == ENDTOKEN || lookahead->tag == END) {

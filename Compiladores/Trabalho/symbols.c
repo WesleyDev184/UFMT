@@ -139,6 +139,7 @@ type_symbol_function_entry * sym_func_declare(char *name, int type, type_symbol_
     strncpy (symfuncs[symfuncspos].name, name, MAX_TOKSZ);
     symfuncs[symfuncspos].type = type;
     symfuncs[symfuncspos].nparams = nparams;
+    symfuncs[symfuncspos].implemented = 0;
     for (i = 0; i < nparams; i++) {    
         strncpy(symfuncs[symfuncspos].params[i].name,params[i].name,MAX_TOKSZ);
         symfuncs[symfuncspos].params[i].type = params[i].type;

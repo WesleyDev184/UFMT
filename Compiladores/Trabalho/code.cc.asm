@@ -8,6 +8,27 @@ extern printf
 extern scanf
 extern exit
 
+	;escreve valor string
+
+	mov rdi, fmt_output_string
+	mov rsi, str0
+	xor eax, eax
+	call printf
+
+	;escreve valor inteiro
+
+	mov rdi, fmt_output_int
+	mov esi, [valor]
+	xor eax, eax
+	call printf
+
+	;escreve valor string
+
+	mov rdi, fmt_output_string
+	mov rsi, str1
+	xor eax, eax
+	call printf
+
 section .bss
 	valor: resd 1
 
@@ -18,7 +39,7 @@ main:
 	;escreve valor string
 
 	mov rdi, fmt_output_string
-	mov rsi, str0
+	mov rsi, str2
 	xor eax, eax
 	call printf
 
@@ -61,7 +82,7 @@ label_bool_0:
 	;escreve valor string
 
 	mov rdi, fmt_output_string
-	mov rsi, str1
+	mov rsi, str3
 	xor eax, eax
 	call printf
 
@@ -98,7 +119,7 @@ label1:
 	;escreve valor string
 
 	mov rdi, fmt_output_string
-	mov rsi, str2
+	mov rsi, str4
 	xor eax, eax
 	call printf
 
@@ -119,6 +140,8 @@ section .data
 	fmt_output_string db "%s", 10, 0
 
 	;valor: dd "%d", 4
-	str0: db "Digite um valor:", 0
-	str1: db "print do while", 0
-	str2: db "fim", 0
+	str0: db "valor: ", 0
+	str1: db "", 0
+	str2: db "Digite um valor:", 0
+	str3: db "print do while", 0
+	str4: db "fim", 0
