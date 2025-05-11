@@ -8,6 +8,8 @@ extern printf
 extern scanf
 extern exit
 
+; Label da funcao
+teste:
 	;escreve valor string
 
 	mov rdi, fmt_output_string
@@ -28,6 +30,9 @@ extern exit
 	mov rsi, str1
 	xor eax, eax
 	call printf
+
+	; Retorna para o endereco de chamada
+	ret
 
 section .bss
 	valor: resd 1
@@ -66,7 +71,7 @@ label0:
 	pop rax
 	mov rcx,1
 	cmp rax,rbx
-	jl label_bool_0
+	jle label_bool_0
 	mov rcx, 0
 
 label_bool_0:
@@ -85,6 +90,9 @@ label_bool_0:
 	mov rsi, str3
 	xor eax, eax
 	call printf
+
+; Chamada da funcao 'teste'
+	call teste
 
 	;Armazenamento de valor de variavel
 

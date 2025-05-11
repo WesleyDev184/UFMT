@@ -12,7 +12,7 @@ begin
     write "Digite um valor:\n";
     read valor;
 
-    while (valor < 10)
+    while (valor <= 10)
     begin
         write "print do while\n";
         teste();
