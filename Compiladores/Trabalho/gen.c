@@ -270,6 +270,15 @@ void gen_epilog_code(void)
 }
 
 /**
+ * @brief Gera o comando de retorno para voltar para o endereço de chamada
+ */
+void gen_return(void)
+{
+    fprintf(output_file, "\n\t; Retorna para o endereco de chamada\n");
+    fprintf(output_file, "\tret\n");
+}
+
+/**
  * @brief Funcao que gera automaticamente um novo nome para um label
  * @param string name
  */
@@ -293,6 +302,26 @@ void gen_label_name(char *name)
 void gen_label(char *label)
 {
     fprintf(output_file, "%s:\n", label);
+}
+
+/**
+ * @brief Gera o label para a função, permitindo seu acesso
+ *
+ * @param func_name Nome da função (preferencialmente com um prefixo, ex: "func_<nome>")
+ */
+void gen_func_label(char *func_name) {
+    fprintf(output_file, "\n; Label da funcao\n");
+    fprintf(output_file, "%s:", func_name);
+}
+
+/**
+ * @brief Gera a instrucao para chamada de uma funcao
+ *
+ * @param func_name Nome da funcao a ser chamada
+ */
+void gen_call_function(char *func_name) {
+    fprintf(output_file, "\n; Chamada da funcao '%s'\n", func_name);
+    fprintf(output_file, "\tcall %s\n", func_name);
 }
 
 /**

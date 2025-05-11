@@ -219,6 +219,7 @@ int declarationF(char *func_name, int func_type) {
     } else if (lookahead->tag == BEGIN) {
         // Definicao: implementacao completa da funcao
         match(BEGIN);
+        gen_func_label(func_name);
         type_symbol_function_entry *f = sym_func_find(func_name);
         if (f != NULL) {
             if (f->implemented) {
@@ -244,6 +245,7 @@ int declarationF(char *func_name, int func_type) {
         }
         // Marca a funcao como implementada
         f->implemented = 1;
+        gen_return();
         return true;
     } else {
         printf("[ERRO] Esperado ';' (declaracao) ou 'BEGIN' (implementacao) apos os parametros da funcao.\n");
@@ -520,6 +522,7 @@ int statement (void) {
     } else {
         // Se não encontrou como variável, verifica se é uma função declarada
         type_symbol_function_entry *search_symbol_func = sym_func_find(lexeme_of_id);
+        gen_call_function(lexeme_of_id);
         if (search_symbol_func != NULL) {
             // Verifica se a chamada está correta: deve abrir e fechar parênteses
             if (lookahead->tag == OPEN_PAR) {
