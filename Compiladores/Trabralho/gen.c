@@ -303,7 +303,6 @@ void gen_cond_jump(char *label)
 {
     fprintf(output_file, "\n\t;jump condicional\n");
     fprintf(output_file, "\n\tpop rax\n");
-    fprintf(output_file, "\tadd rsp, 8\n");
     fprintf(output_file, "\tcmp rax, 0\n");
     fprintf(output_file, "\tjz %s\n", label);
 }

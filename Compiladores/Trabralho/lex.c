@@ -186,6 +186,12 @@ type_token *getToken()
         strcpy(token->lexema, ";");
         token->value = 0;
     }
+    //Verifica se COMMA - > ","
+    else if (ch == COMMA) {
+        token->tag = COMMA;
+        strcpy(token->lexema, ",");
+        token->value = 0;
+    }
     // Verifica se EQUAL ou ASSIGN -> '==' ou '='
     else if (ch == ASSIGN)
     {

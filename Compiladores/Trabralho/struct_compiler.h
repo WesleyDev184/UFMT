@@ -31,6 +31,7 @@
 #define CLOSE_PAR ')'
 #define SEMICOLON ';'
 #define DOUBLE_QUOTES '"'
+#define COMMA ','
 
 // KeyWords
 #define ID 256

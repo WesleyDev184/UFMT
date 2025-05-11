@@ -15,19 +15,19 @@ section .text
 	global main
 
 main:
-	;Armazenamento de valor de variavel
+	;escreve valor string
 
-	push qword [valor]
+	mov rdi, fmt_output_string
+	mov rsi, str0
+	xor eax, eax
+	call printf
 
-	;Armazenamento de inteiro
+	;le valor inteiro
 
-	mov rax,9
-	push rax
-
-	;Atribuicao de valor a variavel
-
-	pop rax
-	mov [valor], rax
+	mov rdi, fmt_input_int
+	lea rsi, [valor]
+	xor eax, eax
+	call scanf
 label0:
 
 	;Armazenamento de valor de variavel
@@ -55,14 +55,13 @@ label_bool_0:
 	;jump condicional
 
 	pop rax
-	add rsp, 8
 	cmp rax, 0
 	jz label1
 
 	;escreve valor string
 
 	mov rdi, fmt_output_string
-	mov rsi, str0
+	mov rsi, str1
 	xor eax, eax
 	call printf
 
@@ -70,9 +69,20 @@ label_bool_0:
 
 	push qword [valor]
 
+	;Armazenamento de valor de variavel
+
+	push qword [valor]
+
 	;Armazenamento de inteiro
 
-	mov rax,11
+	mov rax,1
+	push rax
+
+	;Adicao
+
+	pop rax
+	pop rbx
+	add rax,rbx
 	push rax
 
 	;Atribuicao de valor a variavel
@@ -88,7 +98,7 @@ label1:
 	;escreve valor string
 
 	mov rdi, fmt_output_string
-	mov rsi, str1
+	mov rsi, str2
 	xor eax, eax
 	call printf
 
@@ -109,5 +119,6 @@ section .data
 	fmt_output_string db "%s", 10, 0
 
 	;valor: dd "%d", 4
-	str0: db "print do while", 0
-	str1: db "fim", 0
+	str0: db "Digite um valor:", 0
+	str1: db "print do while", 0
+	str2: db "fim", 0
