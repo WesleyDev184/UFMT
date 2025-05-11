@@ -52,34 +52,14 @@ struct st_symbol_table_strings {
 };
 typedef struct st_symbol_table_strings type_symbol_table_string;
 
-
-// // tabela de simbolos de funcoes
-// struct st_sym_function_entry {
-//     char name[MAX_TOKSZ];
-//     char type;
-//     int n_params;
-//     type_symbol_table_entry params[MAX_PARAMS];
-// };
-
-// typedef struct st_sym_function_entry type_symbol_table_function_entry;
-
-// struct st_symbol_table_function {
-//     type_symbol_table_function_entry function[MAX_FUNCS];
-//     int n_functions;
-// };
-// typedef struct st_symbol_table_function type_symbol_table_function;  
-
-
-/* Preparo para tratamento de funcoes
 // Estrutura da tabela de simbolos para funcoes
-struct st_sym_func {
-    char type;
+struct st_sym_func_entry {
+    int type;
     char name[MAX_TOKSZ];
-    type_symbol params[MAX_PARAMS];
+    type_symbol_table_entry params[MAX_PARAMS];
     int nparams;
 };
-typedef struct st_sym_func type_symbol_function_entry;
-*/
+typedef struct st_sym_func_entry type_symbol_function_entry;
 
 
 
@@ -88,15 +68,16 @@ type_symbol_table_entry *sym_find(char *s, type_symbol_table_variables *stv);
 type_symbol_table_entry *sym_declare(char *name, int type, int addr, type_symbol_table_variables *stv);
 type_symbol_table_string_entry *sym_string_find(char *s);
 type_symbol_table_string_entry *sym_string_declare(char *s);
+type_symbol_function_entry *sym_func_find(char *s);
+type_symbol_function_entry *sym_func_declare(char *name,int type, type_symbol_table_entry params[MAX_PARAMS], int nparams);
+
 void initSymbolTableVariables(type_symbol_table_variables *stv);
 void initSymbolTableString();
 
 //Funcoes destinadas a DEBUG
 void printSTVariables(type_symbol_table_variables *stv);
 void printSTString();
+void printTSFunction();
 
-// Preparo para tratamento de funcoes
-// type_symbol_table_function *sym_func_find(char *s);
-// type_symbol_table_function *sym_func_declare(char *name, char type, type_symbol_table_entry params[MAX_PARAMS], int n_params);
 
 #endif //_SYMBOLS_H_

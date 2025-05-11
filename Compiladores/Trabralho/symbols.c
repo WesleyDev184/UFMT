@@ -7,16 +7,16 @@
  */
 #include "symbols.h"
 
-//extern int nstringconsts;
-//int sympos = 0;
-//int nstringconsts = 0;
-//int stack_pos = 0;
+extern int nstringconsts;
+int sympos = 0;
+int nstringconsts = 0;
+int symfuncspos = 0;
+int stack_pos = 0;
 
 //Variaveis globais
 type_symbol_table_variables global_symbol_table_variables;
 type_symbol_table_string symbol_table_string;
-// type_symbol_table_function symfuncs[MAX_FUNCS]; // Tabela de funcoes 
-// int symfuncspos = 0; // Contador de funcoes
+type_symbol_function_entry symfuncs[MAX_FUNCS];
  
 
 /**
@@ -111,16 +111,16 @@ type_symbol_table_string_entry *sym_string_declare(char *s) {
  * @return type_symbol_function* 
  */
 
-// type_symbol_table_function *sym_func_find(char *s){
-//     int i;
-// 	type_symbol_table_function *symbol = NULL;
-// 	for (i = 0; i < symfuncspos; i++) {
-// 		if (strcmp(symfuncs[i].name, s) == 0) {
-// 			symbol = &symfuncs[i];
-// 		}
-// 	}
-// 	return symbol;
-// }
+type_symbol_function_entry *sym_func_find(char *s){
+    int i;
+	type_symbol_function_entry *symbol = NULL;
+	for (i = 0; i < symfuncspos; i++) {
+		if (strcmp(symfuncs[i].name, s) == 0) {
+			symbol = &symfuncs[i];
+		}
+	}
+	return symbol;
+}
 
 
 
@@ -133,8 +133,8 @@ type_symbol_table_string_entry *sym_string_declare(char *s) {
  * @param nparams 
  * @return type_symbol_function* 
  */
-/*
-type_symbol_function *sym_func_declare(char *name, char type, type_symbol params[MAX_PARAMS],int nparams){
+
+type_symbol_function_entry * sym_func_declare(char *name, int type, type_symbol_table_entry params[MAX_PARAMS],int nparams){
     int i;
     strncpy (symfuncs[symfuncspos].name, name, MAX_TOKSZ);
     symfuncs[symfuncspos].type = type;
@@ -149,7 +149,6 @@ type_symbol_function *sym_func_declare(char *name, char type, type_symbol params
     }
     return &symfuncs[symfuncspos -1];
 }
-*/
 
 /**
  * @brief Inicializa tabela de simbolos de variaveis globais
@@ -201,4 +200,17 @@ void printSTString() {
         printf("\tstring[%d].name:%s\n", i, symbol_table_string.string[i].name);
         printf("\tstring[%d].value:%s\n", i, symbol_table_string.string[i].value);
     }
+}
+
+void printTSFunction() {
+    int i;
+    type_symbol_function_entry *func =  NULL;
+    for (i = 0; i < symfuncspos; i++) {
+        func = &symfuncs[i];
+		printf("Tipo: %d\nNome: %s\nParametros-> (", func->type, func->name);
+        for (int j = 0; j < func->nparams; j++) {
+            printf("tipo: %d nome: %s, ", func->params[j].type, func->params[j].name);
+        }
+        printf(")\n");
+	}
 }

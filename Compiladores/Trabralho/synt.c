@@ -24,37 +24,57 @@ extern FILE *output_file;
  * @return int true/false
  */
 int match(int token_tag) {
+    // printf("[DEBUG] Token esperado: %d\n", token_tag);
+    printf("[DEBUG] Token recebido: %d\n", lookahead->tag);
+
     if ( lookahead->tag == token_tag ) {
         lookahead = getToken(); //Pega o proximo token por meio do lexico
         return true;
     }
     printf("[ERRO] Entrada esperada: %s\n", lookahead->lexema);
-    return false;
+    return ERROR;
 }
 
 /**
  * @brief Regra de derivacao inicial
  */
+// TODO: Fazer a função principal (begin, end)
 int program (void) {
     gen_preambule(); //Temporariamente cria um preambulo adicional que permite o uso das funcoes scanf e printf
 
     int flag = declarations();
 
     if (flag == false) {
-        //printf("[ERRO] Erro na declaracao.\n");
-        return false;
+        printf("[ERRO] Erro na declaracao.\n");
+        return ERROR;
     }
     gen_bss_section();
     gen_preambule_code(); //Chamada do gerador de codigo para escrita do cabecalho da secao de codigo
-    flag = statements();
 
-    if (flag == false) {
-        //printf("[ERRO] Erro nos comandos.\n");
-        return false;
+    if (lookahead->tag == BEGIN) {
+        match(BEGIN);
+        flag = statements();
+
+        if (flag == false) {
+            printf("[ERRO] Erro nos comandos.\n");
+            return ERROR;
+        }
+
+        if (lookahead->tag == END) {
+            match(END);
+            func_code();
+            gen_epilog_code();
+            gen_data_section(); //Chamada do gerador de codigo para declaracao de variaveis
+        } else {
+            printf("[ERRO] Faltou o END.\n");
+            return ERROR;
+        }
+    } else {
+        printf("[ERRO] Faltou o BEGIN.\n");
+        return ERROR;
     }
 
-    gen_epilog_code();
-    gen_data_section(); //Chamada do gerador de codigo para declaracao de variaveis
+    
     return true;
 }
 
@@ -69,10 +89,10 @@ int declarations(void) {
     } while (sucess == true);
 
     if (sucess == ERROR) {
-        //printf("[ERRO] Erro na declaracao.\n");
-        return false;
+        printf("[ERRO] Erro na declaracao.\n");
+        return ERROR;
     } else {
-        //printf("[SUCESSO] Declaracao realizada com sucesso.\n");
+        printf("[SUCESSO] Declaracao realizada com sucesso.\n");
         return true;
     }
 }
@@ -83,7 +103,7 @@ int declarations(void) {
  */
 int declaration (void) {
     type_symbol_table_entry *search_symbol;
-    int ok1, ok2;
+    type_symbol_function_entry *search_symbol_func;
     char var_name[MAX_CHAR];
     int var_type;
 
@@ -93,35 +113,107 @@ int declaration (void) {
         match(var_type);
         strcpy(var_name, lookahead->lexema);
         search_symbol = sym_find( var_name, &global_symbol_table_variables );
+        search_symbol_func = sym_func_find(var_name);
 
         if ( search_symbol != NULL) {
             printf ("[ERRO] Variavel '%s' ja declarada.\n", var_name); 
             return ERROR;
+        } else if ( (search_symbol_func != NULL) ) {
+            printf ("[ERRO] Funcao '%s' ja declarada.\n", var_name); 
+            return ERROR;
         } else {
-            ok1 = match(ID); //Verifica se identificador vem a seguir
-            if (ok1 == false) {
-                printf("[ERRO] Faltou identificador e não foi possível registrar a variável na tabela de simbolos.\n");
+            if ( match(ID) ) {
+                if (lookahead->tag == SEMICOLON){
+                    return declarationV(var_name, var_type);
+                } else if (lookahead->tag == OPEN_PAR) {
+                    return declarationF(var_name, var_type);
+                } else {
+                    printf("[ERRO] Nao foi possivel identificar se é variavel ou funcao.\n");
+                    return ERROR;
+                }
+            } else {
+                printf("[ERRO] Deveria existir um ID.\n");
                 return ERROR;
             }
-            ok2 = match(SEMICOLON); //Verifica se ; vem a seguir
-
-            if (ok2 == false) {
-                printf("[ERRO] Faltou ponto e virgula e não foi possível registrar a variável na tabela de simbolos.\n");
-                return ERROR;
-            }
-            sym_declare( var_name, var_type, 0, &global_symbol_table_variables);
-
-            return ok1 && ok2;
         }
     } else if (lookahead->tag == ENDTOKEN ||
                 lookahead->tag == READ ||
+                lookahead->tag == BEGIN ||
                 lookahead->tag == WRITE || lookahead->tag == IF || lookahead->tag == ID) {
         //Verifica se fim de arquivo
         return false;         
     } else {
         printf ("[ERRO] Tipo desconhecido: %d %s.\n", lookahead->tag, lookahead->lexema);
-        return false; 
+        return ERROR; 
     }
+}
+
+/**
+ * @brief Regra de derivacao declaracaoV, responsavel por declarar uma variavel
+ * @param var_name nome da variável
+ * @param var_type tipo da variável
+ * @return int true/false
+ */
+int declarationV(char *var_name, int var_type) {
+    sym_declare( var_name, var_type, 0, &global_symbol_table_variables);
+    return match(SEMICOLON); 
+}
+
+/**
+ * @brief Regra de derivacao declaracaoF, responsavel por declarar uma funcao
+ * @param func_name nome da função
+ * @param func_type tipo da funcao
+ * @return int true/false
+ */
+int declarationF(char *func_name, int func_type) {
+    int nparams = 0;
+    int ok1, ok2;
+    type_symbol_table_entry params[MAX_PARAMS];
+
+    if ( match(OPEN_PAR) ) {
+        int fim = false;
+        while ( (fim != true) && (nparams < MAX_PARAMS) ) {
+            int var_type;
+            char var_name[MAX_CHAR];
+            var_type = lookahead->tag;
+            if (var_type == INT || var_type == FLOAT || var_type == CHAR || var_type == STRING) {
+                match(var_type);
+                strcpy(var_name, lookahead->lexema);
+
+                if(lookahead->tag == ID){
+                    match(ID);
+                    strncpy(params[nparams].name, var_name, MAX_TOKSZ);
+                    params[nparams].type = var_type;
+                    nparams++;
+
+                    if (lookahead->tag == COMMA) {
+                        match(COMMA);
+                        if (lookahead->tag == INT || lookahead->tag == FLOAT || lookahead->tag == CHAR || lookahead->tag == STRING){
+                            fim = false;
+                        } else
+                            fim = true;
+                    } else {
+                        printf("[ERRO] Esperado ',' apos a declaracao de variavel.\n");
+                        return ERROR;
+                    }
+                } else {
+                    printf("[ERROR] Esperado ID identificador da variavel da funcao"); 
+                    return ERROR;
+                }
+            } else {
+                fim = true;
+            }
+        }
+    } 
+    if (lookahead->tag == CLOSE_PAR) {
+        ok1 = match(CLOSE_PAR);
+        ok2 = match(SEMICOLON);
+        if ( ok1 && ok2) {
+            if (sym_func_declare(func_name, func_type, params, nparams) != NULL) 
+                return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -135,7 +227,7 @@ int statements (void) {
     } while (sucess == true);
 
     if (sucess == ERROR) {
-        return false;
+        return ERROR;
     } else {
         return true;
     } 
@@ -363,52 +455,92 @@ int statement (void) {
         return true;
         
     } else if (lookahead->tag == ID) {
-        strcpy(lexeme_of_id, lookahead->lexema);
-        match(ID);
-        search_symbol = sym_find(lexeme_of_id, &global_symbol_table_variables);
-        if (search_symbol != NULL) {
-            type = search_symbol->type;
-            genId(lexeme_of_id); // gera código para o ID ser salvo na pilha
-            if (lookahead->tag == ASSIGN) {
-                match(ASSIGN);
-                // int flag = E();
-                // if (flag == false) {
-                //     printf("[ERRO] Comando de atribuicao sem expressao.\n");
-                //     return false;
-                // }
-                if (type == INT && lookahead->tag == INT) {
-                    genNum(lookahead->lexema, INT);
-                    match(INT);
-                } else if (type == FLOAT && lookahead->tag == FLOAT) {
-                    genNum(lookahead->lexema, FLOAT);
-                    match(FLOAT);
-                } else {
-                    printf("[ERRO DE SEMANTICA] Tipo de variavel diferente do tipo da atribuicao.\n");
-                    return ERROR;
-                }
-                genAssign(lexeme_of_id, type);
-                if (lookahead->tag != SEMICOLON) {
-                    printf("[ERRO] Comando de atribuicao sem ponto e virgula.\n");
-                    return ERROR;
-                } else {
-                    match(SEMICOLON);
-                    return true;
-                }
-            } else {
-                printf("[ERRO] Comando de atribuicao sem '='.\n");
+    strcpy(lexeme_of_id, lookahead->lexema);
+    match(ID);
+    search_symbol = sym_find(lexeme_of_id, &global_symbol_table_variables);
+    if (search_symbol != NULL) {
+        type = search_symbol->type;
+        genId(lexeme_of_id); // gera código para o ID ser salvo na pilha
+        if (lookahead->tag == ASSIGN) {
+            match(ASSIGN);
+            // Parse the arithmetic expression after '=':
+            if (!E()) {
+                printf("[ERRO] Expressao invalida na atribuicao.\n");
                 return ERROR;
             }
+            genAssign(lexeme_of_id, type);
+            if (lookahead->tag != SEMICOLON) {
+                printf("[ERRO] Comando de atribuicao sem ponto e virgula.\n");
+                return ERROR;
+            } else {
+                match(SEMICOLON);
+                return true;
+            }
+        } else if (lookahead->tag == OPEN_PAR) {
+            return func_call_cmd(lexeme_of_id);
         } else {
-            printf("[ERRO] Simbolo desconhecido (Variavel nao declarada): %s\n", lexeme_of_id);
+            printf("[ERRO] Comando de atribuicao sem '=' ou função mal declarada.\n");
             return ERROR;
         }
+    } else {
+        printf("[ERRO] Simbolo desconhecido (Variavel nao declarada): %s\n", lexeme_of_id);
+        return ERROR;
     }
+}
     else if (lookahead->tag == ENDTOKEN || lookahead->tag == END) {
         return false;
     } else {
         printf("[ERRO] Comando desconhecido.\nTag=%d; Lexema=%s\n", lookahead->tag, lookahead->lexema);
-        return false;
+        return ERROR;
     }
+}
+
+/**
+ * @brief Chama uma funçao que exista
+ * 
+ * @param func_name nome da função
+ * @return int 
+ */
+int func_call_cmd(char *func_name) {
+    type_symbol_table_entry *search_symbol;
+    type_symbol_function_entry *search_symbol_func;
+    search_symbol_func = sym_func_find(func_name);
+    if (search_symbol_func == NULL) {
+        printf("[ERRO] A funcao chamada não existe na tabela de funcoes.\n");
+        return ERROR;
+    } else {
+        match(OPEN_PAR);
+        int i = 0; 
+        int nparams = search_symbol_func->nparams;
+        while ( (lookahead->tag != CLOSE_PAR) && (i < nparams) ) {
+            search_symbol = sym_find(lookahead->lexema, &global_symbol_table_variables);
+            if (search_symbol == NULL) {
+                printf("[ERRO] A variavel passada no parametro não foi declarada.\n");
+                return ERROR;
+            } else {
+                if ( search_symbol_func->params[i++].type == search_symbol->type ) {
+                    match(ID);
+                    match(COMMA);
+                } else {
+                    printf("[ERRO] Parametro não é do mesmo tipo que o declarado no protótipo.\n");
+                    return ERROR;
+                }
+            }
+        }
+        return ( match(CLOSE_PAR) ) && ( match(SEMICOLON) );
+    }
+}
+
+int func_code(){
+    char func_name[MAX_CHAR];
+    strcpy(func_name, lookahead->lexema);
+    match(ID);
+    match(OPEN_PAR);
+    match(CLOSE_PAR);
+    match(BEGIN);
+    statements();
+    match(END);
+    return true;
 }
 
 
@@ -473,7 +605,7 @@ int B_relacional() {
             flag = match(')');
             if (flag == false) {
                 printf("[ERRO] Comando IF sem fechamento de parenteses.\n");
-                return false;
+                return ERROR;
             }
         } 
         else if (lookahead->tag == ID) {
@@ -484,7 +616,7 @@ int B_relacional() {
             flag = E(); // expressao aritmetica
             if (flag == false) {
                 printf("[ERRO] Expressao booleana mal formada.\n");
-                return false;
+                return ERROR;
             }
         }
         
@@ -512,7 +644,7 @@ int boolOperator(int *operator) {
             return true;
     } else {
         printf("[ERRO] Operador relacional esperado.\n");
-        return false;
+        return ERROR;
     }
 }
 
@@ -584,7 +716,7 @@ int ER() {
         return true;
     } else {
         printf("[ERRO] Operador aritmetico esperado.\n");
-        return false;
+        return ERROR;
     }
 }
 
@@ -616,7 +748,7 @@ int TR() {
         return b1 && b2;
     } else if (lookahead->tag == ')') {
         return true;
-    } else if (lookahead->tag == ENDTOKEN || boolOperatorVerify() || logicalOperatorVerify() || lookahead->tag == SEMICOLON){ //EOF
+    } else if (lookahead->tag == ENDTOKEN || boolOperatorVerify() || logicalOperatorVerify() || lookahead->tag == SEMICOLON){
         return true;
     } else if (lookahead->tag == '+') {
         return true;
@@ -629,24 +761,25 @@ int TR() {
 
 int F() {
     if (lookahead->tag == '(') {
-        int b1,b2;
+        int b1, b2;
         match('(');
         b1 = E();
         if (b1)
             b2 = match(')');
         return b1 && b2;
+    } else if (lookahead->tag == ID) {
+        genId(lookahead->lexema);
+        return match(ID);
     } else if (lookahead->tag == INT) {
-        int b1;
         char lexema[MAX_TOKEN];
         strcpy(lexema, lookahead->lexema);
-        b1 = match(INT); //substituir 'id' por NUM
+        int b1 = match(INT);
         genNum(lexema, INT);
         return b1;
     } else if (lookahead->tag == FLOAT) {
-        int b1;
         char lexema[MAX_TOKEN];
         strcpy(lexema, lookahead->lexema);
-        b1 = match(FLOAT); //substituir 'id' por NUM
+        int b1 = match(FLOAT);
         genNum(lexema, FLOAT);
         return b1;
     } else {
@@ -692,6 +825,7 @@ int main(int argc, char *argv[]) {
         // imprime a tabela de simbolos
         printSTVariables(&global_symbol_table_variables);
         printSTString();
+        printTSFunction();
     } else {
         printf("[ERRO] Erro na compilacao.\n");
     }
