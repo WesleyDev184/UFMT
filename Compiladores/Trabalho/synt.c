@@ -108,7 +108,7 @@ int declaration (void) {
 
     //Verifica o tipo da variavel
     var_type = lookahead->tag;
-    if ( var_type == INT || var_type == FLOAT || var_type == CHAR || var_type == STRING) { 
+    if ( var_type == INT || var_type == FLOAT || var_type == CHAR || var_type == STRING || var_type == VOID ) { 
         match(var_type);
         strcpy(var_name, lookahead->lexema);
         search_symbol = sym_find( var_name, &global_symbol_table_variables );
@@ -174,7 +174,7 @@ int declarationF(char *func_name, int func_type) {
     // Processa os parâmetros, se houver
     while (lookahead->tag != CLOSE_PAR && nparams < MAX_PARAMS) {
         int var_type = lookahead->tag;
-        if (var_type == INT || var_type == FLOAT || var_type == CHAR || var_type == STRING) {
+        if (var_type == INT || var_type == FLOAT || var_type == CHAR || var_type == STRING || var_type == VOID) {
             match(var_type);
             if (lookahead->tag != ID) {
                 printf("[ERRO] Esperado identificador do parametro.\n");

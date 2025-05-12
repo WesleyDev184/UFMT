@@ -45,6 +45,7 @@
 #define STRING 264
 #define FLOAT 265
 #define CHAR 266
+#define VOID 367
 #define BEGIN 267
 #define END 268
 
