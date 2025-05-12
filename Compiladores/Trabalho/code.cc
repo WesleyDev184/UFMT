@@ -1,7 +1,7 @@
 int valor;
-int teste();
+void teste();
 
-int teste()
+void teste()
 begin
     write "valor: ";
     write valor; 

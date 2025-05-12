@@ -26,6 +26,7 @@ type_token key_words[] = {
     {FLOAT, "float", 0},
     {STRING, "string", 0},
     {CHAR, "char", 0},
+    {VOID, "void", 0},
     {BEGIN, "begin", 0},
     {END, "end", 0},
     {EQUAL, "==", 0},
