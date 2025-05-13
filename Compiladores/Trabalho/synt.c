@@ -641,18 +641,6 @@ int statement (void) {
     }
 }
 
-// int func_code(){
-//     char func_name[MAX_CHAR];
-//     strcpy(func_name, lookahead->lexema);
-//     match(ID);
-//     match(OPEN_PAR);
-//     match(CLOSE_PAR);
-//     match(BEGIN);
-//     statements();
-//     match(END);
-//     return true;
-// }
-
 /**
  * @brief Regra de derivação que analisa expressoes booleanas
  *        no padrao '[id | expr] op_rel [id | expr]' 
