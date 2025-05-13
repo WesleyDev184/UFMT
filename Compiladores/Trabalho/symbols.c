@@ -134,19 +134,21 @@ type_symbol_function_entry *sym_func_find(char *s){
  * @return type_symbol_function* 
  */
 
-type_symbol_function_entry * sym_func_declare(char *name, int type, type_symbol_table_entry params[MAX_PARAMS],int nparams){
+type_symbol_function_entry * sym_func_declare(char *name, int type, type_symbol_table_entry params[MAX_PARAMS], int nparams){
     int i;
-    strncpy (symfuncs[symfuncspos].name, name, MAX_TOKSZ);
+    strncpy(symfuncs[symfuncspos].name, name, MAX_TOKSZ);
     symfuncs[symfuncspos].type = type;
     symfuncs[symfuncspos].nparams = nparams;
     symfuncs[symfuncspos].implemented = 0;
     for (i = 0; i < nparams; i++) {    
-        strncpy(symfuncs[symfuncspos].params[i].name,params[i].name,MAX_TOKSZ);
+        strncpy(symfuncs[symfuncspos].params[i].name, params[i].name, MAX_TOKSZ);
         symfuncs[symfuncspos].params[i].type = params[i].type;
+        sym_declare(params[i].name, params[i].type, stack_pos, &global_symbol_table_variables);
+        stack_pos++;
     }
-    symfuncspos ++;
+    symfuncspos++;
     if (symfuncspos > MAX_FUNCS) {
-		printf("[ERRO] Limite de declaracao de funcoes atingido.");
+        printf("[ERRO] Limite de declaracao de funcoes atingido.");
     }
     return &symfuncs[symfuncspos -1];
 }

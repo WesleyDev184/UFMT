@@ -44,6 +44,7 @@ int declarations(void);
 int statements (void);
 int declaration(void);
 int declarationV(char *var_name, int var_type);
+int process_params(type_symbol_table_entry params[], int *nparams);
 int declarationF(char *func_name, int func_type);
 int statement(void);
 int func_code(void);
