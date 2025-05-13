@@ -38,9 +38,8 @@ int match(int token_tag) {
 /**
  * @brief Regra de derivacao inicial
  */
-// TODO: Fazer a função principal (begin, end)
 int program (void) {
-    gen_preambule(); //Temporariamente cria um preambulo adicional que permite o uso das funcoes scanf e printf
+    gen_preambule(); 
 
     int flag = declarations();
 
@@ -49,7 +48,7 @@ int program (void) {
         return ERROR;
     }
     gen_bss_section();
-    gen_preambule_code(); //Chamada do gerador de codigo para escrita do cabecalho da secao de codigo
+    gen_preambule_code(); 
 
     if (lookahead->tag == BEGIN) {
         match(BEGIN);
@@ -63,7 +62,7 @@ int program (void) {
         if (lookahead->tag == END) {
             match(END);
             gen_epilog_code();
-            gen_data_section(); //Chamada do gerador de codigo para declaracao de variaveis
+            gen_data_section();
         } else {
             printf("[ERRO] Faltou o END.\n");
             return ERROR;
@@ -81,13 +80,12 @@ int program (void) {
  * @brief Regra de derivacao para declaracoes
  */
 int declarations(void) {
-    // while ( declaration() ); //Laco para processamento continuo das declaracoes
-    int sucess;
+    int success;
     do {
-        sucess = declaration();
-    } while (sucess == true);
+        success = declaration();
+    } while (success == true);
 
-    if (sucess == ERROR) {
+    if (success == ERROR) {
         printf("[ERRO] Erro na declaracao.\n");
         return ERROR;
     } else {
@@ -136,7 +134,6 @@ int declaration (void) {
                 lookahead->tag == READ ||
                 lookahead->tag == BEGIN ||
                 lookahead->tag == WRITE || lookahead->tag == IF || lookahead->tag == ID) {
-        //Verifica se fim de arquivo
         return false;         
     } else {
         printf ("[ERRO] Tipo desconhecido: %d %s.\n", lookahead->tag, lookahead->lexema);
@@ -537,7 +534,7 @@ int statement (void) {
     } else {
         // Se não encontrou como variável, verifica se é uma função declarada
         type_symbol_function_entry *search_symbol_func = sym_func_find(lexeme_of_id);
-        if (search_symbol_func != NULL) {
+        if (search_symbol_func != NULL && search_symbol_func->implemented) {
             // Verifica se a chamada está correta: deve abrir e fechar parênteses
             if (lookahead->tag == OPEN_PAR) {
                 match(OPEN_PAR);
@@ -625,10 +622,8 @@ int statement (void) {
                 printf("[ERRO] Chamada de função '%s' sem abertura de parênteses.\n", lexeme_of_id);
                 return ERROR;
             }
-
-            gen_call_function(lexeme_of_id);
         } else {
-            printf("[ERRO] Simbolo desconhecido (Variavel ou Funcao nao declarada - id): %s\n", lexeme_of_id);
+            printf("[ERRO] Simbolo desconhecido (Variavel ou Funcao nao declarada ou implementada - id): %s\n", lexeme_of_id);
             return ERROR;
         }
     }
@@ -641,25 +636,13 @@ int statement (void) {
     }
 }
 
-// int func_code(){
-//     char func_name[MAX_CHAR];
-//     strcpy(func_name, lookahead->lexema);
-//     match(ID);
-//     match(OPEN_PAR);
-//     match(CLOSE_PAR);
-//     match(BEGIN);
-//     statements();
-//     match(END);
-//     return true;
-// }
-
 /**
  * @brief Regra de derivação que analisa expressoes booleanas
  *        no padrao '[id | expr] op_rel [id | expr]' 
  * 
  */
 int B() { 
-    int flag_left = B_and(); // processa o and primeiro
+    int flag_left = B_and();
     
     while (lookahead->tag == OR) { 
         match(OR);
@@ -673,7 +656,7 @@ int B() {
 
 // Processa o and
 int B_and() {
-    int flag_left = B_relacional(); // processa os operadores relacionais
+    int flag_left = B_relacional();
     
     while (lookahead->tag == AND) {
         match(AND);

@@ -206,5 +206,5 @@ section .data
 	str2: db "", 0
 	str3: db "Digite um valor:", 0
 	str4: db "teste", 0
-	str5: db "print do while", 0
+	str5: db "print do while\n", 0
 	str6: db "fim", 0
