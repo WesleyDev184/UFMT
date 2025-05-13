@@ -19,7 +19,7 @@ begin
 
     while (valor <= 10)
     begin
-        write "print do while\n";
+        write "print do while\n\n";
         teste(valor, name);
         valor = valor + 1;
     end
