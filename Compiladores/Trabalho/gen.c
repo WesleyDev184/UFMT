@@ -120,6 +120,12 @@ void genAssign(char *lexeme_of_id, int type)
         fprintf(output_file, "\n\tpop rax\n");
         fprintf(output_file, "\tmov [rsp], rax\n");
     }
+    else if (type == STRING) {
+        fprintf(output_file, "\n\t; Atribuicao de string para %s", lexeme_of_id);
+        // Pop o endereço da string (resultado da expressão) e armazena na variável
+        fprintf(output_file, "\n\tpop rax");
+        fprintf(output_file, "\n\tmov qword [%s], rax\n", lexeme_of_id);
+    }
 }
 
 /**
@@ -147,12 +153,6 @@ void gen_data_section(void)
 
     fprintf(output_file, "section .data\n");
 
-    // emite strings de formato fixo
-    // fprintf(output_file, "str0: db \"%%d\",13,10,0\n");
-    // fprintf(output_file, "str1: db \"%%s\",13,10,0\n");
-    // fprintf(output_file, "str2: db \"%%c\",13,10,0\n");
-    // fprintf(output_file, "str3: db \"%%lf\",13,10,0\n");
-    // fprintf(output_file, "\n");
     fprintf(output_file, "\tfmt_input_int db \"%%d\", 0\n");
     fprintf(output_file, "\tfmt_output_int db \"%%d\", 10, 0\n");
     fprintf(output_file, "\tfmt_input_float db \"%%lf\", 0\n");
@@ -162,15 +162,6 @@ void gen_data_section(void)
     fprintf(output_file, "\tfmt_input_string db \"%%s\", 0\n");
     fprintf(output_file, "\tfmt_output_string db \"%%s\", 10, 0\n");
     fprintf(output_file, "\n");
-
-    // processa cada simbolo da tabela de strings
-    // n = symbol_table_string.n_strings;
-    // for (i = 0; i < n; i++) {
-    //    fprintf(output_file, "%s: db %s, 0\n",
-    //        symbol_table_string.string[i].name,
-    //        symbol_table_string.string[i].value);
-    //}
-    // fprintf(output_file,"\n");
 
     // processa cada simbolo da tabela e gera um ponteiro para cada variavel na memoria
     n = global_symbol_table_variables.n_variables;
@@ -221,15 +212,11 @@ void gen_bss_section(void)
     n = global_symbol_table_variables.n_variables;
     for (int i = 0; i < n; i++)
     {
-        if (global_symbol_table_variables.variable[i].type == INT)
-        {
-            fprintf(output_file, "\t%s: resd 1\n", global_symbol_table_variables.variable[i].name);
-        }
-        else if (global_symbol_table_variables.variable[i].type == STRING)
+        if (global_symbol_table_variables.variable[i].type == STRING)
         {
             fprintf(output_file, "\t%s: resb 256\n", global_symbol_table_variables.variable[i].name);
         }
-        else if (global_symbol_table_variables.variable[i].type == FLOAT)
+        else if (global_symbol_table_variables.variable[i].type == FLOAT || global_symbol_table_variables.variable[i].type == INT)
         {
             fprintf(output_file, "\t%s: resq 1\n", global_symbol_table_variables.variable[i].name);
         }
@@ -301,7 +288,7 @@ void gen_label_name(char *name)
  */
 void gen_label(char *label)
 {
-    fprintf(output_file, "%s:\n", label);
+    fprintf(output_file, "\n%s:\n", label);
 }
 
 /**
@@ -311,7 +298,7 @@ void gen_label(char *label)
  */
 void gen_func_label(char *func_name) {
     fprintf(output_file, "\n; Label da funcao\n");
-    fprintf(output_file, "%s:", func_name);
+    fprintf(output_file, "%s:\n", func_name);
 }
 
 /**
@@ -320,7 +307,7 @@ void gen_func_label(char *func_name) {
  * @param func_name Nome da funcao a ser chamada
  */
 void gen_call_function(char *func_name) {
-    fprintf(output_file, "\n; Chamada da funcao '%s'\n", func_name);
+    fprintf(output_file, "\n\t; Chamada da funcao '%s'\n", func_name);
     fprintf(output_file, "\tcall %s\n", func_name);
 }
 
@@ -386,7 +373,7 @@ void gen_bool(int oper)
         printf("[ERRO] operador booleano nao suportado.\n");
         break;
     }
-    fprintf(output_file, "\tmov rcx, 0\n\n");
+    fprintf(output_file, "\tmov rcx, 0\n");
     gen_label(bool_label_name);
     fprintf(output_file, "\tmov rax, rcx\n");
     fprintf(output_file, "\tpush rax\n");
@@ -406,13 +393,6 @@ void gen_bool_label_name(char *name)
  */
 void gen_read(char *lexeme_of_id, int type)
 {
-    /*
-    //Codigo antigo, demanda estudo para ser usado com o liker GCC no Linux
-    fprintf(output_file, "mov rdi, fmtstr0\n");
-    fprintf(output_file, "mov rsi, %s\n", lexeme_of_id);
-    fprintf(output_file, "mov rax, 0\n");
-    fprintf(output_file, "call scanf\n");
-    */
     switch (type)
     {
     case INT:
@@ -453,13 +433,6 @@ void gen_read(char *lexeme_of_id, int type)
  */
 void gen_write(char *lexeme_of_id, int type)
 {
-    /*
-    //Codigo antigo, demanda estudo para ser usado com o liker GCC no Linux
-    fprintf(output_file, "mov rdi, fmtstr0\n");
-    fprintf(output_file, "mov rsi, [rel %s]\n", lexeme_of_id);
-    fprintf(output_file, "mov rax, 0\n");
-    fprintf(output_file, "call printf\n");
-    */
     switch (type)
     {
     case INT:
@@ -486,7 +459,11 @@ void gen_write(char *lexeme_of_id, int type)
     case STRING:
         fprintf(output_file, "\n\t;escreve valor string\n");
         fprintf(output_file, "\n\tmov rdi, fmt_output_string\n");
-        fprintf(output_file, "\tmov rsi, %s\n", lexeme_of_id);
+        // Se o lexeme tiver o prefixo "str", é literal (já na seção .data); caso contrário, é variável
+        if (strncmp(lexeme_of_id, "str", 3) == 0)
+            fprintf(output_file, "\tmov rsi, %s\n", lexeme_of_id);
+        else
+            fprintf(output_file, "\tmov rsi, [%s]\n", lexeme_of_id);
         fprintf(output_file, "\txor eax, eax\n");
         fprintf(output_file, "\tcall printf\n");
         break;
@@ -512,4 +489,16 @@ void gen_logical(int oper)
         break;
     }
     fprintf(output_file, "\tpush rax\n");
+}
+
+/**
+ * @brief Gera código para empilhar o endereço de um literal de string
+ *
+ * @param entry Nome do literal de string
+ */
+void gen_push_string_literal(char *entry)
+{
+    fprintf(output_file, "\n\n\t; Empilha o endereço do literal de string %s", entry);
+    fprintf(output_file, "\n\tlea rax, [%s]", entry);
+    fprintf(output_file, "\n\tpush rax\n");
 }

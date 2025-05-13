@@ -42,5 +42,6 @@ void gen_incond_jump(char*);
 void gen_bool(int);
 void gen_bool_label_name(char*);
 void gen_logical(int);
+void gen_push_string_literal(char *entry);
 
 #endif //_GEN_H_
