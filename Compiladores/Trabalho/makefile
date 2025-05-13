@@ -1,9 +1,6 @@
 compiler: lex.o synt.o gen.o symbols.o
 	gcc -o compiler lex.o synt.o gen.o symbols.o -I. -g
 
-compiler_win: lex.o synt.o gen_win.o symbols.o
-	gcc -o compiler4win lex.o synt.o gen_win.o symbols.o -I. -g
-
 lex.o: lex.c
 	gcc -c -g lex.c
 

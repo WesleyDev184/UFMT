@@ -20,7 +20,7 @@ teste:
 	;escreve valor inteiro
 
 	mov rdi, fmt_output_int
-	mov esi, [valor]
+	mov esi, [v]
 	xor eax, eax
 	call printf
 
@@ -36,6 +36,7 @@ teste:
 
 section .bss
 	valor: resd 1
+	v: resd 1
 
 section .text
 	global main
@@ -90,6 +91,10 @@ label_bool_0:
 	mov rsi, str3
 	xor eax, eax
 	call printf
+
+	;Armazenamento de valor de variavel
+
+	push qword [valor]
 
 ; Chamada da funcao 'teste'
 	call teste
@@ -148,6 +153,7 @@ section .data
 	fmt_output_string db "%s", 10, 0
 
 	;valor: dd "%d", 4
+	;v: dd "%d", 4
 	str0: db "valor: ", 0
 	str1: db "", 0
 	str2: db "Digite um valor:", 0

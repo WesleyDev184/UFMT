@@ -1,10 +1,10 @@
 int valor;
-void teste();
+void teste(int v);
 
-void teste()
+void teste(int v)
 begin
     write "valor: ";
-    write valor; 
+    write v; 
     write "\n";
 end
 
@@ -15,7 +15,7 @@ begin
     while (valor <= 10)
     begin
         write "print do while\n";
-        teste();
+        teste(valor);
         valor = valor + 1;
     end
     write "fim\n";

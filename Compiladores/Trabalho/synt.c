@@ -102,7 +102,6 @@ int declarations(void) {
  */
 int declaration (void) {
     type_symbol_table_entry *search_symbol;
-    type_symbol_function_entry *search_symbol_func;
     char var_name[MAX_CHAR];
     int var_type;
 
@@ -112,7 +111,6 @@ int declaration (void) {
         match(var_type);
         strcpy(var_name, lookahead->lexema);
         search_symbol = sym_find( var_name, &global_symbol_table_variables );
-        search_symbol_func = sym_func_find(var_name);
 
         if ( search_symbol != NULL) {
             printf ("[ERRO] Variavel '%s' ja declarada.\n", var_name); 
@@ -151,28 +149,24 @@ int declaration (void) {
  * @return int true/false
  */
 int declarationV(char *var_name, int var_type) {
+    if (var_type == VOID) {
+        printf("[ERRO] Variavel do tipo VOID nao eh permitida.\n");
+        return ERROR;
+    }
+
     sym_declare( var_name, var_type, 0, &global_symbol_table_variables);
     return match(SEMICOLON); 
 }
 
 /**
- * @brief Regra de derivacao declaracaoF, responsavel por declarar uma funcao
- * @param func_name nome da função
- * @param func_type tipo da funcao
+ * @brief Processa a lista de parâmetros da função
+ * @param params array de parâmetros
+ * @param nparams ponteiro para o número de parâmetros
  * @return int true/false
  */
-int declarationF(char *func_name, int func_type) {
-    int nparams = 0;
-    type_symbol_table_entry params[MAX_PARAMS];
-
-    // Inicia a leitura dos parâmetros
-    if (!match(OPEN_PAR)) {
-        printf("[ERRO] Esperado '(' apos o nome da funcao.\n");
-        return ERROR;
-    }
-    
-    // Processa os parâmetros, se houver
-    while (lookahead->tag != CLOSE_PAR && nparams < MAX_PARAMS) {
+int process_params(type_symbol_table_entry params[], int *nparams) {
+    int count = 0;
+    while (lookahead->tag != CLOSE_PAR && count < MAX_PARAMS) {
         int var_type = lookahead->tag;
         if (var_type == INT || var_type == FLOAT || var_type == CHAR || var_type == STRING || var_type == VOID) {
             match(var_type);
@@ -183,11 +177,10 @@ int declarationF(char *func_name, int func_type) {
             char var_name[MAX_CHAR];
             strcpy(var_name, lookahead->lexema);
             match(ID);
-            strncpy(params[nparams].name, var_name, MAX_TOKSZ);
-            params[nparams].type = var_type;
-            nparams++;
+            strncpy(params[count].name, var_name, MAX_TOKSZ);
+            params[count].type = var_type;
+            count++;
 
-            // Se houver vírgula, continua a declaração de outro parâmetro
             if (lookahead->tag == COMMA) {
                 match(COMMA);
                 continue;
@@ -197,6 +190,32 @@ int declarationF(char *func_name, int func_type) {
         } else {
             break;
         }
+    }
+    *nparams = count;
+    return true;
+}
+
+/**
+ * @brief Regra de derivacao declaracaoF, responsavel por declarar uma funcao
+ * @param func_name nome da função
+ * @param func_type tipo da funcao
+ * @return int true/false
+ */
+int declarationF(char *func_name, int func_type) {
+    type_symbol_function_entry *f = sym_func_find(func_name);
+    int nparams = 0;
+    type_symbol_table_entry params[MAX_PARAMS];
+
+    // Inicia a leitura dos parâmetros
+    if (!match(OPEN_PAR)) {
+        printf("[ERRO] Esperado '(' apos o nome da funcao.\n");
+        return ERROR;
+    }
+    
+    // Processa da lista de parâmetros usando a função auxiliar
+    if (process_params(params, &nparams) == ERROR) {
+        printf("[ERRO] Problema na lista de parametros da funcao '%s'.\n", func_name);
+        return ERROR;
     }
     
     if (!match(CLOSE_PAR)) {
@@ -209,7 +228,7 @@ int declarationF(char *func_name, int func_type) {
         // Prototype: declara a funcao sem corpo
         match(SEMICOLON);
         // Verifica se a funcao ja foi declarada
-        if (sym_func_find(func_name) != NULL) {
+        if (f != NULL) {
             printf("[ERRO] Funcao '%s' ja declarada.\n", func_name);
             return ERROR;
         }
@@ -219,17 +238,14 @@ int declarationF(char *func_name, int func_type) {
         // Definicao: implementacao completa da funcao
         match(BEGIN);
         gen_func_label(func_name);
-        type_symbol_function_entry *f = sym_func_find(func_name);
         if (f != NULL) {
             if (f->implemented) {
                 printf("[ERRO] Funcao '%s' ja implementada.\n", func_name);
                 return ERROR;
             }
         } else {
-            // Se ainda nao foi declarada, declara a funcao
-            f = sym_func_declare(func_name, func_type, params, nparams);
-            if (f == NULL)
-                return ERROR;
+            printf("[ERRO] Funcao '%s' nao declarada.\n", func_name);
+            return ERROR;
         }
         
         // Processa os comandos (corpo) da funcao
@@ -528,6 +544,7 @@ int statement (void) {
                 printf("[ERRO] Chamada de função '%s' sem fechamento de parênteses.\n", lexeme_of_id);
                 return ERROR;
             }
+            
             match(CLOSE_PAR);
             if (lookahead->tag != SEMICOLON) {
                 printf("[ERRO] Chamada de função '%s' sem ponto e vírgula.\n", lexeme_of_id);
