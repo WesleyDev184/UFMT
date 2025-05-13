@@ -118,8 +118,10 @@ int declaration (void) {
         } else {
             if ( match(ID) ) {
                 if (lookahead->tag == SEMICOLON){
+                    printf("[DEBUG] Declaracao de variavel: %s\n", var_name);
                     return declarationV(var_name, var_type);
                 } else if (lookahead->tag == OPEN_PAR) {
+                    printf("[DEBUG] Declaracao de funcao: %s\n", var_name);
                     return declarationF(var_name, var_type);
                 } else {
                     printf("[ERRO] Nao foi possivel identificar se é variavel ou funcao.\n");
@@ -535,27 +537,96 @@ int statement (void) {
     } else {
         // Se não encontrou como variável, verifica se é uma função declarada
         type_symbol_function_entry *search_symbol_func = sym_func_find(lexeme_of_id);
-        gen_call_function(lexeme_of_id);
         if (search_symbol_func != NULL) {
             // Verifica se a chamada está correta: deve abrir e fechar parênteses
             if (lookahead->tag == OPEN_PAR) {
-            match(OPEN_PAR);
-            if (lookahead->tag != CLOSE_PAR) {
-                printf("[ERRO] Chamada de função '%s' sem fechamento de parênteses.\n", lexeme_of_id);
-                return ERROR;
-            }
-            
-            match(CLOSE_PAR);
-            if (lookahead->tag != SEMICOLON) {
-                printf("[ERRO] Chamada de função '%s' sem ponto e vírgula.\n", lexeme_of_id);
-                return ERROR;
-            }
-            match(SEMICOLON);
-            return true;
+                match(OPEN_PAR);
+
+                // Processamento dos parâmetros da chamada de função
+                int param_count = 0;
+                int expected_params = search_symbol_func->nparams;
+                type_symbol_table_entry *param_entry;
+
+                if (lookahead->tag != CLOSE_PAR) {
+                    while (1) {
+                        // Verifica se há mais parâmetros do que o esperado
+                        if (param_count >= expected_params) {
+                            printf("[ERRO] Chamada de função '%s' com parâmetros em excesso.\n", lexeme_of_id);
+                            return ERROR;
+                        }
+
+                        // Espera um identificador como argumento
+                        if (lookahead->tag == ID) {
+                            char param_lex[MAX_CHAR];
+                            strcpy(param_lex, lookahead->lexema);
+                            match(ID);
+
+                            // Busca o parâmetro na tabela de símbolos
+                            param_entry = sym_find(param_lex, &global_symbol_table_variables);
+                            if (!param_entry) {
+                                printf("[ERRO] Parâmetro '%s' não declarado.\n", param_lex);
+                                return ERROR;
+                            }
+
+                            // Verifica o tipo do parâmetro
+                            if (param_entry->type != search_symbol_func->params[param_count].type) {
+                                printf("[ERRO] Tipo do parâmetro %d incompatível na chamada da função '%s'. Esperado: %d, Encontrado: %d\n",
+                                       param_count + 1, lexeme_of_id,
+                                       search_symbol_func->params[param_count].type, param_entry->type);
+                                return ERROR;
+                            }
+
+                            // Gera código para empilhar o valor do parâmetro
+                            genId(param_lex);
+
+                            // Gera código para copiar o valor do parâmetro real para o parâmetro formal da função
+                            // Isso garante que o valor passado seja atribuído à variável do parâmetro da função
+                            genAssign(search_symbol_func->params[param_count].name, search_symbol_func->params[param_count].type);
+
+                        } else {
+                            printf("[ERRO] Esperado identificador como parâmetro na chamada da função '%s'.\n", lexeme_of_id);
+                            return ERROR;
+                        }
+
+                        param_count++;
+
+                        // Se houver vírgula, continua para o próximo parâmetro
+                        if (lookahead->tag == COMMA) {
+                            match(COMMA);
+                            continue;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+
+                // Verifica se o número de parâmetros está correto
+                if (param_count != expected_params) {
+                    printf("[ERRO] Quantidade de parâmetros incompatível na chamada da função '%s'. Esperado: %d, Encontrado: %d\n",
+                           lexeme_of_id, expected_params, param_count);
+                    return ERROR;
+                }
+
+                // Gera o código de chamada da função
+                gen_call_function(lexeme_of_id);
+
+                if (lookahead->tag != CLOSE_PAR) {
+                    printf("[ERRO] Chamada de função '%s' sem fechamento de parênteses.\n", lexeme_of_id);
+                    return ERROR;
+                }
+                match(CLOSE_PAR);
+                if (lookahead->tag != SEMICOLON) {
+                    printf("[ERRO] Chamada de função '%s' sem ponto e vírgula.\n", lexeme_of_id);
+                    return ERROR;
+                }
+                match(SEMICOLON);
+                return true;
             } else {
-            printf("[ERRO] Chamada de função '%s' sem abertura de parênteses.\n", lexeme_of_id);
-            return ERROR;
+                printf("[ERRO] Chamada de função '%s' sem abertura de parênteses.\n", lexeme_of_id);
+                return ERROR;
             }
+
+            gen_call_function(lexeme_of_id);
         } else {
             printf("[ERRO] Simbolo desconhecido (Variavel ou Funcao nao declarada - id): %s\n", lexeme_of_id);
             return ERROR;
@@ -820,6 +891,13 @@ int F() {
         int b1 = match(FLOAT);
         genNum(lexema, FLOAT);
         return b1;
+    } else if (lookahead->tag == STRING) {
+        char literal[MAX_STRING];
+        strcpy(literal, lookahead->lexema);
+        type_symbol_table_string_entry *entry = sym_string_declare(literal);
+        gen_push_string_literal(entry->name);
+        match(STRING);
+        return true;
     } else {
         return false;
     }

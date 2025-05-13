@@ -10,6 +10,7 @@ extern exit
 
 ; Label da funcao
 teste:
+
 	;escreve valor string
 
 	mov rdi, fmt_output_string
@@ -31,12 +32,28 @@ teste:
 	xor eax, eax
 	call printf
 
+	;escreve valor string
+
+	mov rdi, fmt_output_string
+	mov rsi, [n]
+	xor eax, eax
+	call printf
+
+	;escreve valor string
+
+	mov rdi, fmt_output_string
+	mov rsi, str2
+	xor eax, eax
+	call printf
+
 	; Retorna para o endereco de chamada
 	ret
 
 section .bss
-	valor: resd 1
-	v: resd 1
+	valor: resq 1
+	name: resb 256
+	v: resq 1
+	n: resb 256
 
 section .text
 	global main
@@ -45,7 +62,7 @@ main:
 	;escreve valor string
 
 	mov rdi, fmt_output_string
-	mov rsi, str2
+	mov rsi, str3
 	xor eax, eax
 	call printf
 
@@ -55,6 +72,20 @@ main:
 	lea rsi, [valor]
 	xor eax, eax
 	call scanf
+
+	;Armazenamento de valor de variavel
+
+	push qword [name]
+
+
+	; Empilha o endereço do literal de string str4
+	lea rax, [str4]
+	push rax
+
+	; Atribuicao de string para name
+	pop rax
+	mov qword [name], rax
+
 label0:
 
 	;Armazenamento de valor de variavel
@@ -88,7 +119,7 @@ label_bool_0:
 	;escreve valor string
 
 	mov rdi, fmt_output_string
-	mov rsi, str3
+	mov rsi, str5
 	xor eax, eax
 	call printf
 
@@ -96,7 +127,20 @@ label_bool_0:
 
 	push qword [valor]
 
-; Chamada da funcao 'teste'
+	;Atribuicao de valor a variavel
+
+	pop rax
+	mov [v], rax
+
+	;Armazenamento de valor de variavel
+
+	push qword [name]
+
+	; Atribuicao de string para n
+	pop rax
+	mov qword [n], rax
+
+	; Chamada da funcao 'teste'
 	call teste
 
 	;Armazenamento de valor de variavel
@@ -127,12 +171,13 @@ label_bool_0:
 	;jump incondicional
 
 	jmp label0
+
 label1:
 
 	;escreve valor string
 
 	mov rdi, fmt_output_string
-	mov rsi, str4
+	mov rsi, str6
 	xor eax, eax
 	call printf
 
@@ -153,9 +198,13 @@ section .data
 	fmt_output_string db "%s", 10, 0
 
 	;valor: dd "%d", 4
+	;name: db "                " 
 	;v: dd "%d", 4
+	;n: db "                " 
 	str0: db "valor: ", 0
-	str1: db "", 0
-	str2: db "Digite um valor:", 0
-	str3: db "print do while", 0
-	str4: db "fim", 0
+	str1: db "nome: ", 0
+	str2: db "", 0
+	str3: db "Digite um valor:", 0
+	str4: db "teste", 0
+	str5: db "print do while", 0
+	str6: db "fim", 0
