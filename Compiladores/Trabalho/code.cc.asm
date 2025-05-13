@@ -73,6 +73,13 @@ main:
 	xor eax, eax
 	call scanf
 
+	;escreve valor string
+
+	mov rdi, fmt_output_string
+	mov rsi, str2
+	xor eax, eax
+	call printf
+
 	;Armazenamento de valor de variavel
 
 	push qword [name]

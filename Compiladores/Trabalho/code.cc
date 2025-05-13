@@ -14,6 +14,7 @@ end
 begin
     write "Digite um valor:\n";
     read valor;
+    write "\n";
 
     name = "teste";
 
