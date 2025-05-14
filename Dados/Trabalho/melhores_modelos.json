@@ -1,0 +1,48 @@
+{
+    "KNN": {
+        "melhores_parametros": {
+            "model__n_neighbors": 7,
+            "model__weights": "distance"
+        },
+        "r2_teste": 0.36429405521651725,
+        "mse_teste": 1.291456934759799,
+        "mae_teste": 0.911010543407491
+    },
+    "Ridge": {
+        "melhores_parametros": {
+            "model__alpha": 10.0
+        },
+        "r2_teste": 0.48032262524195024,
+        "mse_teste": 1.055741188164658,
+        "mae_teste": 0.8194611225632202
+    },
+    "SVR": {
+        "melhores_parametros": {
+            "model__C": 1,
+            "model__epsilon": 0.5,
+            "model__kernel": "rbf"
+        },
+        "r2_teste": 0.4900433809195104,
+        "mse_teste": 1.0359931624714789,
+        "mae_teste": 0.8166542696982894
+    },
+    "GradientBoosting": {
+        "melhores_parametros": {
+            "model__learning_rate": 0.1,
+            "model__max_depth": 3,
+            "model__n_estimators": 100
+        },
+        "r2_teste": 0.5147767262422481,
+        "mse_teste": 0.9857465813297251,
+        "mae_teste": 0.7935745710182391
+    },
+    "RandomForest": {
+        "melhores_parametros": {
+            "model__max_depth": 10,
+            "model__n_estimators": 150
+        },
+        "r2_teste": 0.5080714684124055,
+        "mse_teste": 0.9993685268137369,
+        "mae_teste": 0.7992417685687337
+    }
+}
