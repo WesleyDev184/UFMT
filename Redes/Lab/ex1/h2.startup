@@ -1,0 +1,1 @@
+ip address add dev eth0 192.168.1.2/29
