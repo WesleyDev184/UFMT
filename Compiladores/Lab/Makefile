@@ -1,28 +1,38 @@
-EXEC = synt
+# The name of the final executable
+EXEC = compiler
 
-LEX = lex.l
-YACC = synt.y
+# Source file names
+LEX_SRC = lex.l
+YACC_SRC = parser.y
 
+# Generated C source files
 LEX_C = lex.yy.c
-YACC_C = synt.tab.c
-YACC_H = synt.tab.h
+YACC_C = parser.tab.c
+YACC_H = parser.tab.h
 
+# Compiler and flags
 CC = gcc
 CFLAGS = -Wall -g
 
+# Default target
 all: $(EXEC)
 
-$(EXEC): $(LEX_C) $(YACC_C)
-	$(CC) $(CFLAGS) -o $(EXEC) $(LEX_C) $(YACC_C) -lfl
+# Rule to link the final executable
+$(EXEC): $(YACC_C) $(LEX_C) 
+	$(CC) $(CFLAGS) -o $(EXEC) $(YACC_C) $(LEX_C) -lfl
 
-$(YACC_C) $(YACC_H): $(YACC)
-	bison -d $(YACC)
+# Rule to generate the parser C file and header from the Bison grammar
+$(YACC_C) $(YACC_H): $(YACC_SRC)
+	bison -d -o $(YACC_C) $(YACC_SRC)
 
-$(LEX_C): $(LEX)
-	flex $(LEX)
+# Rule to generate the scanner C file from the Flex definition
+$(LEX_C): $(LEX_SRC) $(YACC_H)
+	flex -o $(LEX_C) $(LEX_SRC)
 
+# Target to test only the lexer/scanner
 lex_test: $(LEX_C)
 	$(CC) $(CFLAGS) -o lex_test $(LEX_C) -lfl
 
+# Clean up generated files
 clean:
-	rm -f $(EXEC) $(LEX_C) $(YACC_C) $(YACC_H)
+	rm -f $(EXEC) $(LEX_C) $(YACC_C) $(YACC_H) lex_test
