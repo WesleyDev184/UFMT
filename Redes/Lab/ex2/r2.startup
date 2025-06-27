@@ -1,0 +1,21 @@
+# Ativa o encaminhamento de pacotes
+sysctl -w net.ipv4.ip_forward=1
+
+# Configura os endereços IP nas interfaces de R2
+# eth0 -> Rede C (link com R1)
+ip addr add 8.4.3.86/30 dev eth0
+# eth1 -> Rede D (link com R3)
+ip addr add 8.4.3.89/30 dev eth1
+# eth2 -> Rede F (link com R4)
+ip addr add 8.4.3.93/30 dev eth2
+
+# Rotas estáticas: R2 é o roteador central e precisa de rotas específicas
+# Para alcançar as redes A e B, o caminho é via R1 (8.4.3.85)
+ip route add 8.4.3.80/30 via 8.4.3.85 # Rede A
+ip route add 8.4.3.64/28 via 8.4.3.85 # Rede B
+
+# Para alcançar a rede E, o caminho é via R3 (8.4.3.90)
+ip route add 8.4.3.32/27 via 8.4.3.90 # Rede E
+
+# Para alcançar a rede G, o caminho é via R4 (8.4.3.94)
+ip route add 8.4.3.0/27 via 8.4.3.94 # Rede G

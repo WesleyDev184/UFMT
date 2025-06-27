@@ -1,0 +1,11 @@
+# Ativa o encaminhamento de pacotes
+sysctl -w net.ipv4.ip_forward=1
+
+# Configura os endereços IP nas interfaces de R3
+# eth0 -> Rede D (link com R2)
+ip addr add 8.4.3.90/30 dev eth0
+# eth1 -> Rede E
+ip addr add 8.4.3.33/27 dev eth1
+
+# Rota padrão: a única saída de R3 é através de R2 (8.4.3.89)
+ip route add default via 8.4.3.89

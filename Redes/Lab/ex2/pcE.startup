@@ -1,0 +1,4 @@
+# eth0 -> Rede E
+ip addr add 8.4.3.34/27 dev eth0
+# O gateway é a interface de R3 na mesma rede
+ip route add default via 8.4.3.33
