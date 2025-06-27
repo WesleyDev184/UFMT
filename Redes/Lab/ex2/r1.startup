@@ -1,0 +1,14 @@
+# Ativa o encaminhamento de pacotes para que o dispositivo funcione como roteador
+sysctl -w net.ipv4.ip_forward=1
+
+# Configura os endereços IP nas interfaces de R1
+# eth0 -> Rede A
+ip addr add 8.4.3.81/30 dev eth0
+# eth1 -> Rede B
+ip addr add 8.4.3.65/28 dev eth1
+# eth2 -> Rede C (link com R2)
+ip addr add 8.4.3.85/30 dev eth2
+
+# Rota padrão: para alcançar qualquer rede que R1 não conhece,
+# ele deve enviar o tráfego para R2 (8.4.3.86)
+ip route add default via 8.4.3.86
