@@ -1,28 +1,56 @@
-%{ 
-    #include <stdio.h>
-    #include <stdlib.h> 
-    void yyerror(char *); 
-    #include "parser.tab.h" 
-%} 
+%{
+	#include <string.h>
+	#include <stdio.h>
+	#include "parser.tab.h"
+	void yyerror(char *); 
+	int count_lines=0;
+%}
 
-%% 
+ws [ \t]
+letter [A-Za-z]
+digit [0-9]
+quotes ['\"']
+text_str [^'\"']
 
-[a-z]       { 	yylval = *yytext - 'a';
-		printf("Variavel: %c - indice %d\n",yytext[0], yylval); 
-                return VARIABLE; } 
-[0-9]+      { 	yylval = atoi(yytext);
-		printf("Valor inteiro: %d\n",yylval);
-                return INTEGER; } 
-[-+()=/*\n] { 	
-		printf("Operador: %c\n", yytext[0]);
-		return *yytext; } 
-
-[ \t]    	; 
-
-.             	yyerror("invalid character"); 
 
 %%
- 
-int yywrap(void) { 
-    return 1; 
-} 
+
+"//".*\n  {
+	count_lines++;
+}
+
+
+
+{digit}+  {
+	strcpy(yylval.c.str, yytext);
+	return NUM;
+}
+
+
+{letter}({letter}|{digit}|_)*	{
+	
+	strcpy(yylval.c.str, yytext);
+	return ID;
+}
+
+
+
+[-;:={}+*()<>/%] {
+	// printf("Lexic: %c found\n", *yytext);
+	// strcpy(yylval.str, yytext);
+	return *yytext;
+}
+
+
+{ws}           { }
+
+\n             { count_lines++; }
+
+. { yyerror("Invalid character"); }
+
+%%
+
+int yywrap (void)
+{
+ 	return 1;
+}
