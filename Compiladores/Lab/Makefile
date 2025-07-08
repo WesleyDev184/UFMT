@@ -9,6 +9,7 @@ YACC_SRC = parser.y
 LEX_C = lex.yy.c
 YACC_C = parser.tab.c
 YACC_H = parser.tab.h
+CODE_GEN_C = codeGeneration.c
 
 # Compiler and flags
 CC = gcc
@@ -18,8 +19,8 @@ CFLAGS = -Wall -g
 all: $(EXEC)
 
 # Rule to link the final executable
-$(EXEC): $(YACC_C) $(LEX_C) 
-	$(CC) $(CFLAGS) -o $(EXEC) $(YACC_C) $(LEX_C) -lfl
+$(EXEC): $(YACC_C) $(LEX_C) $(CODE_GEN_C)
+	$(CC) $(CFLAGS) -o $(EXEC) $(YACC_C) $(LEX_C) $(CODE_GEN_C) -lfl
 
 # Rule to generate the parser C file and header from the Bison grammar
 $(YACC_C) $(YACC_H): $(YACC_SRC)
