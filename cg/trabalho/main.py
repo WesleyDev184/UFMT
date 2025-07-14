@@ -6,7 +6,7 @@ from pywavefront import visualization
 import random
 import math
 
-# Variáveis da nave (carro)
+# Variáveis da nave (nave)
 nave_x = 0.0
 nave_y = 0.0
 nave_z = 0.0
@@ -72,12 +72,13 @@ def display():
     # Atualizar física da nave
     update_nave()
     
-    # Desenhar a nave (carro)
+    # Desenhar a nave (nave)
     glPushMatrix()
     glTranslatef(nave_x, nave_y, nave_z)
     glRotatef(nave_angle, 0.0, 1.0, 0.0)
-    glColor3f(0.0, 1.0, 0.0)  # Verde para a nave
-    visualization.draw(carro)
+    glScalef(0.3, 0.3, 0.3)  # Diminui o tamanho da nave
+    glColor3f(1.0, 1.0, 1.0)  # Branco para a nave (galinha)
+    visualization.draw(nave)
     glPopMatrix()
     
     # Atualizar e desenhar asteroides
@@ -87,8 +88,8 @@ def display():
         glTranslatef(asteroide.x, 0.0, asteroide.z)
         glRotatef(asteroide.rotation, 1.0, 1.0, 1.0)
         glScalef(asteroide.size, asteroide.size, asteroide.size)
-        glColor3f(0.8, 0.4, 0.2)  # Cor marrom para asteroides
-        visualization.draw(roda)
+        glColor3f(0.2, 0.4, 0.8)  # Tons de azul para asteroides
+        visualization.draw(meteor)
         glPopMatrix()
     
     # Desenhar grid de referência
@@ -127,7 +128,7 @@ def update_nave():
     if nave_z < -50: nave_z = 50
 
 def draw_grid():
-    glColor3f(0.3, 0.3, 0.3)
+    glColor3f(0.2, 0.3, 0.7)  # Grid azul
     glBegin(GL_LINES)
     for i in range(-50, 51, 10):
         # Linhas verticais
@@ -173,9 +174,9 @@ def resize(w, h):
   
 
 def init():
-    glClearColor (0.3, 0.3, 0.3, 0.0)
+    glClearColor (0.1, 0.2, 0.4, 0.0)  # Fundo azul escuro
     glShadeModel( GL_SMOOTH )
-    glClearColor( 0.0, 0.1, 0.0, 0.5 )
+    glClearColor( 0.1, 0.2, 0.4, 0.5 )  # Fundo azul escuro
     glClearDepth( 1.0 )
     glEnable( GL_DEPTH_TEST )
     glDepthFunc( GL_LEQUAL )
@@ -183,8 +184,8 @@ def init():
 
     glLightModelfv( GL_LIGHT_MODEL_AMBIENT, [0.1, 0.1, 0.1, 1.0] )
     glLightfv( GL_LIGHT0, GL_AMBIENT, [ 0.2, 0.2, 0.2, 1.0] )
-    glLightfv( GL_LIGHT0, GL_DIFFUSE, [0.5, 0.5, 0.5, 1.0] )
-    glLightfv( GL_LIGHT0, GL_SPECULAR, [0.7, 0.7, 0.7, 1] );
+    glLightfv( GL_LIGHT0, GL_DIFFUSE, [0.25, 0.25, 0.25, 1.0] )  # Menor intensidade difusa
+    glLightfv( GL_LIGHT0, GL_SPECULAR, [0.35, 0.35, 0.35, 1] );  # Menor intensidade especular
     glLightfv( GL_LIGHT0, GL_POSITION, [10.0, 10.0, 10.0, 0.0])
     glLightfv(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.01)
     glLightfv(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.01)
@@ -204,8 +205,8 @@ glutInitWindowPosition(100, 100)
 wind = glutCreateWindow("Asteroids Game")
 init()
 init_asteroides()  # Inicializar asteroides
-roda = pywavefront.Wavefront("roda2.obj")
-carro = pywavefront.Wavefront("carro.obj")
+meteor = pywavefront.Wavefront("meteor.obj")
+nave = pywavefront.Wavefront("galinha.obj")
 glutDisplayFunc(display)
 glutReshapeFunc(resize)
 glutTimerFunc(16, animacao, 1)  # ~60 FPS
