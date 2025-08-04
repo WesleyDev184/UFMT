@@ -1,6 +1,6 @@
 # Blender 4.4.3
 # www.blender.org
-mtllib galinha.mtl
+# mtllib galinha.mtl (commented out - file not found)
 o galinha
 v -0.164600 0.828260 2.814188
 v -0.164600 0.217779 1.629733
@@ -1762,8 +1762,8 @@ vt 0.723724 0.821548
 vt 0.712606 0.819219
 vt 0.690805 0.688301
 vt 0.589206 0.735575
-s 1
-usemtl lambert1
+# s 1 (commented out - unsupported by pywavefront)
+# usemtl lambert1 (commented out - material file not available)
 f 150/1/1 64/2/2 62/3/3 151/4/4
 f 62/3/3 64/2/2 23/5/5 1/6/5
 f 114/7/6 115/8/7 14/9/8 15/10/9
