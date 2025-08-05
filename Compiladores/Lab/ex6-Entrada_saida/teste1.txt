@@ -1,0 +1,6 @@
+var a: int;
+
+{ 
+ read a;
+ write a;
+}
