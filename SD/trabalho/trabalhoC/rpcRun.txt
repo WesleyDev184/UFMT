@@ -1,0 +1,3 @@
+gcc -g -I/usr/include/tirpc -o server addsub_server.c addsub_xdr.c addsub_svc.c -ltirpc
+
+gcc -g -I/usr/include/tirpc -o client addsub_client.c addsub_xdr.c addsub_clnt.c -ltirpc

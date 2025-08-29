@@ -1,0 +1,11 @@
+var a: int = 5;
+var b: int;
+var c: float = 3;
+var d: float;
+var s: str = "hello";
+{
+ a = b + 10;
+ c = d * 2;
+ a = a - b;
+ c = c / 2;
+}
