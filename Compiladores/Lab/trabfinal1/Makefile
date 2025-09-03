@@ -34,4 +34,4 @@ $(LEX_C): $(LEX_SRC) $(YACC_H)
 
 # Clean up generated files
 clean:
-	rm -f $(EXEC) $(LEX_C) $(YACC_C) $(YACC_H) lex_test *.asm
+	rm -f $(EXEC) $(LEX_C) $(YACC_C) $(YACC_H) lex_test *.asm  *.o ex
