@@ -10,6 +10,11 @@ extern SymTable table;
 extern FILE *out_file;
 static int label_counter = 0;
 
+void resetLabelCounter()
+{
+    label_counter = 0;
+}
+
 // Function to create assembly file preamble
 void makePreambule(const char *filename)
 {
@@ -54,6 +59,26 @@ void makePreambule(const char *filename)
 // End of data section and beginning of code section
 void dumpCodeDeclarationEnd()
 {
+    // Add all declared variables to the data section
+    for (int i = 0; i < table.max_size; i++)
+    {
+        if (table.array[i].data.identifier[0] != '\0')
+        {
+            SymTableNode *node = &table.array[i];
+            while (node != NULL)
+            {
+                fprintf(out_file, "    %s:          dq 0", node->data.identifier);
+                if (node->data.type == REAL)
+                {
+                    fprintf(out_file, ".0");
+                }
+                fprintf(out_file, "              ; %s variable\n",
+                        node->data.type == INTEGER ? "Integer" : "Float");
+                node = node->next;
+            }
+        }
+    }
+
     fprintf(out_file, "\nsection .text\n");
     fprintf(out_file, "global main\n");
     fprintf(out_file, "\n");
@@ -85,30 +110,8 @@ void makeCodeEpilogue(void)
 }
 void makeCodeDeclaration(char *dest, char *identifier, Type type, char *value)
 {
-    if (type == INTEGER)
-    {
-        if (value == NULL)
-            sprintf(dest, "%s: dq 0\n", identifier);
-        else
-        {
-            int x = atoi(value);
-            sprintf(dest, "%s: dq %d\n", identifier, x);
-        }
-    }
-    else if (type == REAL)
-    {
-        if (value == NULL)
-            sprintf(dest, "%s: dq 0.0\n", identifier);
-        else
-        {
-            double x = atof(value);
-            sprintf(dest, "%s: dq %f\n", identifier, x);
-        }
-    }
-    else
-    {
-        printf("error: unknown type\n");
-    }
+    // Don't generate code here - variables will be declared in dumpCodeDeclarationEnd
+    dest[0] = '\0'; // Empty string
 }
 
 int makeCodeAssignment(char *dest, char *id, char *expr)
@@ -120,8 +123,8 @@ int makeCodeAssignment(char *dest, char *id, char *expr)
     if (ret->type == INTEGER || ret->type == REAL)
     {
         sprintf(dest + strlen(dest), "%s", expr);
-        sprintf(dest + strlen(dest), "pop rbx\n");
-        sprintf(dest + strlen(dest), "mov [%s],rbx\n", ret->identifier);
+        sprintf(dest + strlen(dest), "    pop rbx\n");
+        sprintf(dest + strlen(dest), "    mov [%s], rbx\n", ret->identifier);
     }
     else
     {
@@ -143,67 +146,103 @@ int makeCodeLoad(char *dest, char *id, int ref)
         {
             // It's a float number
             double val = atof(id);
-            sprintf(dest + strlen(dest), "mov rbx,%ld\n", *(long *)&val);
+            long *bits = (long *)&val;
+            sprintf(dest + strlen(dest), "    ; Load float literal: %s\n", id);
+            sprintf(dest + strlen(dest), "    mov rbx, %ld                ; Load float bits\n", *bits);
         }
         else
         {
-            // It's an integer number
-            sprintf(dest + strlen(dest), "mov rbx,%s\n", id);
+            // It's an integer number - convert to float
+            double val = (double)atoi(id);
+            long *bits = (long *)&val;
+            sprintf(dest + strlen(dest), "    ; Load integer literal as float: %s\n", id);
+            sprintf(dest + strlen(dest), "    mov rbx, %ld                ; Load as float bits\n", *bits);
         }
-        sprintf(dest + strlen(dest), "push rbx\n");
+        sprintf(dest + strlen(dest), "    push rbx\n");
         return 1;
     }
 
     SymTableEntry *ret = findSymTable(&table, id);
     // Validation already done in the syntactic analyzer
 
-    sprintf(dest + strlen(dest), "mov rbx,[%s]\n", ret->identifier);
-    sprintf(dest + strlen(dest), "push rbx\n");
+    sprintf(dest + strlen(dest), "    mov rbx, [%s]\n", ret->identifier);
+    sprintf(dest + strlen(dest), "    push rbx\n");
     return 1;
 }
 
-void makeCodeAdd(char *dest, char *value)
+void makeCodeAdd(char *dest)
 {
-    sprintf(dest + strlen(dest), "%s", value);
-    sprintf(dest + strlen(dest), "pop rcx\n");
-    sprintf(dest + strlen(dest), "pop rbx\n");
-    sprintf(dest + strlen(dest), "add rbx,rcx\n");
-    sprintf(dest + strlen(dest), "push rbx\n");
+    char temp[256];
+    sprintf(temp, "    ; Float addition operation\n");
+    strcat(dest, temp);
+    strcat(dest, "    pop rcx                     ; Get second operand\n");
+    strcat(dest, "    pop rbx                     ; Get first operand\n");
+    strcat(dest, "    ; Convert to float for addition\n");
+    strcat(dest, "    mov [temp_float], rbx       ; Store first operand\n");
+    strcat(dest, "    movsd xmm0, [temp_float]    ; Load as double\n");
+    strcat(dest, "    mov [temp_float], rcx       ; Store second operand\n");
+    strcat(dest, "    movsd xmm1, [temp_float]    ; Load as double\n");
+    strcat(dest, "    addsd xmm0, xmm1            ; Add: xmm0 = xmm0 + xmm1\n");
+    strcat(dest, "    movsd [temp_float], xmm0    ; Store result\n");
+    strcat(dest, "    mov rbx, [temp_float]       ; Load result back\n");
+    strcat(dest, "    push rbx                    ; Push result\n");
 }
 
-void makeCodeSub(char *dest, char *value)
+void makeCodeSub(char *dest)
 {
-    sprintf(dest + strlen(dest), "%s", value);
-    sprintf(dest + strlen(dest), "pop rcx\n");
-    sprintf(dest + strlen(dest), "pop rbx\n");
-    sprintf(dest + strlen(dest), "sub rbx,rcx\n");
-    sprintf(dest + strlen(dest), "push rbx\n");
+    sprintf(dest + strlen(dest), "    ; Float subtraction operation\n");
+    sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
+    sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand\n");
+    sprintf(dest + strlen(dest), "    ; Convert to float for subtraction\n");
+    sprintf(dest + strlen(dest), "    mov [temp_float], rbx       ; Store first operand\n");
+    sprintf(dest + strlen(dest), "    movsd xmm0, [temp_float]    ; Load as double\n");
+    sprintf(dest + strlen(dest), "    mov [temp_float], rcx       ; Store second operand\n");
+    sprintf(dest + strlen(dest), "    movsd xmm1, [temp_float]    ; Load as double\n");
+    sprintf(dest + strlen(dest), "    subsd xmm0, xmm1            ; Subtract: xmm0 = xmm0 - xmm1\n");
+    sprintf(dest + strlen(dest), "    movsd [temp_float], xmm0    ; Store result\n");
+    sprintf(dest + strlen(dest), "    mov rbx, [temp_float]       ; Load result back\n");
+    sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
 }
 
-void makeCodeMul(char *dest, char *value2)
+void makeCodeMul(char *dest)
 {
-    sprintf(dest + strlen(dest), "%s", value2);
-    sprintf(dest + strlen(dest), "pop rcx\npop rbx\nimul rbx,rcx\npush rbx\n");
+    sprintf(dest + strlen(dest), "    ; Float multiplication operation\n");
+    sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
+    sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand\n");
+    sprintf(dest + strlen(dest), "    ; Convert to float for multiplication\n");
+    sprintf(dest + strlen(dest), "    mov [temp_float], rbx       ; Store first operand\n");
+    sprintf(dest + strlen(dest), "    movsd xmm0, [temp_float]    ; Load as double\n");
+    sprintf(dest + strlen(dest), "    mov [temp_float], rcx       ; Store second operand\n");
+    sprintf(dest + strlen(dest), "    movsd xmm1, [temp_float]    ; Load as double\n");
+    sprintf(dest + strlen(dest), "    mulsd xmm0, xmm1            ; Multiply: xmm0 = xmm0 * xmm1\n");
+    sprintf(dest + strlen(dest), "    movsd [temp_float], xmm0    ; Store result\n");
+    sprintf(dest + strlen(dest), "    mov rbx, [temp_float]       ; Load result back\n");
+    sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
 }
 
-void makeCodeDiv(char *dest, char *value2)
+void makeCodeDiv(char *dest)
 {
-    sprintf(dest + strlen(dest), "%s", value2);
-    sprintf(dest + strlen(dest), "pop r8\n");
-    sprintf(dest + strlen(dest), "pop rax\n");
-    sprintf(dest + strlen(dest), "xor rdx,rdx\n");
-    sprintf(dest + strlen(dest), "idiv r8\n");
-    sprintf(dest + strlen(dest), "push rax\n");
+    sprintf(dest + strlen(dest), "    ; Float division operation\n");
+    sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand (divisor)\n");
+    sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand (dividend)\n");
+    sprintf(dest + strlen(dest), "    ; Convert to float for division\n");
+    sprintf(dest + strlen(dest), "    mov [temp_float], rbx       ; Store dividend\n");
+    sprintf(dest + strlen(dest), "    movsd xmm0, [temp_float]    ; Load as double\n");
+    sprintf(dest + strlen(dest), "    mov [temp_float], rcx       ; Store divisor\n");
+    sprintf(dest + strlen(dest), "    movsd xmm1, [temp_float]    ; Load as double\n");
+    sprintf(dest + strlen(dest), "    divsd xmm0, xmm1            ; Divide: xmm0 = xmm0 / xmm1\n");
+    sprintf(dest + strlen(dest), "    movsd [temp_float], xmm0    ; Store result\n");
+    sprintf(dest + strlen(dest), "    mov rbx, [temp_float]       ; Load result back\n");
+    sprintf(dest + strlen(dest), "    push rbx                    ; Push quotient\n");
 }
 
-void makeCodeMod(char *dest, char *value2)
+void makeCodeMod(char *dest)
 {
-    sprintf(dest + strlen(dest), "%s", value2);
-    sprintf(dest + strlen(dest), "pop r8\n");
-    sprintf(dest + strlen(dest), "pop rax\n");
-    sprintf(dest + strlen(dest), "xor rdx,rdx\n");
-    sprintf(dest + strlen(dest), "idiv r8\n");
-    sprintf(dest + strlen(dest), "push rdx\n");
+    sprintf(dest + strlen(dest), "    pop r8                      ; Get divisor\n");
+    sprintf(dest + strlen(dest), "    pop rax                     ; Get dividend\n");
+    sprintf(dest + strlen(dest), "    xor rdx, rdx                ; Clear remainder\n");
+    sprintf(dest + strlen(dest), "    idiv r8                     ; rax = rax / r8\n");
+    sprintf(dest + strlen(dest), "    push rdx                    ; Push remainder\n");
 }
 
 void makeCodeNeg(char *dest)
@@ -216,33 +255,39 @@ void makeCodeNeg(char *dest)
 // Implementation of new functions for I/O
 void makeCodeRead(char *dest, char *varname, Type type)
 {
+    // Initialize dest string
     dest[0] = '\0';
+
     if (type == INTEGER)
     {
-        sprintf(dest + strlen(dest), "    lea rdi, [fmt_d]            ; Integer format\n");
+        strcat(dest, "    lea rdi, [fmt_d]            ; Integer format\n");
         sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Variable address\n", varname);
-        sprintf(dest + strlen(dest), "    mov rax, 0                  ; Clear rax for scanf\n");
-        sprintf(dest + strlen(dest), "    call scanf                  ; Call scanf\n");
+        strcat(dest, "    mov rax, 0                  ; Clear rax for scanf\n");
+        strcat(dest, "    call scanf                  ; Call scanf\n");
     }
     else if (type == REAL)
     {
-        sprintf(dest + strlen(dest), "    lea rdi, [fmt_f]            ; Float format\n");
+        strcat(dest, "    lea rdi, [fmt_f]            ; Float format\n");
         sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Variable address\n", varname);
-        sprintf(dest + strlen(dest), "    mov rax, 0                  ; Clear rax for scanf\n");
-        sprintf(dest + strlen(dest), "    call scanf                  ; Call scanf\n");
+        strcat(dest, "    mov rax, 0                  ; Clear rax for scanf\n");
+        strcat(dest, "    call scanf                  ; Call scanf\n");
     }
 }
 
 void makeCodeWrite(char *dest)
 {
-    sprintf(dest + strlen(dest), "    ; Write operation - integer output\n");
-    sprintf(dest + strlen(dest), "    pop rbx                     ; Get value to write\n");
-    sprintf(dest + strlen(dest), "    mov rsi, rbx                ; Move to printf argument\n");
-    sprintf(dest + strlen(dest), "    lea rdi, [fmt_dln]          ; Load format string\n");
-    sprintf(dest + strlen(dest), "    mov rax, 0                  ; Clear rax for printf\n");
-    sprintf(dest + strlen(dest), "    call printf                 ; Call printf\n");
+    // Initialize dest and concatenate to existing code
+    strcat(dest, "    ; Write operation with float-to-int conversion\n");
+    strcat(dest, "    pop rbx                     ; Get value to write\n");
+    strcat(dest, "    ; Convert float to integer for display\n");
+    strcat(dest, "    mov [temp_float], rbx       ; Store float bits\n");
+    strcat(dest, "    movsd xmm0, [temp_float]    ; Load as double\n");
+    strcat(dest, "    cvttsd2si rbx, xmm0         ; Convert to integer\n");
+    strcat(dest, "    mov rsi, rbx                ; Move to printf argument\n");
+    strcat(dest, "    lea rdi, [fmt_dln]          ; Load format string\n");
+    strcat(dest, "    mov rax, 0                  ; Clear rax for printf\n");
+    strcat(dest, "    call printf                 ; Call printf\n");
 }
-
 void makeCodeWriteString(char *dest, char *str)
 {
     dest[0] = '\0';
@@ -279,9 +324,9 @@ void makeCodeIf(char *dest, char *condition, char *body)
     dest[0] = '\0';
 
     sprintf(dest + strlen(dest), "%s", condition);
-    sprintf(dest + strlen(dest), "pop rbx\n");
-    sprintf(dest + strlen(dest), "cmp rbx, 0\n");
-    sprintf(dest + strlen(dest), "je .L%d\n", label);
+    sprintf(dest + strlen(dest), "    pop rbx\n");
+    sprintf(dest + strlen(dest), "    cmp rbx, 0\n");
+    sprintf(dest + strlen(dest), "    je .L%d\n", label);
     sprintf(dest + strlen(dest), "%s", body);
     sprintf(dest + strlen(dest), ".L%d:\n", label);
 }
@@ -293,11 +338,11 @@ void makeCodeIfElse(char *dest, char *condition, char *ifBody, char *elseBody)
     dest[0] = '\0';
 
     sprintf(dest + strlen(dest), "%s", condition);
-    sprintf(dest + strlen(dest), "pop rbx\n");
-    sprintf(dest + strlen(dest), "cmp rbx, 0\n");
-    sprintf(dest + strlen(dest), "je .L%d\n", label1);
+    sprintf(dest + strlen(dest), "    pop rbx\n");
+    sprintf(dest + strlen(dest), "    cmp rbx, 0\n");
+    sprintf(dest + strlen(dest), "    je .L%d\n", label1);
     sprintf(dest + strlen(dest), "%s", ifBody);
-    sprintf(dest + strlen(dest), "jmp .L%d\n", label2);
+    sprintf(dest + strlen(dest), "    jmp .L%d\n", label2);
     sprintf(dest + strlen(dest), ".L%d:\n", label1);
     sprintf(dest + strlen(dest), "%s", elseBody);
     sprintf(dest + strlen(dest), ".L%d:\n", label2);
@@ -311,48 +356,54 @@ void makeCodeWhile(char *dest, char *condition, char *body)
 
     sprintf(dest + strlen(dest), ".L%d:\n", label1);
     sprintf(dest + strlen(dest), "%s", condition);
-    sprintf(dest + strlen(dest), "pop rbx\n");
-    sprintf(dest + strlen(dest), "cmp rbx, 0\n");
-    sprintf(dest + strlen(dest), "je .L%d\n", label2);
+    sprintf(dest + strlen(dest), "    pop rbx\n");
+    sprintf(dest + strlen(dest), "    cmp rbx, 0\n");
+    sprintf(dest + strlen(dest), "    je .L%d\n", label2);
     sprintf(dest + strlen(dest), "%s", body);
-    sprintf(dest + strlen(dest), "jmp .L%d\n", label1);
+    sprintf(dest + strlen(dest), "    jmp .L%d\n", label1);
     sprintf(dest + strlen(dest), ".L%d:\n", label2);
 }
 
 // Implementation of functions for comparisons
 void makeCodeComparison(char *dest, char *op)
 {
-    sprintf(dest + strlen(dest), "pop rcx\n");
-    sprintf(dest + strlen(dest), "pop rbx\n");
-    sprintf(dest + strlen(dest), "cmp rbx, rcx\n");
+    sprintf(dest + strlen(dest), "    ; Float comparison operation: %s\n", op);
+    sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
+    sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand\n");
+    sprintf(dest + strlen(dest), "    ; Convert to float for comparison\n");
+    sprintf(dest + strlen(dest), "    mov [temp_float], rbx       ; Store first operand\n");
+    sprintf(dest + strlen(dest), "    movsd xmm0, [temp_float]    ; Load as double\n");
+    sprintf(dest + strlen(dest), "    mov [temp_float], rcx       ; Store second operand\n");
+    sprintf(dest + strlen(dest), "    movsd xmm1, [temp_float]    ; Load as double\n");
+    sprintf(dest + strlen(dest), "    comisd xmm0, xmm1           ; Compare floats\n");
 
     if (strcmp(op, "<") == 0)
     {
-        sprintf(dest + strlen(dest), "setl al\n");
+        sprintf(dest + strlen(dest), "    setb al                     ; Set if less than\n");
     }
     else if (strcmp(op, ">") == 0)
     {
-        sprintf(dest + strlen(dest), "setg al\n");
+        sprintf(dest + strlen(dest), "    seta al                     ; Set if greater than\n");
     }
     else if (strcmp(op, "<=") == 0)
     {
-        sprintf(dest + strlen(dest), "setle al\n");
+        sprintf(dest + strlen(dest), "    setbe al                    ; Set if less or equal\n");
     }
     else if (strcmp(op, ">=") == 0)
     {
-        sprintf(dest + strlen(dest), "setge al\n");
+        sprintf(dest + strlen(dest), "    setae al                    ; Set if greater or equal\n");
     }
     else if (strcmp(op, "==") == 0)
     {
-        sprintf(dest + strlen(dest), "sete al\n");
+        sprintf(dest + strlen(dest), "    sete al                     ; Set if equal\n");
     }
     else if (strcmp(op, "!=") == 0)
     {
-        sprintf(dest + strlen(dest), "setne al\n");
+        sprintf(dest + strlen(dest), "    setne al                    ; Set if not equal\n");
     }
 
-    sprintf(dest + strlen(dest), "movzx rbx, al\n");
-    sprintf(dest + strlen(dest), "push rbx\n");
+    sprintf(dest + strlen(dest), "    movzx rbx, al               ; Zero-extend result\n");
+    sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
 }
 
 void makeCodeNot(char *dest)

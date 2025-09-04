@@ -16,7 +16,7 @@
 %union {
 	struct code_t
 	{
-		char str[2044]; // string para o codigo asm
+		char str[8192]; // string para o codigo asm (increased from 2044)
 		int op; // opcoes (por exemplo nos jumps)
 	} c;
 }
@@ -37,7 +37,7 @@
 
 
 programa: declaracoes bloco  {
-		fprintf(out_file, "%s", $1.str);
+		// Don't write declaracoes anymore, they are written in dumpCodeDeclarationEnd
 		dumpCodeDeclarationEnd();
 		fprintf(out_file, "%s", $2.str);
 	}
@@ -177,23 +177,28 @@ expressao: termo  {
 	}
 	| expressao '+' expressao  {
 		strcpy($$.str, $1.str);
-		makeCodeAdd($$.str, $3.str);
+		strcat($$.str, $3.str);
+		makeCodeAdd($$.str);
 	}
 	| expressao '-' expressao  {	
 		strcpy($$.str, $1.str);
-		makeCodeSub($$.str, $3.str);
+		strcat($$.str, $3.str);
+		makeCodeSub($$.str);
 	}
 	| expressao '*' expressao  {	
 		strcpy($$.str, $1.str);
-		makeCodeMul($$.str, $3.str);
+		strcat($$.str, $3.str);
+		makeCodeMul($$.str);
 	}
 	| expressao '/' expressao  {
 		strcpy($$.str, $1.str);
-		makeCodeDiv($$.str, $3.str);
+		strcat($$.str, $3.str);
+		makeCodeDiv($$.str);
 	}
 	| expressao '%' expressao  {
 		strcpy($$.str, $1.str);
-		makeCodeMod($$.str, $3.str);
+		strcat($$.str, $3.str);
+		makeCodeMod($$.str);
 	}
 	| '-' expressao %prec UMINUS {
 		strcpy($$.str, $2.str);

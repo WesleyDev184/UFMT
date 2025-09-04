@@ -53,6 +53,9 @@ int main(int argc, char const *argv[])
         strcat(s, ".asm");
     }
 
+    // Reset label counter for fresh compilation
+    resetLabelCounter();
+
     out_file = fopen(s, "w");
     if (out_file == NULL)
     {

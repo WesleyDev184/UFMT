@@ -1,23 +1,23 @@
-int var_x;
-int var_y;
-int total;
-int media;
+float var_x;
+float var_y;
+float total;
+float media;
 int impar;
 
 {
     read(var_x);
     read(var_y);
     total = var_x + var_y;
-    media = total / 2;
+    media = total / 2.0;
     write(media);
     impar = 0;
-    while (total > 0) {
+    while (total > 0.0) {
         if (impar == 0) {
             impar = 1;
         } else {
             impar = 0;
         }
-        total = total - 1;
+        total = total - 1.0;
     }
     write(impar);
 }

@@ -14,12 +14,13 @@
 #include "symbolTable.h"
 
 // Size of an uninitialized string
-#define STRING_SIZE 256
+#define STRING_SIZE 4096
 extern FILE *out_file;
 
 // Assembly file structure functions
 void makePreambule(const char *filename);
 void makeCodeEpilogue(void);
+void resetLabelCounter();
 
 // Variable declaration and management
 void makeCodeDeclaration(char *dest, char *identifier, Type type, char *value);
@@ -29,12 +30,12 @@ void dumpCodeDeclarationEnd(void);
 int makeCodeAssignment(char *dest, char *id, char *expr);
 int makeCodeLoad(char *dest, char *id, int ref);
 
-// Arithmetic operations (removed value parameter from these)
-void makeCodeAdd(char *dest, char *value);
-void makeCodeSub(char *dest, char *value);
-void makeCodeMul(char *dest, char *value2);
-void makeCodeDiv(char *dest, char *value2);
-void makeCodeMod(char *dest, char *value2);
+// Arithmetic operations (no value parameter needed)
+void makeCodeAdd(char *dest);
+void makeCodeSub(char *dest);
+void makeCodeMul(char *dest);
+void makeCodeDiv(char *dest);
+void makeCodeMod(char *dest);
 void makeCodeNeg(char *dest);
 
 // I/O operations
