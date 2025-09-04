@@ -17,16 +17,13 @@ ERROR_HANDLER_C = errorHandler.c
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Wextra -g -O2 -std=c99
-# Suppress warnings for generated files
-LEX_CFLAGS = -Wno-unused-function -Wno-implicit-function-declaration
-DEBUG_FLAGS = -DDEBUG -fsanitize=address -fsanitize=undefined
 
 # Default target
 all: $(EXEC)
 
 # Rule to link the final executable
 $(EXEC): $(YACC_C) $(LEX_C) $(MAIN_SRC) $(CODE_GEN_C) $(SYMBOL_TABLE_C) $(ERROR_HANDLER_C)
-	$(CC) $(CFLAGS) $(LEX_CFLAGS) -o $(EXEC) $(MAIN_SRC) $(YACC_C) $(LEX_C) $(CODE_GEN_C) $(SYMBOL_TABLE_C) $(ERROR_HANDLER_C) -lfl -lm
+	$(CC) $(CFLAGS) -o $(EXEC) $(MAIN_SRC) $(YACC_C) $(LEX_C) $(CODE_GEN_C) $(SYMBOL_TABLE_C) $(ERROR_HANDLER_C) -lfl -lm
 
 # Rule to generate the parser C file and header from the Bison grammar
 $(YACC_C) $(YACC_H): $(YACC_SRC)
@@ -37,33 +34,10 @@ $(LEX_C): $(LEX_SRC) $(YACC_H)
 	flex -o $(LEX_C) $(LEX_SRC)
 
 asm:
-	./$(EXEC) ex.txt
-	nasm -f elf64 ex.asm -o ex.o
-	gcc -no-pie ex.o -o program
+	./$(EXEC) teste.txt
+	nasm -f elf64 teste.asm -o teste.o
+	gcc -no-pie teste.o -o program
 	./program
-
-# Debug target with additional safety checks
-debug: CFLAGS += $(DEBUG_FLAGS)
-debug: $(EXEC)
-
-# Release target with optimizations
-release: CFLAGS += -O3 -DNDEBUG
-release: $(EXEC)
-
-# Quiet compilation (suppress flex/bison warnings)
-quiet: LEX_CFLAGS += -w
-quiet: $(EXEC)
-
-# Test target
-test: $(EXEC)
-	@echo "Running compiler tests..."
-	./$(EXEC) ex.txt
-	@echo "Assembly generated successfully"
-
-# Run automated test suite
-test-suite: $(EXEC)
-	@echo "Running automated test suite..."
-	./run_tests.sh
 
 # Clean up generated files
 clean:
