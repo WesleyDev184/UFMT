@@ -28,7 +28,7 @@ void dumpCodeDeclarationEnd(void);
 int makeCodeAssignment(char *dest, char *id, char *expr);
 int makeCodeLoad(char *dest, char *id, int ref);
 
-// Arithmetic operations (type-specific)
+// Arithmetic operations (type-specific) - now with integrated optimizations
 void makeCodeAdd(char *dest, Type type);
 void makeCodeSub(char *dest, Type type);
 void makeCodeMul(char *dest, Type type);

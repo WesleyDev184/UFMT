@@ -12,6 +12,7 @@ YACC_C = parser.tab.c
 YACC_H = parser.tab.h
 CODE_GEN_C = codeGeneration.c
 SYMBOL_TABLE_C = symbolTable.c
+ERROR_HANDLER_C = errorHandler.c
 
 # Compiler and flags
 CC = gcc
@@ -24,8 +25,8 @@ DEBUG_FLAGS = -DDEBUG -fsanitize=address -fsanitize=undefined
 all: $(EXEC)
 
 # Rule to link the final executable
-$(EXEC): $(YACC_C) $(LEX_C) $(MAIN_SRC) $(CODE_GEN_C) $(SYMBOL_TABLE_C)
-	$(CC) $(CFLAGS) $(LEX_CFLAGS) -o $(EXEC) $(MAIN_SRC) $(YACC_C) $(LEX_C) $(CODE_GEN_C) $(SYMBOL_TABLE_C) -lfl
+$(EXEC): $(YACC_C) $(LEX_C) $(MAIN_SRC) $(CODE_GEN_C) $(SYMBOL_TABLE_C) $(ERROR_HANDLER_C)
+	$(CC) $(CFLAGS) $(LEX_CFLAGS) -o $(EXEC) $(MAIN_SRC) $(YACC_C) $(LEX_C) $(CODE_GEN_C) $(SYMBOL_TABLE_C) $(ERROR_HANDLER_C) -lfl -lm
 
 # Rule to generate the parser C file and header from the Bison grammar
 $(YACC_C) $(YACC_H): $(YACC_SRC)

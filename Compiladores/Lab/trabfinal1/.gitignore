@@ -1,4 +1,7 @@
-*.0
 *.asm
 compiler
 program
+*.o
+*.yy.c
+*.tab.c
+*.tab.h

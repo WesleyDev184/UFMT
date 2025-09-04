@@ -11,6 +11,7 @@
 #include <string.h>
 #include "symbolTable.h"
 #include "codeGeneration.h"
+#include "errorHandler.h"
 #include "parser.tab.h"
 
 FILE *out_file = NULL;
@@ -61,6 +62,9 @@ int main(int argc, char const *argv[])
     // Reset label counter for fresh compilation
     resetLabelCounter();
 
+    // Initialize error handling system
+    initErrorHandler();
+
     out_file = fopen(s, "w");
     if (out_file == NULL)
     {
@@ -109,11 +113,16 @@ int main(int argc, char const *argv[])
     // Print success message and symbol table
     printf("\n=== COMPILATION SUCCESSFUL ===\n");
     printf("Assembly code generated in: %s\n\n", s);
+
+    // Show compilation statistics
+    printErrorSummary();
+
     printf("=== SYMBOL TABLE ===\n");
     printSymTable(&table);
 
     // Free allocated memory
     freeSymTable(&table);
+    freeErrorHandler();
 
     return 0;
 }

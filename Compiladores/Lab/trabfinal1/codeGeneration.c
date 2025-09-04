@@ -1,28 +1,345 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#include <ctype.h>
 
 #include "symbolTable.h"
 #include "codeGeneration.h"
+#include "errorHandler.h"
+
+// ===============================================
+// INTEGRATED OPTIMIZER SYSTEM
+// ===============================================
+
+typedef enum
+{
+    OPT_CONSTANT_FOLDING,
+    OPT_DEAD_CODE_ELIMINATION,
+    OPT_STRENGTH_REDUCTION,
+    OPT_COMMON_SUBEXPRESSION
+} OptimizationType;
+
+typedef struct
+{
+    int enabled;
+    int level; // 0=none, 1=basic, 2=aggressive
+    int constant_folding;
+    int strength_reduction;
+    int dead_code_elimination;
+} OptimizerConfig;
+
+// Global optimizer configuration
+static OptimizerConfig optimizer_config = {0, 1, 1, 1, 0};
 
 // Global variables
 extern SymTable table;
 extern FILE *out_file;
 static int label_counter = 0;
 
+// Optimization tracking - store last two loaded values
+static char last_left_operand[64] = "";
+static char last_right_operand[64] = "";
+static int has_literal_operands = 0;
+
+// ===============================================
+// OPTIMIZER FUNCTIONS (INTEGRATED)
+// ===============================================
+
+static void initOptimizer(void)
+{
+    optimizer_config.enabled = 1;
+    optimizer_config.level = 1;
+    optimizer_config.constant_folding = 1;
+    optimizer_config.strength_reduction = 1;
+    optimizer_config.dead_code_elimination = 0;
+}
+
+static void setOptimizationLevel(int level)
+{
+    optimizer_config.level = level;
+    switch (level)
+    {
+    case 0: // No optimization
+        optimizer_config.enabled = 0;
+        optimizer_config.constant_folding = 0;
+        optimizer_config.strength_reduction = 0;
+        optimizer_config.dead_code_elimination = 0;
+        break;
+    case 1: // Basic optimization
+        optimizer_config.enabled = 1;
+        optimizer_config.constant_folding = 1;
+        optimizer_config.strength_reduction = 1;
+        optimizer_config.dead_code_elimination = 0;
+        break;
+    case 2: // Aggressive optimization
+        optimizer_config.enabled = 1;
+        optimizer_config.constant_folding = 1;
+        optimizer_config.strength_reduction = 1;
+        optimizer_config.dead_code_elimination = 1;
+        break;
+    }
+}
+
+static int isLiteralInteger(const char *str)
+{
+    if (!str || *str == '\0')
+        return 0;
+
+    char *endptr;
+    strtol(str, &endptr, 10);
+    return (*endptr == '\0' && strchr(str, '.') == NULL);
+}
+
+static int isLiteralFloat(const char *str)
+{
+    if (!str || *str == '\0')
+        return 0;
+
+    char *endptr;
+    strtod(str, &endptr);
+    return (*endptr == '\0' && strchr(str, '.') != NULL);
+}
+
+static int isPowerOfTwo(long value)
+{
+    return value > 0 && (value & (value - 1)) == 0;
+}
+
+static int log2Int(long value)
+{
+    int log = 0;
+    while (value > 1)
+    {
+        value >>= 1;
+        log++;
+    }
+    return log;
+}
+
+static long evaluateConstantInteger(const char *expr)
+{
+    // Simple constant evaluation (could be expanded)
+    return strtol(expr, NULL, 10);
+}
+
+static double evaluateConstantFloat(const char *expr)
+{
+    // Simple constant evaluation (could be expanded)
+    return strtod(expr, NULL);
+}
+
+static void optimizeConstantFolding(char *dest, const char *op, const char *left, const char *right, Type type)
+{
+    if (!optimizer_config.enabled || !optimizer_config.constant_folding)
+    {
+        dest[0] = '\0';
+        return;
+    }
+
+    dest[0] = '\0';
+
+    if (type == INTEGER && isLiteralInteger(left) && isLiteralInteger(right))
+    {
+        long left_val = evaluateConstantInteger(left);
+        long right_val = evaluateConstantInteger(right);
+        long result = 0;
+
+        if (strcmp(op, "+") == 0)
+        {
+            result = left_val + right_val;
+        }
+        else if (strcmp(op, "-") == 0)
+        {
+            result = left_val - right_val;
+        }
+        else if (strcmp(op, "*") == 0)
+        {
+            result = left_val * right_val;
+        }
+        else if (strcmp(op, "/") == 0 && right_val != 0)
+        {
+            result = left_val / right_val;
+        }
+        else
+        {
+            return; // Can't optimize
+        }
+
+        sprintf(dest, "    ; Constant folding optimization: %s %s %s = %ld\n", left, op, right, result);
+        sprintf(dest + strlen(dest), "    mov rbx, %ld                ; Optimized constant\n", result);
+        sprintf(dest + strlen(dest), "    push rbx\n");
+    }
+    else if (type == FLOAT_TYPE && isLiteralFloat(left) && isLiteralFloat(right))
+    {
+        double left_val = evaluateConstantFloat(left);
+        double right_val = evaluateConstantFloat(right);
+        double result = 0.0;
+
+        if (strcmp(op, "+") == 0)
+        {
+            result = left_val + right_val;
+        }
+        else if (strcmp(op, "-") == 0)
+        {
+            result = left_val - right_val;
+        }
+        else if (strcmp(op, "*") == 0)
+        {
+            result = left_val * right_val;
+        }
+        else if (strcmp(op, "/") == 0 && right_val != 0.0)
+        {
+            result = left_val / right_val;
+        }
+        else
+        {
+            return; // Can't optimize
+        }
+
+        long *bits = (long *)&result;
+        sprintf(dest, "    ; Constant folding optimization: %s %s %s = %f\n", left, op, right, result);
+        sprintf(dest + strlen(dest), "    mov rbx, %ld                ; Optimized float constant\n", *bits);
+        sprintf(dest + strlen(dest), "    push rbx\n");
+    }
+}
+
+static void optimizeStrengthReduction(char *dest, const char *op, const char *left, const char *right, Type type)
+{
+    if (!optimizer_config.enabled || !optimizer_config.strength_reduction)
+    {
+        dest[0] = '\0';
+        return;
+    }
+
+    dest[0] = '\0';
+
+    // Optimize multiplication by powers of 2
+    if (strcmp(op, "*") == 0 && type == INTEGER)
+    {
+        if (isLiteralInteger(right))
+        {
+            long right_val = evaluateConstantInteger(right);
+            if (isPowerOfTwo(right_val))
+            {
+                int shift_amount = log2Int(right_val);
+                sprintf(dest, "    ; Strength reduction optimization: multiply by %ld = shift left %d\n", right_val, shift_amount);
+                sprintf(dest + strlen(dest), "    pop rcx                     ; Get multiplier (ignored)\n");
+                sprintf(dest + strlen(dest), "    pop rbx                     ; Get multiplicand\n");
+                sprintf(dest + strlen(dest), "    shl rbx, %d                 ; Shift left instead of multiply\n", shift_amount);
+                sprintf(dest + strlen(dest), "    push rbx\n");
+                return;
+            }
+        }
+        if (isLiteralInteger(left))
+        {
+            long left_val = evaluateConstantInteger(left);
+            if (isPowerOfTwo(left_val))
+            {
+                int shift_amount = log2Int(left_val);
+                sprintf(dest, "    ; Strength reduction optimization: multiply by %ld = shift left %d\n", left_val, shift_amount);
+                sprintf(dest + strlen(dest), "    pop rbx                     ; Get second operand\n");
+                sprintf(dest + strlen(dest), "    pop rax                     ; Get first operand\n");
+                sprintf(dest + strlen(dest), "    shl rax, %d                 ; Shift left instead of multiply\n", shift_amount);
+                sprintf(dest + strlen(dest), "    push rax\n");
+                return;
+            }
+        }
+    }
+
+    // Optimize division by powers of 2
+    if (strcmp(op, "/") == 0 && type == INTEGER && isLiteralInteger(right))
+    {
+        long right_val = evaluateConstantInteger(right);
+        if (isPowerOfTwo(right_val))
+        {
+            int shift_amount = log2Int(right_val);
+            sprintf(dest, "    ; Strength reduction optimization: divide by %ld = shift right %d\n", right_val, shift_amount);
+            sprintf(dest + strlen(dest), "    pop rcx                     ; Get divisor (ignored)\n");
+            sprintf(dest + strlen(dest), "    pop rax                     ; Get dividend\n");
+            sprintf(dest + strlen(dest), "    sar rax, %d                 ; Arithmetic shift right\n", shift_amount);
+            sprintf(dest + strlen(dest), "    push rax\n");
+            return;
+        }
+    }
+
+    // Optimize multiplication by 0, 1
+    if (strcmp(op, "*") == 0 && type == INTEGER)
+    {
+        if (isLiteralInteger(right))
+        {
+            long right_val = evaluateConstantInteger(right);
+            if (right_val == 0)
+            {
+                sprintf(dest, "    ; Optimization: multiply by 0\n");
+                sprintf(dest + strlen(dest), "    pop rbx                     ; Remove operands\n");
+                sprintf(dest + strlen(dest), "    pop rbx\n");
+                sprintf(dest + strlen(dest), "    mov rbx, 0                  ; Result is 0\n");
+                sprintf(dest + strlen(dest), "    push rbx\n");
+                return;
+            }
+            else if (right_val == 1)
+            {
+                sprintf(dest, "    ; Optimization: multiply by 1 (identity)\n");
+                sprintf(dest + strlen(dest), "    pop rbx                     ; Remove multiplier\n");
+                sprintf(dest + strlen(dest), "    ; First operand already on stack\n");
+                return;
+            }
+        }
+        if (isLiteralInteger(left))
+        {
+            long left_val = evaluateConstantInteger(left);
+            if (left_val == 0 || left_val == 1)
+            {
+                // Similar optimizations for left operand
+            }
+        }
+    }
+
+    // Optimize addition/subtraction by 0
+    if ((strcmp(op, "+") == 0 || strcmp(op, "-") == 0) && type == INTEGER)
+    {
+        if (isLiteralInteger(right))
+        {
+            long right_val = evaluateConstantInteger(right);
+            if (right_val == 0)
+            {
+                sprintf(dest, "    ; Optimization: %s by 0 (identity)\n",
+                        strcmp(op, "+") == 0 ? "addition" : "subtraction");
+                sprintf(dest + strlen(dest), "    pop rbx                     ; Remove zero\n");
+                sprintf(dest + strlen(dest), "    ; First operand already on stack\n");
+                return;
+            }
+        }
+    }
+}
+
+// ===============================================
+// END OF INTEGRATED OPTIMIZER
+// ===============================================
+
 void resetLabelCounter()
 {
     label_counter = 0;
+    // Reset optimization tracking
+    last_left_operand[0] = '\0';
+    last_right_operand[0] = '\0';
+    has_literal_operands = 0;
 }
 
 // Function to create assembly file preamble
 void makePreambule(const char *filename)
 {
+    // Initialize optimizer with level 1 (basic optimizations)
+    initOptimizer();
+    setOptimizationLevel(1);
+
     // Assembly format header with detailed comments
     fprintf(out_file, "; ===============================================\n");
     fprintf(out_file, "; Assembly code generated from: %s\n", filename);
     fprintf(out_file, "; Generated by UFMT Compiler Lab Project\n");
     fprintf(out_file, "; Author: Wesley Antonio Junior dos Santos\n");
+    fprintf(out_file, "; Optimization Level: 1 (Basic)\n");
     fprintf(out_file, "; ===============================================\n");
     fprintf(out_file, "\n");
 
@@ -183,6 +500,18 @@ int makeCodeLoad(char *dest, char *id, int ref)
             sprintf(dest + strlen(dest), "    mov rbx, %d                ; Load integer value\n", val);
         }
         sprintf(dest + strlen(dest), "    push rbx\n");
+
+        // Track literal operands for optimization
+        if (strlen(last_left_operand) == 0)
+        {
+            strcpy(last_left_operand, id);
+        }
+        else
+        {
+            strcpy(last_right_operand, id);
+            has_literal_operands = 1; // We have both operands as literals
+        }
+
         return 1;
     }
 
@@ -191,12 +520,61 @@ int makeCodeLoad(char *dest, char *id, int ref)
 
     sprintf(dest + strlen(dest), "    mov rbx, [%s]\n", ret->identifier);
     sprintf(dest + strlen(dest), "    push rbx\n");
+
+    // Track variable operands (not literals)
+    if (strlen(last_left_operand) == 0)
+    {
+        strcpy(last_left_operand, id);
+    }
+    else
+    {
+        strcpy(last_right_operand, id);
+        has_literal_operands = 0; // At least one is not a literal
+    }
+
     return 1;
 }
 
 void makeCodeAdd(char *dest, Type type)
 {
     char temp[256];
+    char optimized[512];
+
+    // Try optimization if we have literal operands
+    if (has_literal_operands && strlen(last_left_operand) > 0 && strlen(last_right_operand) > 0)
+    {
+        optimized[0] = '\0';
+        optimizeConstantFolding(optimized, "+", last_left_operand, last_right_operand, type);
+        if (strlen(optimized) > 0)
+        {
+            // Clear dest and use only optimized code (no loads needed)
+            dest[0] = '\0';
+            strcat(dest, optimized);
+            // Reset tracking
+            has_literal_operands = 0;
+            last_left_operand[0] = '\0';
+            last_right_operand[0] = '\0';
+            return;
+        }
+    }
+
+    // Check for strength reduction patterns
+    if (strlen(last_right_operand) > 0)
+    {
+        optimized[0] = '\0';
+        optimizeStrengthReduction(optimized, "+", last_left_operand, last_right_operand, type);
+        if (strlen(optimized) > 0)
+        {
+            strcat(dest, optimized);
+            // Reset tracking
+            has_literal_operands = 0;
+            last_left_operand[0] = '\0';
+            last_right_operand[0] = '\0';
+            return;
+        }
+    }
+
+    // Standard addition code
     if (type == INTEGER)
     {
         sprintf(temp, "    ; Integer addition operation\n");
@@ -222,10 +600,50 @@ void makeCodeAdd(char *dest, Type type)
         strcat(dest, "    mov rbx, [temp_float]       ; Load result back\n");
         strcat(dest, "    push rbx                    ; Push result\n");
     }
+
+    // Reset tracking after operation
+    has_literal_operands = 0;
+    last_left_operand[0] = '\0';
+    last_right_operand[0] = '\0';
 }
 
 void makeCodeSub(char *dest, Type type)
 {
+    char optimized[512];
+
+    // Try optimization if we have literal operands
+    if (has_literal_operands && strlen(last_left_operand) > 0 && strlen(last_right_operand) > 0)
+    {
+        optimized[0] = '\0';
+        optimizeConstantFolding(optimized, "-", last_left_operand, last_right_operand, type);
+        if (strlen(optimized) > 0)
+        {
+            strcat(dest, optimized);
+            // Reset tracking
+            has_literal_operands = 0;
+            last_left_operand[0] = '\0';
+            last_right_operand[0] = '\0';
+            return;
+        }
+    }
+
+    // Check for strength reduction patterns
+    if (strlen(last_right_operand) > 0)
+    {
+        optimized[0] = '\0';
+        optimizeStrengthReduction(optimized, "-", last_left_operand, last_right_operand, type);
+        if (strlen(optimized) > 0)
+        {
+            strcat(dest, optimized);
+            // Reset tracking
+            has_literal_operands = 0;
+            last_left_operand[0] = '\0';
+            last_right_operand[0] = '\0';
+            return;
+        }
+    }
+
+    // Standard subtraction code
     if (type == INTEGER)
     {
         sprintf(dest + strlen(dest), "    ; Integer subtraction operation\n");
@@ -249,10 +667,52 @@ void makeCodeSub(char *dest, Type type)
         sprintf(dest + strlen(dest), "    mov rbx, [temp_float]       ; Load result back\n");
         sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
     }
+
+    // Reset tracking after operation
+    has_literal_operands = 0;
+    last_left_operand[0] = '\0';
+    last_right_operand[0] = '\0';
 }
 
 void makeCodeMul(char *dest, Type type)
 {
+    char optimized[512];
+
+    // Try optimization if we have literal operands
+    if (has_literal_operands && strlen(last_left_operand) > 0 && strlen(last_right_operand) > 0)
+    {
+        optimized[0] = '\0';
+        optimizeConstantFolding(optimized, "*", last_left_operand, last_right_operand, type);
+        if (strlen(optimized) > 0)
+        {
+            // Clear dest and use only optimized code
+            dest[0] = '\0';
+            strcat(dest, optimized);
+            // Reset tracking
+            has_literal_operands = 0;
+            last_left_operand[0] = '\0';
+            last_right_operand[0] = '\0';
+            return;
+        }
+    }
+
+    // Check for strength reduction patterns (multiplication by powers of 2)
+    if (strlen(last_right_operand) > 0)
+    {
+        optimized[0] = '\0';
+        optimizeStrengthReduction(optimized, "*", last_left_operand, last_right_operand, type);
+        if (strlen(optimized) > 0)
+        {
+            strcat(dest, optimized);
+            // Reset tracking
+            has_literal_operands = 0;
+            last_left_operand[0] = '\0';
+            last_right_operand[0] = '\0';
+            return;
+        }
+    }
+
+    // Standard multiplication code
     if (type == INTEGER)
     {
         sprintf(dest + strlen(dest), "    ; Integer multiplication operation\n");
@@ -277,10 +737,50 @@ void makeCodeMul(char *dest, Type type)
         sprintf(dest + strlen(dest), "    mov rbx, [temp_float]       ; Load result back\n");
         sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
     }
+
+    // Reset tracking after operation
+    has_literal_operands = 0;
+    last_left_operand[0] = '\0';
+    last_right_operand[0] = '\0';
 }
 
 void makeCodeDiv(char *dest, Type type)
 {
+    char optimized[512];
+
+    // Try optimization if we have literal operands
+    if (has_literal_operands && strlen(last_left_operand) > 0 && strlen(last_right_operand) > 0)
+    {
+        optimized[0] = '\0';
+        optimizeConstantFolding(optimized, "/", last_left_operand, last_right_operand, type);
+        if (strlen(optimized) > 0)
+        {
+            strcat(dest, optimized);
+            // Reset tracking
+            has_literal_operands = 0;
+            last_left_operand[0] = '\0';
+            last_right_operand[0] = '\0';
+            return;
+        }
+    }
+
+    // Check for strength reduction patterns (division by powers of 2)
+    if (strlen(last_right_operand) > 0)
+    {
+        optimized[0] = '\0';
+        optimizeStrengthReduction(optimized, "/", last_left_operand, last_right_operand, type);
+        if (strlen(optimized) > 0)
+        {
+            strcat(dest, optimized);
+            // Reset tracking
+            has_literal_operands = 0;
+            last_left_operand[0] = '\0';
+            last_right_operand[0] = '\0';
+            return;
+        }
+    }
+
+    // Standard division code
     if (type == INTEGER)
     {
         sprintf(dest + strlen(dest), "    ; Integer division operation with zero check\n");
@@ -324,6 +824,11 @@ void makeCodeDiv(char *dest, Type type)
         sprintf(dest + strlen(dest), "    call exit                   ; Exit with error\n");
         sprintf(dest + strlen(dest), "\ndivision_end:\n");
     }
+
+    // Reset tracking after operation
+    has_literal_operands = 0;
+    last_left_operand[0] = '\0';
+    last_right_operand[0] = '\0';
 }
 
 void makeCodeMod(char *dest)
