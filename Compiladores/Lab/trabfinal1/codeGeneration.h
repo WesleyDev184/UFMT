@@ -15,9 +15,7 @@
 
 // Size of an uninitialized string
 #define STRING_SIZE 4096
-extern FILE *out_file;
-
-// Assembly file structure functions
+extern FILE *out_file; // Assembly file structure functions
 void makePreambule(const char *filename);
 void makeCodeEpilogue(void);
 void resetLabelCounter();
@@ -30,30 +28,31 @@ void dumpCodeDeclarationEnd(void);
 int makeCodeAssignment(char *dest, char *id, char *expr);
 int makeCodeLoad(char *dest, char *id, int ref);
 
-// Arithmetic operations (no value parameter needed)
-void makeCodeAdd(char *dest);
-void makeCodeSub(char *dest);
-void makeCodeMul(char *dest);
-void makeCodeDiv(char *dest);
+// Arithmetic operations (type-specific)
+void makeCodeAdd(char *dest, Type type);
+void makeCodeSub(char *dest, Type type);
+void makeCodeMul(char *dest, Type type);
+void makeCodeDiv(char *dest, Type type);
 void makeCodeMod(char *dest);
-void makeCodeNeg(char *dest);
+void makeCodeNeg(char *dest, Type type);
 
 // I/O operations
 void makeCodeRead(char *dest, char *varname, Type type);
-void makeCodeWrite(char *dest);
-void makeCodeWriteType(char *dest, Type type);
+void makeCodeWrite(char *dest, Type type);
 void makeCodeWriteString(char *dest, char *str);
 
-// Type conversion
-void makeCodeFloatToInt(char *dest);
+// Comparison operations (type-specific)
+void makeCodeComparison(char *dest, char *op, Type type);
 
-// Control structures
+// Type checking utilities
+Type getExpressionType(char *expr);
+int checkTypeCompatibility(Type type1, Type type2);
+void printTypeMismatchError(int line, const char *operation, Type type1, Type type2);
 void makeCodeIf(char *dest, char *condition, char *body);
 void makeCodeIfElse(char *dest, char *condition, char *ifBody, char *elseBody);
 void makeCodeWhile(char *dest, char *condition, char *body);
 
-// Comparison and logical operations
-void makeCodeComparison(char *dest, char *op);
+// Logical operations
 void makeCodeNot(char *dest);
 
 #endif

@@ -135,6 +135,31 @@ int makeCodeAssignment(char *dest, char *id, char *expr)
     return 1;
 }
 
+// Type checking utilities
+Type getExpressionType(char *expr)
+{
+    (void)expr; // Suppress unused parameter warning
+    // Esta função deve ser implementada no parser para retornar o tipo da expressão
+    // Por simplicidade, vamos assumir que podemos determinar o tipo
+    // Na implementação real, isso seria feito durante a análise sintática
+    return INTEGER; // Placeholder - deve ser implementado adequadamente
+}
+
+int checkTypeCompatibility(Type type1, Type type2)
+{
+    return (type1 == type2);
+}
+
+// Function to print type mismatch error
+void printTypeMismatchError(int line, const char *operation, Type type1, Type type2)
+{
+    const char *type1_str = (type1 == INTEGER) ? "int" : ((type1 == REAL) ? "float" : "string");
+    const char *type2_str = (type2 == INTEGER) ? "int" : ((type2 == REAL) ? "float" : "string");
+
+    fprintf(stderr, "Error at line %d: Type mismatch in %s operation. Cannot operate %s with %s.\n",
+            line, operation, type1_str, type2_str);
+}
+
 int makeCodeLoad(char *dest, char *id, int ref)
 {
     dest[0] = '\0';
@@ -152,11 +177,10 @@ int makeCodeLoad(char *dest, char *id, int ref)
         }
         else
         {
-            // It's an integer number - convert to float
-            double val = (double)atoi(id);
-            long *bits = (long *)&val;
-            sprintf(dest + strlen(dest), "    ; Load integer literal as float: %s\n", id);
-            sprintf(dest + strlen(dest), "    mov rbx, %ld                ; Load as float bits\n", *bits);
+            // It's an integer number - load as integer
+            int val = atoi(id);
+            sprintf(dest + strlen(dest), "    ; Load integer literal: %s\n", id);
+            sprintf(dest + strlen(dest), "    mov rbx, %d                ; Load integer value\n", val);
         }
         sprintf(dest + strlen(dest), "    push rbx\n");
         return 1;
@@ -170,79 +194,136 @@ int makeCodeLoad(char *dest, char *id, int ref)
     return 1;
 }
 
-void makeCodeAdd(char *dest)
+void makeCodeAdd(char *dest, Type type)
 {
     char temp[256];
-    sprintf(temp, "    ; Float addition operation\n");
-    strcat(dest, temp);
-    strcat(dest, "    pop rcx                     ; Get second operand\n");
-    strcat(dest, "    pop rbx                     ; Get first operand\n");
-    strcat(dest, "    ; Convert to float for addition\n");
-    strcat(dest, "    mov [temp_float], rbx       ; Store first operand\n");
-    strcat(dest, "    movsd xmm0, [temp_float]    ; Load as double\n");
-    strcat(dest, "    mov [temp_float], rcx       ; Store second operand\n");
-    strcat(dest, "    movsd xmm1, [temp_float]    ; Load as double\n");
-    strcat(dest, "    addsd xmm0, xmm1            ; Add: xmm0 = xmm0 + xmm1\n");
-    strcat(dest, "    movsd [temp_float], xmm0    ; Store result\n");
-    strcat(dest, "    mov rbx, [temp_float]       ; Load result back\n");
-    strcat(dest, "    push rbx                    ; Push result\n");
+    if (type == INTEGER)
+    {
+        sprintf(temp, "    ; Integer addition operation\n");
+        strcat(dest, temp);
+        strcat(dest, "    pop rcx                     ; Get second operand\n");
+        strcat(dest, "    pop rbx                     ; Get first operand\n");
+        strcat(dest, "    add rbx, rcx                ; Add: rbx = rbx + rcx\n");
+        strcat(dest, "    push rbx                    ; Push result\n");
+    }
+    else if (type == REAL)
+    {
+        sprintf(temp, "    ; Float addition operation\n");
+        strcat(dest, temp);
+        strcat(dest, "    pop rcx                     ; Get second operand\n");
+        strcat(dest, "    pop rbx                     ; Get first operand\n");
+        strcat(dest, "    ; Convert to float for addition\n");
+        strcat(dest, "    mov [temp_float], rbx       ; Store first operand\n");
+        strcat(dest, "    movsd xmm0, [temp_float]    ; Load as double\n");
+        strcat(dest, "    mov [temp_float], rcx       ; Store second operand\n");
+        strcat(dest, "    movsd xmm1, [temp_float]    ; Load as double\n");
+        strcat(dest, "    addsd xmm0, xmm1            ; Add: xmm0 = xmm0 + xmm1\n");
+        strcat(dest, "    movsd [temp_float], xmm0    ; Store result\n");
+        strcat(dest, "    mov rbx, [temp_float]       ; Load result back\n");
+        strcat(dest, "    push rbx                    ; Push result\n");
+    }
 }
 
-void makeCodeSub(char *dest)
+void makeCodeSub(char *dest, Type type)
 {
-    sprintf(dest + strlen(dest), "    ; Float subtraction operation\n");
-    sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
-    sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand\n");
-    sprintf(dest + strlen(dest), "    ; Convert to float for subtraction\n");
-    sprintf(dest + strlen(dest), "    mov [temp_float], rbx       ; Store first operand\n");
-    sprintf(dest + strlen(dest), "    movsd xmm0, [temp_float]    ; Load as double\n");
-    sprintf(dest + strlen(dest), "    mov [temp_float], rcx       ; Store second operand\n");
-    sprintf(dest + strlen(dest), "    movsd xmm1, [temp_float]    ; Load as double\n");
-    sprintf(dest + strlen(dest), "    subsd xmm0, xmm1            ; Subtract: xmm0 = xmm0 - xmm1\n");
-    sprintf(dest + strlen(dest), "    movsd [temp_float], xmm0    ; Store result\n");
-    sprintf(dest + strlen(dest), "    mov rbx, [temp_float]       ; Load result back\n");
-    sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
+    if (type == INTEGER)
+    {
+        sprintf(dest + strlen(dest), "    ; Integer subtraction operation\n");
+        sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
+        sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand\n");
+        sprintf(dest + strlen(dest), "    sub rbx, rcx                ; Subtract: rbx = rbx - rcx\n");
+        sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
+    }
+    else if (type == REAL)
+    {
+        sprintf(dest + strlen(dest), "    ; Float subtraction operation\n");
+        sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
+        sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand\n");
+        sprintf(dest + strlen(dest), "    ; Convert to float for subtraction\n");
+        sprintf(dest + strlen(dest), "    mov [temp_float], rbx       ; Store first operand\n");
+        sprintf(dest + strlen(dest), "    movsd xmm0, [temp_float]    ; Load as double\n");
+        sprintf(dest + strlen(dest), "    mov [temp_float], rcx       ; Store second operand\n");
+        sprintf(dest + strlen(dest), "    movsd xmm1, [temp_float]    ; Load as double\n");
+        sprintf(dest + strlen(dest), "    subsd xmm0, xmm1            ; Subtract: xmm0 = xmm0 - xmm1\n");
+        sprintf(dest + strlen(dest), "    movsd [temp_float], xmm0    ; Store result\n");
+        sprintf(dest + strlen(dest), "    mov rbx, [temp_float]       ; Load result back\n");
+        sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
+    }
 }
 
-void makeCodeMul(char *dest)
+void makeCodeMul(char *dest, Type type)
 {
-    sprintf(dest + strlen(dest), "    ; Float multiplication operation\n");
-    sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
-    sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand\n");
-    sprintf(dest + strlen(dest), "    ; Convert to float for multiplication\n");
-    sprintf(dest + strlen(dest), "    mov [temp_float], rbx       ; Store first operand\n");
-    sprintf(dest + strlen(dest), "    movsd xmm0, [temp_float]    ; Load as double\n");
-    sprintf(dest + strlen(dest), "    mov [temp_float], rcx       ; Store second operand\n");
-    sprintf(dest + strlen(dest), "    movsd xmm1, [temp_float]    ; Load as double\n");
-    sprintf(dest + strlen(dest), "    mulsd xmm0, xmm1            ; Multiply: xmm0 = xmm0 * xmm1\n");
-    sprintf(dest + strlen(dest), "    movsd [temp_float], xmm0    ; Store result\n");
-    sprintf(dest + strlen(dest), "    mov rbx, [temp_float]       ; Load result back\n");
-    sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
+    if (type == INTEGER)
+    {
+        sprintf(dest + strlen(dest), "    ; Integer multiplication operation\n");
+        sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
+        sprintf(dest + strlen(dest), "    pop rax                     ; Get first operand\n");
+        sprintf(dest + strlen(dest), "    imul rax, rcx               ; Multiply: rax = rax * rcx\n");
+        sprintf(dest + strlen(dest), "    mov rbx, rax                ; Move result to rbx\n");
+        sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
+    }
+    else if (type == REAL)
+    {
+        sprintf(dest + strlen(dest), "    ; Float multiplication operation\n");
+        sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
+        sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand\n");
+        sprintf(dest + strlen(dest), "    ; Convert to float for multiplication\n");
+        sprintf(dest + strlen(dest), "    mov [temp_float], rbx       ; Store first operand\n");
+        sprintf(dest + strlen(dest), "    movsd xmm0, [temp_float]    ; Load as double\n");
+        sprintf(dest + strlen(dest), "    mov [temp_float], rcx       ; Store second operand\n");
+        sprintf(dest + strlen(dest), "    movsd xmm1, [temp_float]    ; Load as double\n");
+        sprintf(dest + strlen(dest), "    mulsd xmm0, xmm1            ; Multiply: xmm0 = xmm0 * xmm1\n");
+        sprintf(dest + strlen(dest), "    movsd [temp_float], xmm0    ; Store result\n");
+        sprintf(dest + strlen(dest), "    mov rbx, [temp_float]       ; Load result back\n");
+        sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
+    }
 }
 
-void makeCodeDiv(char *dest)
+void makeCodeDiv(char *dest, Type type)
 {
-    sprintf(dest + strlen(dest), "    ; Float division operation with zero check\n");
-    sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand (divisor)\n");
-    sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand (dividend)\n");
-    sprintf(dest + strlen(dest), "    ; Check for division by zero\n");
-    sprintf(dest + strlen(dest), "    mov [temp_float], rcx       ; Store divisor\n");
-    sprintf(dest + strlen(dest), "    movsd xmm1, [temp_float]    ; Load divisor as double\n");
-    sprintf(dest + strlen(dest), "    xorpd xmm2, xmm2            ; Clear xmm2 (zero)\n");
-    sprintf(dest + strlen(dest), "    comisd xmm1, xmm2           ; Compare with zero\n");
-    sprintf(dest + strlen(dest), "    je division_by_zero         ; Jump if divisor is zero\n");
-    sprintf(dest + strlen(dest), "    ; Convert to float for division\n");
-    sprintf(dest + strlen(dest), "    mov [temp_float], rbx       ; Store dividend\n");
-    sprintf(dest + strlen(dest), "    movsd xmm0, [temp_float]    ; Load as double\n");
-    sprintf(dest + strlen(dest), "    divsd xmm0, xmm1            ; Divide: xmm0 = xmm0 / xmm1\n");
-    sprintf(dest + strlen(dest), "    movsd [temp_float], xmm0    ; Store result\n");
-    sprintf(dest + strlen(dest), "    mov rbx, [temp_float]       ; Load result back\n");
-    sprintf(dest + strlen(dest), "    push rbx                    ; Push quotient\n");
-    sprintf(dest + strlen(dest), "    jmp division_end            ; Skip error handling\n");
-    sprintf(dest + strlen(dest), "\ndivision_by_zero:\n");
-    sprintf(dest + strlen(dest), "    mov rdi, 1                  ; Exit code 1\n");
-    sprintf(dest + strlen(dest), "    call exit                   ; Exit with error\n");
-    sprintf(dest + strlen(dest), "\ndivision_end:\n");
+    if (type == INTEGER)
+    {
+        sprintf(dest + strlen(dest), "    ; Integer division operation with zero check\n");
+        sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand (divisor)\n");
+        sprintf(dest + strlen(dest), "    pop rax                     ; Get first operand (dividend)\n");
+        sprintf(dest + strlen(dest), "    ; Check for division by zero\n");
+        sprintf(dest + strlen(dest), "    cmp rcx, 0                  ; Compare divisor with zero\n");
+        sprintf(dest + strlen(dest), "    je division_by_zero         ; Jump if divisor is zero\n");
+        sprintf(dest + strlen(dest), "    ; Perform integer division\n");
+        sprintf(dest + strlen(dest), "    xor rdx, rdx                ; Clear remainder register\n");
+        sprintf(dest + strlen(dest), "    idiv rcx                    ; Divide: rax = rax / rcx\n");
+        sprintf(dest + strlen(dest), "    mov rbx, rax                ; Move quotient to rbx\n");
+        sprintf(dest + strlen(dest), "    push rbx                    ; Push quotient\n");
+        sprintf(dest + strlen(dest), "    jmp division_end            ; Skip error handling\n");
+        sprintf(dest + strlen(dest), "\ndivision_by_zero:\n");
+        sprintf(dest + strlen(dest), "    mov rdi, 1                  ; Exit code 1\n");
+        sprintf(dest + strlen(dest), "    call exit                   ; Exit with error\n");
+        sprintf(dest + strlen(dest), "\ndivision_end:\n");
+    }
+    else if (type == REAL)
+    {
+        sprintf(dest + strlen(dest), "    ; Float division operation with zero check\n");
+        sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand (divisor)\n");
+        sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand (dividend)\n");
+        sprintf(dest + strlen(dest), "    ; Check for division by zero\n");
+        sprintf(dest + strlen(dest), "    mov [temp_float], rcx       ; Store divisor\n");
+        sprintf(dest + strlen(dest), "    movsd xmm1, [temp_float]    ; Load divisor as double\n");
+        sprintf(dest + strlen(dest), "    xorpd xmm2, xmm2            ; Clear xmm2 (zero)\n");
+        sprintf(dest + strlen(dest), "    comisd xmm1, xmm2           ; Compare with zero\n");
+        sprintf(dest + strlen(dest), "    je division_by_zero         ; Jump if divisor is zero\n");
+        sprintf(dest + strlen(dest), "    ; Convert to float for division\n");
+        sprintf(dest + strlen(dest), "    mov [temp_float], rbx       ; Store dividend\n");
+        sprintf(dest + strlen(dest), "    movsd xmm0, [temp_float]    ; Load as double\n");
+        sprintf(dest + strlen(dest), "    divsd xmm0, xmm1            ; Divide: xmm0 = xmm0 / xmm1\n");
+        sprintf(dest + strlen(dest), "    movsd [temp_float], xmm0    ; Store result\n");
+        sprintf(dest + strlen(dest), "    mov rbx, [temp_float]       ; Load result back\n");
+        sprintf(dest + strlen(dest), "    push rbx                    ; Push quotient\n");
+        sprintf(dest + strlen(dest), "    jmp division_end            ; Skip error handling\n");
+        sprintf(dest + strlen(dest), "\ndivision_by_zero:\n");
+        sprintf(dest + strlen(dest), "    mov rdi, 1                  ; Exit code 1\n");
+        sprintf(dest + strlen(dest), "    call exit                   ; Exit with error\n");
+        sprintf(dest + strlen(dest), "\ndivision_end:\n");
+    }
 }
 
 void makeCodeMod(char *dest)
@@ -254,11 +335,27 @@ void makeCodeMod(char *dest)
     sprintf(dest + strlen(dest), "    push rdx                    ; Push remainder\n");
 }
 
-void makeCodeNeg(char *dest)
+void makeCodeNeg(char *dest, Type type)
 {
-    sprintf(dest + strlen(dest), "pop rbx\n");
-    sprintf(dest + strlen(dest), "neg rbx\n");
-    sprintf(dest + strlen(dest), "push rbx\n");
+    if (type == INTEGER)
+    {
+        sprintf(dest + strlen(dest), "    ; Integer negation\n");
+        sprintf(dest + strlen(dest), "    pop rbx\n");
+        sprintf(dest + strlen(dest), "    neg rbx\n");
+        sprintf(dest + strlen(dest), "    push rbx\n");
+    }
+    else if (type == REAL)
+    {
+        sprintf(dest + strlen(dest), "    ; Float negation\n");
+        sprintf(dest + strlen(dest), "    pop rbx\n");
+        sprintf(dest + strlen(dest), "    mov [temp_float], rbx       ; Store float bits\n");
+        sprintf(dest + strlen(dest), "    movsd xmm0, [temp_float]    ; Load as double\n");
+        sprintf(dest + strlen(dest), "    xorpd xmm1, xmm1            ; Clear xmm1\n");
+        sprintf(dest + strlen(dest), "    subsd xmm1, xmm0            ; Negate: xmm1 = 0 - xmm0\n");
+        sprintf(dest + strlen(dest), "    movsd [temp_float], xmm1    ; Store result\n");
+        sprintf(dest + strlen(dest), "    mov rbx, [temp_float]       ; Load result back\n");
+        sprintf(dest + strlen(dest), "    push rbx\n");
+    }
 }
 
 // Implementation of new functions for I/O
@@ -283,19 +380,29 @@ void makeCodeRead(char *dest, char *varname, Type type)
     }
 }
 
-void makeCodeWrite(char *dest)
+void makeCodeWrite(char *dest, Type type)
 {
-    // Initialize dest and concatenate to existing code
-    strcat(dest, "    ; Write operation with float-to-int conversion\n");
-    strcat(dest, "    pop rbx                     ; Get value to write\n");
-    strcat(dest, "    ; Convert float to integer for display\n");
-    strcat(dest, "    mov [temp_float], rbx       ; Store float bits\n");
-    strcat(dest, "    movsd xmm0, [temp_float]    ; Load as double\n");
-    strcat(dest, "    cvttsd2si rbx, xmm0         ; Convert to integer\n");
-    strcat(dest, "    mov rsi, rbx                ; Move to printf argument\n");
-    strcat(dest, "    lea rdi, [fmt_dln]          ; Load format string\n");
-    strcat(dest, "    mov rax, 0                  ; Clear rax for printf\n");
-    strcat(dest, "    call printf                 ; Call printf\n");
+    if (type == INTEGER)
+    {
+        // Write operation for integer
+        strcat(dest, "    ; Write operation for integer\n");
+        strcat(dest, "    pop rbx                     ; Get value to write\n");
+        strcat(dest, "    mov rsi, rbx                ; Move to printf argument\n");
+        strcat(dest, "    lea rdi, [fmt_dln]          ; Load format string\n");
+        strcat(dest, "    mov rax, 0                  ; Clear rax for printf\n");
+        strcat(dest, "    call printf                 ; Call printf\n");
+    }
+    else if (type == REAL)
+    {
+        // Write operation for float
+        strcat(dest, "    ; Write operation for float\n");
+        strcat(dest, "    pop rbx                     ; Get value to write\n");
+        strcat(dest, "    mov [temp_float], rbx       ; Store float bits\n");
+        strcat(dest, "    movsd xmm0, [temp_float]    ; Load as double\n");
+        strcat(dest, "    lea rdi, [fmt_fln]          ; Load float format string\n");
+        strcat(dest, "    mov rax, 1                  ; One XMM register used\n");
+        strcat(dest, "    call printf                 ; Call printf\n");
+    }
 }
 void makeCodeWriteString(char *dest, char *str)
 {
@@ -374,41 +481,76 @@ void makeCodeWhile(char *dest, char *condition, char *body)
 }
 
 // Implementation of functions for comparisons
-void makeCodeComparison(char *dest, char *op)
+void makeCodeComparison(char *dest, char *op, Type type)
 {
-    sprintf(dest + strlen(dest), "    ; Float comparison operation: %s\n", op);
-    sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
-    sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand\n");
-    sprintf(dest + strlen(dest), "    ; Convert to float for comparison\n");
-    sprintf(dest + strlen(dest), "    mov [temp_float], rbx       ; Store first operand\n");
-    sprintf(dest + strlen(dest), "    movsd xmm0, [temp_float]    ; Load as double\n");
-    sprintf(dest + strlen(dest), "    mov [temp_float], rcx       ; Store second operand\n");
-    sprintf(dest + strlen(dest), "    movsd xmm1, [temp_float]    ; Load as double\n");
-    sprintf(dest + strlen(dest), "    comisd xmm0, xmm1           ; Compare floats\n");
+    if (type == INTEGER)
+    {
+        sprintf(dest + strlen(dest), "    ; Integer comparison operation: %s\n", op);
+        sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
+        sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand\n");
+        sprintf(dest + strlen(dest), "    cmp rbx, rcx                ; Compare integers\n");
 
-    if (strcmp(op, "<") == 0)
-    {
-        sprintf(dest + strlen(dest), "    setb al                     ; Set if less than\n");
+        if (strcmp(op, "<") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setl al                     ; Set if less than\n");
+        }
+        else if (strcmp(op, ">") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setg al                     ; Set if greater than\n");
+        }
+        else if (strcmp(op, "<=") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setle al                    ; Set if less or equal\n");
+        }
+        else if (strcmp(op, ">=") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setge al                    ; Set if greater or equal\n");
+        }
+        else if (strcmp(op, "==") == 0)
+        {
+            sprintf(dest + strlen(dest), "    sete al                     ; Set if equal\n");
+        }
+        else if (strcmp(op, "!=") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setne al                    ; Set if not equal\n");
+        }
     }
-    else if (strcmp(op, ">") == 0)
+    else if (type == REAL)
     {
-        sprintf(dest + strlen(dest), "    seta al                     ; Set if greater than\n");
-    }
-    else if (strcmp(op, "<=") == 0)
-    {
-        sprintf(dest + strlen(dest), "    setbe al                    ; Set if less or equal\n");
-    }
-    else if (strcmp(op, ">=") == 0)
-    {
-        sprintf(dest + strlen(dest), "    setae al                    ; Set if greater or equal\n");
-    }
-    else if (strcmp(op, "==") == 0)
-    {
-        sprintf(dest + strlen(dest), "    sete al                     ; Set if equal\n");
-    }
-    else if (strcmp(op, "!=") == 0)
-    {
-        sprintf(dest + strlen(dest), "    setne al                    ; Set if not equal\n");
+        sprintf(dest + strlen(dest), "    ; Float comparison operation: %s\n", op);
+        sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
+        sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand\n");
+        sprintf(dest + strlen(dest), "    ; Convert to float for comparison\n");
+        sprintf(dest + strlen(dest), "    mov [temp_float], rbx       ; Store first operand\n");
+        sprintf(dest + strlen(dest), "    movsd xmm0, [temp_float]    ; Load as double\n");
+        sprintf(dest + strlen(dest), "    mov [temp_float], rcx       ; Store second operand\n");
+        sprintf(dest + strlen(dest), "    movsd xmm1, [temp_float]    ; Load as double\n");
+        sprintf(dest + strlen(dest), "    comisd xmm0, xmm1           ; Compare floats\n");
+
+        if (strcmp(op, "<") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setb al                     ; Set if less than\n");
+        }
+        else if (strcmp(op, ">") == 0)
+        {
+            sprintf(dest + strlen(dest), "    seta al                     ; Set if greater than\n");
+        }
+        else if (strcmp(op, "<=") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setbe al                    ; Set if less or equal\n");
+        }
+        else if (strcmp(op, ">=") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setae al                    ; Set if greater or equal\n");
+        }
+        else if (strcmp(op, "==") == 0)
+        {
+            sprintf(dest + strlen(dest), "    sete al                     ; Set if equal\n");
+        }
+        else if (strcmp(op, "!=") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setne al                    ; Set if not equal\n");
+        }
     }
 
     sprintf(dest + strlen(dest), "    movzx rbx, al               ; Zero-extend result\n");

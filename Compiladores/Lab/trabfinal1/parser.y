@@ -8,6 +8,7 @@
     int yylex();
 
     extern SymTable table;
+    extern int cont_lines;
 
     char s_decs[256];
 
@@ -18,6 +19,7 @@
 	{
 		char str[8192]; // string para o codigo asm (increased from 2044)
 		int op; // opcoes (por exemplo nos jumps)
+		int type; // type information for expressions (using int instead of Type enum)
 	} c;
 }
 
@@ -151,7 +153,7 @@ comando_io: READ '(' ID ')' ';'  {
 	}
 	| WRITE '(' expressao ')' ';'  {
 		strcpy($$.str, $3.str);
-		makeCodeWrite($$.str);
+		makeCodeWrite($$.str, (Type)$3.type);
 	}
 	| WRITE '(' LITERAL_STR ')' ';'  {
 		makeCodeWriteString($$.str, $3.str);
@@ -174,95 +176,174 @@ comando_repeticao: WHILE '(' expressao_logica ')' bloco  {
 
 expressao: termo  {
 		strcpy($$.str, $1.str);
+		$$.type = $1.type;
 	}
 	| expressao '+' expressao  {
+		// Check type compatibility
+		if (!checkTypeCompatibility((Type)$1.type, (Type)$3.type)) {
+			printTypeMismatchError(cont_lines, "addition", (Type)$1.type, (Type)$3.type);
+			YYABORT;
+		}
 		strcpy($$.str, $1.str);
 		strcat($$.str, $3.str);
-		makeCodeAdd($$.str);
+		makeCodeAdd($$.str, (Type)$1.type);
+		$$.type = $1.type;
 	}
 	| expressao '-' expressao  {	
+		// Check type compatibility
+		if (!checkTypeCompatibility((Type)$1.type, (Type)$3.type)) {
+			printTypeMismatchError(cont_lines, "subtraction", (Type)$1.type, (Type)$3.type);
+			YYABORT;
+		}
 		strcpy($$.str, $1.str);
 		strcat($$.str, $3.str);
-		makeCodeSub($$.str);
+		makeCodeSub($$.str, (Type)$1.type);
+		$$.type = $1.type;
 	}
 	| expressao '*' expressao  {	
+		// Check type compatibility
+		if (!checkTypeCompatibility((Type)$1.type, (Type)$3.type)) {
+			printTypeMismatchError(cont_lines, "multiplication", (Type)$1.type, (Type)$3.type);
+			YYABORT;
+		}
 		strcpy($$.str, $1.str);
 		strcat($$.str, $3.str);
-		makeCodeMul($$.str);
+		makeCodeMul($$.str, (Type)$1.type);
+		$$.type = $1.type;
 	}
 	| expressao '/' expressao  {
+		// Check type compatibility
+		if (!checkTypeCompatibility((Type)$1.type, (Type)$3.type)) {
+			printTypeMismatchError(cont_lines, "division", (Type)$1.type, (Type)$3.type);
+			YYABORT;
+		}
 		strcpy($$.str, $1.str);
 		strcat($$.str, $3.str);
-		makeCodeDiv($$.str);
+		makeCodeDiv($$.str, (Type)$1.type);
+		$$.type = $1.type;
 	}
 	| expressao '%' expressao  {
+		// Check type compatibility and that it's integer only
+		if (!checkTypeCompatibility((Type)$1.type, (Type)$3.type)) {
+			printTypeMismatchError(cont_lines, "modulo", (Type)$1.type, (Type)$3.type);
+			YYABORT;
+		}
+		if ($1.type != INTEGER) {
+			fprintf(stderr, "Error at line %d: Modulo operation is only allowed with integers.\n", cont_lines);
+			YYABORT;
+		}
 		strcpy($$.str, $1.str);
 		strcat($$.str, $3.str);
 		makeCodeMod($$.str);
+		$$.type = INTEGER;
 	}
 	| '-' expressao %prec UMINUS {
 		strcpy($$.str, $2.str);
-		makeCodeNeg($$.str);
+		makeCodeNeg($$.str, (Type)$2.type);
+		$$.type = $2.type;
 	}
 	| '(' expressao ')'  {
 		strcpy($$.str, $2.str);
+		$$.type = $2.type;
 	}
 ;
 
 termo: NUM  {
 		makeCodeLoad($$.str, $1.str, 0);
+		$$.type = INTEGER;
 	}
 	| FLOAT_NUM  {
 		makeCodeLoad($$.str, $1.str, 0);
+		$$.type = REAL;
 	}
 	| ID  {
 		// Check if variable was declared before using
-		if (findSymTable(&table, $1.str) == NULL) {
+		SymTableEntry* var = findSymTable(&table, $1.str);
+		if (var == NULL) {
 			fprintf(stderr, "Error: Variable '%s' not declared at line %d\n", $1.str, cont_lines);
 			YYABORT;
 		}
 		if (!makeCodeLoad($$.str, $1.str, 1))
 			YYABORT;
+		$$.type = var->type;
 	}
 ;
 
 
 expressao_logica: expressao '<' expressao  {
+		// Check type compatibility
+		if (!checkTypeCompatibility((Type)$1.type, (Type)$3.type)) {
+			printTypeMismatchError(cont_lines, "comparison", (Type)$1.type, (Type)$3.type);
+			YYABORT;
+		}
 		strcpy($$.str, $1.str);
 		strcat($$.str, $3.str);
-		makeCodeComparison($$.str, "<");
+		makeCodeComparison($$.str, "<", (Type)$1.type);
+		$$.type = INTEGER; // comparison result is always integer (0 or 1)
 	}
 	| expressao '>' expressao  {
+		// Check type compatibility
+		if (!checkTypeCompatibility((Type)$1.type, (Type)$3.type)) {
+			printTypeMismatchError(cont_lines, "comparison", (Type)$1.type, (Type)$3.type);
+			YYABORT;
+		}
 		strcpy($$.str, $1.str);
 		strcat($$.str, $3.str);
-		makeCodeComparison($$.str, ">");
+		makeCodeComparison($$.str, ">", (Type)$1.type);
+		$$.type = INTEGER;
 	}
 	| expressao LE expressao  {
+		// Check type compatibility
+		if (!checkTypeCompatibility((Type)$1.type, (Type)$3.type)) {
+			printTypeMismatchError(cont_lines, "comparison", (Type)$1.type, (Type)$3.type);
+			YYABORT;
+		}
 		strcpy($$.str, $1.str);
 		strcat($$.str, $3.str);
-		makeCodeComparison($$.str, "<=");
+		makeCodeComparison($$.str, "<=", (Type)$1.type);
+		$$.type = INTEGER;
 	}
 	| expressao GE expressao  {
+		// Check type compatibility
+		if (!checkTypeCompatibility((Type)$1.type, (Type)$3.type)) {
+			printTypeMismatchError(cont_lines, "comparison", (Type)$1.type, (Type)$3.type);
+			YYABORT;
+		}
 		strcpy($$.str, $1.str);
 		strcat($$.str, $3.str);
-		makeCodeComparison($$.str, ">=");
+		makeCodeComparison($$.str, ">=", (Type)$1.type);
+		$$.type = INTEGER;
 	}
 	| expressao EQ expressao  {
+		// Check type compatibility
+		if (!checkTypeCompatibility((Type)$1.type, (Type)$3.type)) {
+			printTypeMismatchError(cont_lines, "comparison", (Type)$1.type, (Type)$3.type);
+			YYABORT;
+		}
 		strcpy($$.str, $1.str);
 		strcat($$.str, $3.str);
-		makeCodeComparison($$.str, "==");
+		makeCodeComparison($$.str, "==", (Type)$1.type);
+		$$.type = INTEGER;
 	}
 	| expressao NE expressao  {
+		// Check type compatibility
+		if (!checkTypeCompatibility((Type)$1.type, (Type)$3.type)) {
+			printTypeMismatchError(cont_lines, "comparison", (Type)$1.type, (Type)$3.type);
+			YYABORT;
+		}
 		strcpy($$.str, $1.str);
 		strcat($$.str, $3.str);
-		makeCodeComparison($$.str, "!=");
+		makeCodeComparison($$.str, "!=", (Type)$1.type);
+		$$.type = INTEGER;
 	}
 	| '!' expressao_logica  {
 		strcpy($$.str, $2.str);
 		makeCodeNot($$.str);
+		$$.type = INTEGER;
 	}
 	| '(' expressao_logica ')'  {
 		strcpy($$.str, $2.str);
+		$$.type = $2.type;
 	}
 ;
 
