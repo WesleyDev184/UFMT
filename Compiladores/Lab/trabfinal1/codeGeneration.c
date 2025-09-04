@@ -32,6 +32,17 @@ typedef struct
 // Global optimizer configuration
 static OptimizerConfig optimizer_config = {0, 1, 1, 1, 0};
 
+// String literal management
+#define MAX_STRINGS 100
+typedef struct
+{
+    char label[64];
+    char content[256];
+} StringLiteral;
+
+static StringLiteral string_literals[MAX_STRINGS];
+static int string_count = 0;
+
 // Global variables
 extern SymTable table;
 extern FILE *out_file;
@@ -41,6 +52,33 @@ static int label_counter = 0;
 static char last_left_operand[64] = "";
 static char last_right_operand[64] = "";
 static int has_literal_operands = 0;
+
+// Function to add a string literal and return its label
+static char *addStringLiteral(const char *str)
+{
+    if (string_count >= MAX_STRINGS)
+    {
+        fprintf(stderr, "Error: Too many string literals\n");
+        return NULL;
+    }
+
+    // Generate label for this string
+    sprintf(string_literals[string_count].label, "str_%d", string_count);
+
+    // Copy the string content without quotes
+    int len = strlen(str);
+    if (str[0] == '"' && str[len - 1] == '"')
+    {
+        strncpy(string_literals[string_count].content, str + 1, len - 2);
+        string_literals[string_count].content[len - 2] = '\0';
+    }
+    else
+    {
+        strcpy(string_literals[string_count].content, str);
+    }
+
+    return string_literals[string_count++].label;
+}
 
 // ===============================================
 // OPTIMIZER FUNCTIONS (INTEGRATED)
@@ -391,6 +429,16 @@ void dumpCodeDeclarationEnd()
                         node->data.type == INTEGER ? "Integer" : "Float");
                 node = node->next;
             }
+        }
+    }
+
+    // Add string literals to the data section
+    if (string_count > 0)
+    {
+        fprintf(out_file, "\n    ; String literals\n");
+        for (int i = 0; i < string_count; i++)
+        {
+            fprintf(out_file, "    %s:     db \"%s\", 0\n", string_literals[i].label, string_literals[i].content);
         }
     }
 
@@ -912,30 +960,19 @@ void makeCodeWrite(char *dest, Type type)
 void makeCodeWriteString(char *dest, char *str)
 {
     dest[0] = '\0';
-    // Remove quotes from string and create a label for it
-    static int string_counter = 0;
-    char string_label[64];
-    sprintf(string_label, "str_%d", string_counter++);
 
-    // Add string to data section (this should be done in a separate function)
-    // For now, we'll use the string directly
-    int len = strlen(str);
-    char clean_str[len + 1];
-
-    // Remove the quotes
-    if (str[0] == '"' && str[len - 1] == '"')
+    // Add string to data section and get its label
+    char *label = addStringLiteral(str);
+    if (label == NULL)
     {
-        strncpy(clean_str, str + 1, len - 2);
-        clean_str[len - 2] = '\0';
-    }
-    else
-    {
-        strcpy(clean_str, str);
+        return; // Error handled in addStringLiteral
     }
 
-    sprintf(dest + strlen(dest), "lea rdi, [fmt_sln]\n");
-    sprintf(dest + strlen(dest), "mov rsi, %s\n", clean_str);
-    sprintf(dest + strlen(dest), "call printf\n");
+    // Generate assembly code to print the string
+    sprintf(dest + strlen(dest), "    lea rdi, [fmt_sln]          ; Load string format\n");
+    sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Load string address\n", label);
+    sprintf(dest + strlen(dest), "    mov rax, 0                  ; Clear rax for printf\n");
+    sprintf(dest + strlen(dest), "    call printf                 ; Call printf\n");
 }
 
 // Implementation of functions for control structures

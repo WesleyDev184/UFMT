@@ -5,7 +5,9 @@ float media ;
 int impar ;
 
 {
+  write("Insira o valor de X:");
   read ( x ) ;
+  write("Insira o valor de Y:");
   read ( y ) ;
   total = x + y ;
   media = total / 2.0 ;
