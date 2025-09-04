@@ -91,7 +91,7 @@ void printSymTable(SymTable *table)
 
 			while (aux != NULL)
 			{
-				const char *typeStr = (aux->data.type == INTEGER) ? "int" : (aux->data.type == REAL) ? "float"
+				const char *typeStr = (aux->data.type == INTEGER) ? "int" : (aux->data.type == FLOAT_TYPE) ? "float"
 																																														 : "string";
 				const char *valueStr = (aux->data.value != NULL) ? aux->data.value : "uninitialized";
 

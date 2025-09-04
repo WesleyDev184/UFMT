@@ -66,7 +66,7 @@ void dumpCodeDeclarationEnd()
             while (node != NULL)
             {
                 fprintf(out_file, "    %s:          dq 0", node->data.identifier);
-                if (node->data.type == REAL)
+                if (node->data.type == FLOAT_TYPE)
                 {
                     fprintf(out_file, ".0");
                 }
@@ -120,7 +120,7 @@ int makeCodeAssignment(char *dest, char *id, char *expr)
     dest[0] = '\0';
 
     // Validation already done in the syntactic analyzer
-    if (ret->type == INTEGER || ret->type == REAL)
+    if (ret->type == INTEGER || ret->type == FLOAT_TYPE)
     {
         sprintf(dest + strlen(dest), "%s", expr);
         sprintf(dest + strlen(dest), "    pop rbx\n");
@@ -153,8 +153,8 @@ int checkTypeCompatibility(Type type1, Type type2)
 // Function to print type mismatch error
 void printTypeMismatchError(int line, const char *operation, Type type1, Type type2)
 {
-    const char *type1_str = (type1 == INTEGER) ? "int" : ((type1 == REAL) ? "float" : "string");
-    const char *type2_str = (type2 == INTEGER) ? "int" : ((type2 == REAL) ? "float" : "string");
+    const char *type1_str = (type1 == INTEGER) ? "int" : ((type1 == FLOAT_TYPE) ? "float" : "string");
+    const char *type2_str = (type2 == INTEGER) ? "int" : ((type2 == FLOAT_TYPE) ? "float" : "string");
 
     fprintf(stderr, "Error at line %d: Type mismatch in %s operation. Cannot operate %s with %s.\n",
             line, operation, type1_str, type2_str);
@@ -206,7 +206,7 @@ void makeCodeAdd(char *dest, Type type)
         strcat(dest, "    add rbx, rcx                ; Add: rbx = rbx + rcx\n");
         strcat(dest, "    push rbx                    ; Push result\n");
     }
-    else if (type == REAL)
+    else if (type == FLOAT_TYPE)
     {
         sprintf(temp, "    ; Float addition operation\n");
         strcat(dest, temp);
@@ -234,7 +234,7 @@ void makeCodeSub(char *dest, Type type)
         sprintf(dest + strlen(dest), "    sub rbx, rcx                ; Subtract: rbx = rbx - rcx\n");
         sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
     }
-    else if (type == REAL)
+    else if (type == FLOAT_TYPE)
     {
         sprintf(dest + strlen(dest), "    ; Float subtraction operation\n");
         sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
@@ -262,7 +262,7 @@ void makeCodeMul(char *dest, Type type)
         sprintf(dest + strlen(dest), "    mov rbx, rax                ; Move result to rbx\n");
         sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
     }
-    else if (type == REAL)
+    else if (type == FLOAT_TYPE)
     {
         sprintf(dest + strlen(dest), "    ; Float multiplication operation\n");
         sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
@@ -300,7 +300,7 @@ void makeCodeDiv(char *dest, Type type)
         sprintf(dest + strlen(dest), "    call exit                   ; Exit with error\n");
         sprintf(dest + strlen(dest), "\ndivision_end:\n");
     }
-    else if (type == REAL)
+    else if (type == FLOAT_TYPE)
     {
         sprintf(dest + strlen(dest), "    ; Float division operation with zero check\n");
         sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand (divisor)\n");
@@ -344,7 +344,7 @@ void makeCodeNeg(char *dest, Type type)
         sprintf(dest + strlen(dest), "    neg rbx\n");
         sprintf(dest + strlen(dest), "    push rbx\n");
     }
-    else if (type == REAL)
+    else if (type == FLOAT_TYPE)
     {
         sprintf(dest + strlen(dest), "    ; Float negation\n");
         sprintf(dest + strlen(dest), "    pop rbx\n");
@@ -371,7 +371,7 @@ void makeCodeRead(char *dest, char *varname, Type type)
         strcat(dest, "    mov rax, 0                  ; Clear rax for scanf\n");
         strcat(dest, "    call scanf                  ; Call scanf\n");
     }
-    else if (type == REAL)
+    else if (type == FLOAT_TYPE)
     {
         strcat(dest, "    lea rdi, [fmt_f]            ; Float format\n");
         sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Variable address\n", varname);
@@ -392,7 +392,7 @@ void makeCodeWrite(char *dest, Type type)
         strcat(dest, "    mov rax, 0                  ; Clear rax for printf\n");
         strcat(dest, "    call printf                 ; Call printf\n");
     }
-    else if (type == REAL)
+    else if (type == FLOAT_TYPE)
     {
         // Write operation for float
         strcat(dest, "    ; Write operation for float\n");
@@ -515,7 +515,7 @@ void makeCodeComparison(char *dest, char *op, Type type)
             sprintf(dest + strlen(dest), "    setne al                    ; Set if not equal\n");
         }
     }
-    else if (type == REAL)
+    else if (type == FLOAT_TYPE)
     {
         sprintf(dest + strlen(dest), "    ; Float comparison operation: %s\n", op);
         sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");

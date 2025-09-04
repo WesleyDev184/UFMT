@@ -86,8 +86,8 @@ declaracao_float: FLOAT ID ';'  {
 			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
 			YYABORT;
 		}
-		addSymTable(&table, $2.str, REAL, NULL);
-		makeCodeDeclaration($$.str, $2.str, REAL, NULL);
+		addSymTable(&table, $2.str, FLOAT_TYPE, NULL);
+		makeCodeDeclaration($$.str, $2.str, FLOAT_TYPE, NULL);
 	}
 	| FLOAT ID '=' FLOAT_NUM ';'  {
 		// Check if variable has already been declared
@@ -95,8 +95,8 @@ declaracao_float: FLOAT ID ';'  {
 			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
 			YYABORT;
 		}
-		addSymTable(&table, $2.str, REAL, $4.str);
-		makeCodeDeclaration($$.str, $2.str, REAL, $4.str);
+		addSymTable(&table, $2.str, FLOAT_TYPE, $4.str);
+		makeCodeDeclaration($$.str, $2.str, FLOAT_TYPE, $4.str);
 	}
 	| FLOAT ID '=' NUM ';'  {
 		// Allow float initialization with integer
@@ -104,8 +104,8 @@ declaracao_float: FLOAT ID ';'  {
 			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
 			YYABORT;
 		}
-		addSymTable(&table, $2.str, REAL, $4.str);
-		makeCodeDeclaration($$.str, $2.str, REAL, $4.str);
+		addSymTable(&table, $2.str, FLOAT_TYPE, $4.str);
+		makeCodeDeclaration($$.str, $2.str, FLOAT_TYPE, $4.str);
 	}
 ;
 
@@ -254,7 +254,7 @@ termo: NUM  {
 	}
 	| FLOAT_NUM  {
 		makeCodeLoad($$.str, $1.str, 0);
-		$$.type = REAL;
+		$$.type = FLOAT_TYPE;
 	}
 	| ID  {
 		// Check if variable was declared before using

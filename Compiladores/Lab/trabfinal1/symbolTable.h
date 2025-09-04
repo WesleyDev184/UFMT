@@ -15,7 +15,7 @@
 typedef enum
 {
 	INTEGER,
-	REAL,
+	FLOAT_TYPE,
 	STRING
 } Type;
 
