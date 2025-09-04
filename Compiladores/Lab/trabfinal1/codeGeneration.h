@@ -11,17 +11,25 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "symbolTable.h"
 
 // Size of an uninitialized string
 #define STRING_SIZE 256
 extern FILE *out_file;
 
-void makeCodeDeclaration(char *dest, char *identifier, Type type, char *value);
-void dumpCodeDeclarationEnd();
+// Assembly file structure functions
+void makePreambule(const char *filename);
+void makeCodeEpilogue(void);
 
+// Variable declaration and management
+void makeCodeDeclaration(char *dest, char *identifier, Type type, char *value);
+void dumpCodeDeclarationEnd(void);
+
+// Assignment and loading
 int makeCodeAssignment(char *dest, char *id, char *expr);
 int makeCodeLoad(char *dest, char *id, int ref);
 
+// Arithmetic operations (removed value parameter from these)
 void makeCodeAdd(char *dest, char *value);
 void makeCodeSub(char *dest, char *value);
 void makeCodeMul(char *dest, char *value2);
@@ -29,17 +37,21 @@ void makeCodeDiv(char *dest, char *value2);
 void makeCodeMod(char *dest, char *value2);
 void makeCodeNeg(char *dest);
 
-// New functions for I/O
+// I/O operations
 void makeCodeRead(char *dest, char *varname, Type type);
 void makeCodeWrite(char *dest);
+void makeCodeWriteType(char *dest, Type type);
 void makeCodeWriteString(char *dest, char *str);
 
-// New functions for control structures
+// Type conversion
+void makeCodeFloatToInt(char *dest);
+
+// Control structures
 void makeCodeIf(char *dest, char *condition, char *body);
 void makeCodeIfElse(char *dest, char *condition, char *ifBody, char *elseBody);
 void makeCodeWhile(char *dest, char *condition, char *body);
 
-// New functions for comparisons
+// Comparison and logical operations
 void makeCodeComparison(char *dest, char *op);
 void makeCodeNot(char *dest);
 

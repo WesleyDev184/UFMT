@@ -32,6 +32,12 @@ $(YACC_C) $(YACC_H): $(YACC_SRC)
 $(LEX_C): $(LEX_SRC) $(YACC_H)
 	flex -o $(LEX_C) $(LEX_SRC)
 
+asm:
+	./$(EXEC) ex.txt
+	nasm -f elf64 ex.asm -o ex.o
+	gcc -no-pie ex.o -o program
+	./program
+
 # Clean up generated files
 clean:
-	rm -f $(EXEC) $(LEX_C) $(YACC_C) $(YACC_H) lex_test *.asm  *.o ex
+	rm -f $(EXEC) $(LEX_C) $(YACC_C) $(YACC_H) lex_test *.asm  *.o program

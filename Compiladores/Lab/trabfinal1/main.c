@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "symbolTable.h"
+#include "codeGeneration.h"
 #include "parser.tab.h"
 
 FILE *out_file = NULL;
@@ -53,44 +54,49 @@ int main(int argc, char const *argv[])
     }
 
     out_file = fopen(s, "w");
-    fprintf(out_file, "extern printf\n");
-    fprintf(out_file, "extern scanf\n");
-    fprintf(out_file, "section .data\n");
+    if (out_file == NULL)
+    {
+        fprintf(stderr, "[ERROR]: Could not create output file %s\n", s);
+        return 1;
+    }
 
-    // this are strings without a line break character
-    fprintf(out_file, "fmt_d: db \"%%ld\", 0\n");
-    fprintf(out_file, "fmt_f: db \"%%f\", 0\n");
-    fprintf(out_file, "fmt_s: db \"%%s\", 0\n");
+    // Generate assembly file preambule
+    makePreambule(argv[1]);
 
-    // this are strings that contain a line break character
-    fprintf(out_file, "fmt_dln: db \"%%ld\", 10, 0\n");
-    fprintf(out_file, "fmt_fln: db \"%%f\", 10, 0\n");
-    fprintf(out_file, "fmt_sln: db \"%%s\", 10, 0\n");
-    fprintf(out_file, "\n");
-
+    // Initialize symbol table and parse input
     initSymTable(&table);
 
-    stdin = fopen(argv[1], "r");
-
-    int ret = yyparse(); // call the syntactic analyzer
-    if (ret == 1)
+    FILE *input_file = fopen(argv[1], "r");
+    if (input_file == NULL)
     {
+        fprintf(stderr, "[ERROR]: Could not open input file %s\n", argv[1]);
         fclose(out_file);
         remove(s);
         return 1;
     }
 
-    fprintf(out_file, "mov rax,0\n");
-    fprintf(out_file, "ret\n");
+    stdin = input_file;
+
+    int ret = yyparse(); // call the syntactic analyzer
+    if (ret == 1)
+    {
+        fclose(out_file);
+        fclose(input_file);
+        remove(s);
+        return 1;
+    }
+
+    // Generate assembly file epilogue
+    makeCodeEpilogue();
 
     fclose(out_file);
+    fclose(input_file);
 
     // Print success message and symbol table
     printf("\n=== COMPILATION SUCCESSFUL ===\n");
     printf("Assembly code generated in: %s\n\n", s);
     printf("=== SYMBOL TABLE ===\n");
     printSymTable(&table);
-    fclose(stdin);
 
     return 0;
 }

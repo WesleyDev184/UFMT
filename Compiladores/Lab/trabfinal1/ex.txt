@@ -1,9 +1,9 @@
-float var_x;
-float var_y;
-float total;
-float media;
-
+int var_x;
+int var_y;
+int total;
+int media;
 int impar;
+
 {
     read(var_x);
     read(var_y);
