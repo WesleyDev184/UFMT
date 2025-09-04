@@ -3,8 +3,6 @@
  * Laboratório de Compiladores
  * Author: Wesley Antonio Junior dos Santos
  * RGA:202011722024
- *
- * Error Handling System Implementation
  */
 
 #include <string.h>
