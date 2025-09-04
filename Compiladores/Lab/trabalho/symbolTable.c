@@ -91,8 +91,28 @@ void printSymTable(SymTable *table)
 
 			while (aux != NULL)
 			{
-				const char *typeStr = (aux->data.type == INTEGER) ? "int" : (aux->data.type == FLOAT_TYPE) ? "float"
-																																														 : "string";
+				const char *typeStr;
+				switch (aux->data.type)
+				{
+				case INTEGER:
+					typeStr = "int";
+					break;
+				case FLOAT:
+					typeStr = "float";
+					break;
+				case STRING:
+					typeStr = "string";
+					break;
+				case CHAR:
+					typeStr = "char";
+					break;
+				case BOOL:
+					typeStr = "bool";
+					break;
+				default:
+					typeStr = "unknown";
+					break;
+				}
 				const char *valueStr = (aux->data.value != NULL) ? aux->data.value : "uninitialized";
 
 				printf("%-5d %-15s %-8s %-10s\n", i,

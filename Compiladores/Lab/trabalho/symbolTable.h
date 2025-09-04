@@ -15,8 +15,10 @@
 typedef enum
 {
 	INTEGER,
-	FLOAT_TYPE,
-	STRING
+	FLOAT,
+	STRING,
+	CHAR,
+	BOOL
 } Type;
 
 extern int cont_lines;

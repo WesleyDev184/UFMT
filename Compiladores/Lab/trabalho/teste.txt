@@ -3,6 +3,7 @@ float y ;
 float total ;
 float media ;
 int impar ;
+string nome = "Wesley";
 
 {
   write("Insira o valor de X:");
@@ -23,4 +24,7 @@ int impar ;
     total = total - 1.0 ;
   }
   write ( impar ) ;
+
+  write(nome);
+
 }

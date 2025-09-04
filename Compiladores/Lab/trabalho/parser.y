@@ -24,11 +24,12 @@
 }
 
 %type <c> programa declaracoes declaracao bloco
-%type <c> declaracao_inteiro declaracao_float 
+%type <c> declaracao_inteiro declaracao_float declaracao_char declaracao_bool declaracao_string
 %type <c> comandos comando comando_atribuicao comando_io comando_condicional comando_repeticao
 %type <c> expressao termo expressao_logica
 
-%token <c> ID NUM FLOAT_NUM LITERAL_STR INT FLOAT WRITE READ IF ELSE WHILE EQ NE LE GE
+%token <c> ID NUM FLOAT_NUM LITERAL_STR CHAR_LITERAL TRUE_VAL FALSE_VAL
+%token <c> INT_TYPE FLOAT_TYPE CHAR_TYPE BOOL_TYPE STRING_TYPE WRITE READ IF ELSE WHILE EQ NE LE GE
 %left '+' '-'
 %left '*' '/' '%'
 %left '<' '>' LE GE EQ NE
@@ -58,9 +59,12 @@ declaracoes: declaracao declaracoes  {
 
 declaracao: declaracao_inteiro { strcpy($$.str, $1.str); }
 	| declaracao_float { strcpy($$.str, $1.str); }
+	| declaracao_char { strcpy($$.str, $1.str); }
+	| declaracao_bool { strcpy($$.str, $1.str); }
+	| declaracao_string { strcpy($$.str, $1.str); }
 ;
 
-declaracao_inteiro: INT ID ';'  {
+declaracao_inteiro: INT_TYPE ID ';'  {
 		// Check if variable has already been declared
 		if (findSymTable(&table, $2.str) != NULL) {
 			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
@@ -69,7 +73,7 @@ declaracao_inteiro: INT ID ';'  {
 		addSymTable(&table, $2.str, INTEGER, NULL);
 		makeCodeDeclaration($$.str, $2.str, INTEGER, NULL);
 	}
-	| INT ID '=' NUM ';'  {
+	| INT_TYPE ID '=' NUM ';'  {
 		// Check if variable has already been declared
 		if (findSymTable(&table, $2.str) != NULL) {
 			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
@@ -80,32 +84,101 @@ declaracao_inteiro: INT ID ';'  {
 	}
 ;
 
-declaracao_float: FLOAT ID ';'  {
+declaracao_float: FLOAT_TYPE ID ';'  {
 		// Check if variable has already been declared
 		if (findSymTable(&table, $2.str) != NULL) {
 			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
 			YYABORT;
 		}
-		addSymTable(&table, $2.str, FLOAT_TYPE, NULL);
-		makeCodeDeclaration($$.str, $2.str, FLOAT_TYPE, NULL);
+		addSymTable(&table, $2.str, FLOAT, NULL);
+		makeCodeDeclaration($$.str, $2.str, FLOAT, NULL);
 	}
-	| FLOAT ID '=' FLOAT_NUM ';'  {
+	| FLOAT_TYPE ID '=' FLOAT_NUM ';'  {
 		// Check if variable has already been declared
 		if (findSymTable(&table, $2.str) != NULL) {
 			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
 			YYABORT;
 		}
-		addSymTable(&table, $2.str, FLOAT_TYPE, $4.str);
-		makeCodeDeclaration($$.str, $2.str, FLOAT_TYPE, $4.str);
+		addSymTable(&table, $2.str, FLOAT, $4.str);
+		makeCodeDeclaration($$.str, $2.str, FLOAT, $4.str);
 	}
-	| FLOAT ID '=' NUM ';'  {
+	| FLOAT_TYPE ID '=' NUM ';'  {
 		// Allow float initialization with integer
 		if (findSymTable(&table, $2.str) != NULL) {
 			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
 			YYABORT;
 		}
-		addSymTable(&table, $2.str, FLOAT_TYPE, $4.str);
-		makeCodeDeclaration($$.str, $2.str, FLOAT_TYPE, $4.str);
+		addSymTable(&table, $2.str, FLOAT, $4.str);
+		makeCodeDeclaration($$.str, $2.str, FLOAT, $4.str);
+	}
+;
+
+declaracao_char: CHAR_TYPE ID ';'  {
+		// Check if variable has already been declared
+		if (findSymTable(&table, $2.str) != NULL) {
+			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+			YYABORT;
+		}
+		addSymTable(&table, $2.str, CHAR, NULL);
+		makeCodeDeclaration($$.str, $2.str, CHAR, NULL);
+	}
+	| CHAR_TYPE ID '=' CHAR_LITERAL ';'  {
+		// Check if variable has already been declared
+		if (findSymTable(&table, $2.str) != NULL) {
+			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+			YYABORT;
+		}
+		addSymTable(&table, $2.str, CHAR, $4.str);
+		makeCodeDeclaration($$.str, $2.str, CHAR, $4.str);
+	}
+;
+
+declaracao_bool: BOOL_TYPE ID ';'  {
+		// Check if variable has already been declared
+		if (findSymTable(&table, $2.str) != NULL) {
+			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+			YYABORT;
+		}
+		addSymTable(&table, $2.str, BOOL, NULL);
+		makeCodeDeclaration($$.str, $2.str, BOOL, NULL);
+	}
+	| BOOL_TYPE ID '=' TRUE_VAL ';'  {
+		// Check if variable has already been declared
+		if (findSymTable(&table, $2.str) != NULL) {
+			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+			YYABORT;
+		}
+		addSymTable(&table, $2.str, BOOL, $4.str);
+		makeCodeDeclaration($$.str, $2.str, BOOL, $4.str);
+	}
+	| BOOL_TYPE ID '=' FALSE_VAL ';'  {
+		// Check if variable has already been declared
+		if (findSymTable(&table, $2.str) != NULL) {
+			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+			YYABORT;
+		}
+		addSymTable(&table, $2.str, BOOL, $4.str);
+		makeCodeDeclaration($$.str, $2.str, BOOL, $4.str);
+	}
+;
+
+declaracao_string: STRING_TYPE ID ';'  {
+		// Check if variable has already been declared
+		if (findSymTable(&table, $2.str) != NULL) {
+			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+			YYABORT;
+		}
+		addSymTable(&table, $2.str, STRING, NULL);
+		makeCodeDeclaration($$.str, $2.str, STRING, NULL);
+	}
+	| STRING_TYPE ID '=' LITERAL_STR ';'  {
+		// Check if variable has already been declared
+		if (findSymTable(&table, $2.str) != NULL) {
+			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+			YYABORT;
+		}
+		addSymTable(&table, $2.str, STRING, $4.str);
+		makeCodeDeclaration($$.str, $2.str, STRING, $4.str);
 	}
 ;
 
@@ -254,7 +327,23 @@ termo: NUM  {
 	}
 	| FLOAT_NUM  {
 		makeCodeLoad($$.str, $1.str, 0);
-		$$.type = FLOAT_TYPE;
+		$$.type = FLOAT;
+	}
+	| CHAR_LITERAL  {
+		makeCodeLoad($$.str, $1.str, 0);
+		$$.type = CHAR;
+	}
+	| TRUE_VAL  {
+		makeCodeLoad($$.str, "1", 0);
+		$$.type = BOOL;
+	}
+	| FALSE_VAL  {
+		makeCodeLoad($$.str, "0", 0);
+		$$.type = BOOL;
+	}
+	| LITERAL_STR  {
+		makeCodeLoad($$.str, $1.str, 0);
+		$$.type = STRING;
 	}
 	| ID  {
 		// Check if variable was declared before using

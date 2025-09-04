@@ -216,7 +216,7 @@ static void optimizeConstantFolding(char *dest, const char *op, const char *left
         sprintf(dest + strlen(dest), "    mov rbx, %ld                ; Optimized constant\n", result);
         sprintf(dest + strlen(dest), "    push rbx\n");
     }
-    else if (type == FLOAT_TYPE && isLiteralFloat(left) && isLiteralFloat(right))
+    else if (type == FLOAT && isLiteralFloat(left) && isLiteralFloat(right))
     {
         double left_val = evaluateConstantFloat(left);
         double right_val = evaluateConstantFloat(right);
@@ -407,9 +407,16 @@ void makePreambule(const char *filename)
     fprintf(out_file, "    fmt_d:       db \"%%ld\", 0          ; Integer format (no newline)\n");
     fprintf(out_file, "    fmt_f:       db \"%%lf\", 0          ; Float format (no newline)\n");
     fprintf(out_file, "    fmt_s:       db \"%%s\", 0          ; String format (no newline)\n");
+    fprintf(out_file, "    fmt_c:       db \"%%c\", 0          ; Char format (no newline)\n");
     fprintf(out_file, "    fmt_dln:     db \"%%ld\", 10, 0     ; Integer format (with newline)\n");
     fprintf(out_file, "    fmt_fln:     db \"%%lf\", 10, 0     ; Float format (with newline)\n");
     fprintf(out_file, "    fmt_sln:     db \"%%s\", 10, 0      ; String format (with newline)\n");
+    fprintf(out_file, "    fmt_cln:     db \"%%c\", 10, 0      ; Char format (with newline)\n");
+    fprintf(out_file, "\n");
+    fprintf(out_file, "    ; Boolean literals\n");
+    fprintf(out_file, "    str_true:    db \"true\", 0         ; Boolean true string\n");
+    fprintf(out_file, "    str_false:   db \"false\", 0        ; Boolean false string\n");
+    fprintf(out_file, "    newline:     db 10, 0              ; Newline character\n");
     fprintf(out_file, "\n");
     fprintf(out_file, "    ; Temporary variables\n");
     fprintf(out_file, "    temp_float:  dq 0.0              ; Temporary for float conversions\n");
@@ -428,13 +435,80 @@ void dumpCodeDeclarationEnd()
             SymTableNode *node = &table.array[i];
             while (node != NULL)
             {
-                fprintf(out_file, "    %s:          dq 0", node->data.identifier);
-                if (node->data.type == FLOAT_TYPE)
+                if (node->data.type == STRING)
                 {
-                    fprintf(out_file, ".0");
+                    if (node->data.value != NULL)
+                    {
+                        // Create string literal and initialize variable with its address
+                        char *label = addStringLiteral(node->data.value);
+                        if (label != NULL)
+                        {
+                            fprintf(out_file, "    %s:          dq %s              ; String variable = %s\n",
+                                    node->data.identifier, label, node->data.value);
+                        }
+                        else
+                        {
+                            fprintf(out_file, "    %s:          dq 0              ; String variable (error)\n", node->data.identifier);
+                        }
+                    }
+                    else
+                    {
+                        fprintf(out_file, "    %s:          dq 0              ; String variable\n", node->data.identifier);
+                    }
                 }
-                fprintf(out_file, "              ; %s variable\n",
-                        node->data.type == INTEGER ? "Integer" : "Float");
+                else if (node->data.type == CHAR)
+                {
+                    if (node->data.value != NULL)
+                    {
+                        // Extract character from 'x' format
+                        char c = node->data.value[1]; // Get character between quotes
+                        fprintf(out_file, "    %s:          db %d              ; Char variable = %s\n",
+                                node->data.identifier, (int)c, node->data.value);
+                    }
+                    else
+                    {
+                        fprintf(out_file, "    %s:          db 0              ; Char variable\n", node->data.identifier);
+                    }
+                }
+                else if (node->data.type == BOOL)
+                {
+                    if (node->data.value != NULL)
+                    {
+                        int val = (strcmp(node->data.value, "true") == 0) ? 1 : 0;
+                        fprintf(out_file, "    %s:          db %d              ; Bool variable = %s\n",
+                                node->data.identifier, val, node->data.value);
+                    }
+                    else
+                    {
+                        fprintf(out_file, "    %s:          db 0              ; Bool variable\n", node->data.identifier);
+                    }
+                }
+                else
+                {
+                    if (node->data.value != NULL)
+                    {
+                        if (node->data.type == INTEGER)
+                        {
+                            fprintf(out_file, "    %s:          dq %s              ; Integer variable = %s\n",
+                                    node->data.identifier, node->data.value, node->data.value);
+                        }
+                        else if (node->data.type == FLOAT)
+                        {
+                            fprintf(out_file, "    %s:          dq %s              ; Float variable = %s\n",
+                                    node->data.identifier, node->data.value, node->data.value);
+                        }
+                    }
+                    else
+                    {
+                        fprintf(out_file, "    %s:          dq 0", node->data.identifier);
+                        if (node->data.type == FLOAT)
+                        {
+                            fprintf(out_file, ".0");
+                        }
+                        fprintf(out_file, "              ; %s variable\n",
+                                node->data.type == INTEGER ? "Integer" : "Float");
+                    }
+                }
                 node = node->next;
             }
         }
@@ -493,7 +567,19 @@ int makeCodeAssignment(char *dest, char *id, char *expr)
     dest[0] = '\0';
 
     // Validation already done in the syntactic analyzer
-    if (ret->type == INTEGER || ret->type == FLOAT_TYPE)
+    if (ret->type == INTEGER || ret->type == FLOAT)
+    {
+        sprintf(dest + strlen(dest), "%s", expr);
+        sprintf(dest + strlen(dest), "    pop rbx\n");
+        sprintf(dest + strlen(dest), "    mov [%s], rbx\n", ret->identifier);
+    }
+    else if (ret->type == CHAR || ret->type == BOOL)
+    {
+        sprintf(dest + strlen(dest), "%s", expr);
+        sprintf(dest + strlen(dest), "    pop rbx\n");
+        sprintf(dest + strlen(dest), "    mov [%s], bl\n", ret->identifier);
+    }
+    else if (ret->type == STRING)
     {
         sprintf(dest + strlen(dest), "%s", expr);
         sprintf(dest + strlen(dest), "    pop rbx\n");
@@ -501,7 +587,7 @@ int makeCodeAssignment(char *dest, char *id, char *expr)
     }
     else
     {
-        fprintf(stderr, "Unsupported operation involving string at line %d\n",
+        fprintf(stderr, "Unsupported type for assignment at line %d\n",
                 cont_lines);
         return 0;
     }
@@ -526,8 +612,52 @@ int checkTypeCompatibility(Type type1, Type type2)
 // Function to print type mismatch error
 void printTypeMismatchError(int line, const char *operation, Type type1, Type type2)
 {
-    const char *type1_str = (type1 == INTEGER) ? "int" : ((type1 == FLOAT_TYPE) ? "float" : "string");
-    const char *type2_str = (type2 == INTEGER) ? "int" : ((type2 == FLOAT_TYPE) ? "float" : "string");
+    const char *type1_str;
+    const char *type2_str;
+
+    switch (type1)
+    {
+    case INTEGER:
+        type1_str = "int";
+        break;
+    case FLOAT:
+        type1_str = "float";
+        break;
+    case STRING:
+        type1_str = "string";
+        break;
+    case CHAR:
+        type1_str = "char";
+        break;
+    case BOOL:
+        type1_str = "bool";
+        break;
+    default:
+        type1_str = "unknown";
+        break;
+    }
+
+    switch (type2)
+    {
+    case INTEGER:
+        type2_str = "int";
+        break;
+    case FLOAT:
+        type2_str = "float";
+        break;
+    case STRING:
+        type2_str = "string";
+        break;
+    case CHAR:
+        type2_str = "char";
+        break;
+    case BOOL:
+        type2_str = "bool";
+        break;
+    default:
+        type2_str = "unknown";
+        break;
+    }
 
     fprintf(stderr, "Error at line %d: Type mismatch in %s operation. Cannot operate %s with %s.\n",
             line, operation, type1_str, type2_str);
@@ -539,8 +669,46 @@ int makeCodeLoad(char *dest, char *id, int ref)
 
     if (ref == 0)
     {
+        // Check if it's a string literal
+        if (id[0] == '"')
+        {
+            // It's a string literal
+            sprintf(dest + strlen(dest), "    ; Load string literal: %s\n", id);
+            // For string literals, we store the address of the string
+            char *label = addStringLiteral(id);
+            if (label == NULL)
+                return 0;
+            sprintf(dest + strlen(dest), "    mov rbx, %s               ; Load string address\n", label);
+            sprintf(dest + strlen(dest), "    push rbx\n");
+            return 1;
+        }
+        // Check if it's a char literal
+        else if (id[0] == '\'')
+        {
+            // It's a char literal
+            char char_val = id[1]; // Get the character inside quotes
+            sprintf(dest + strlen(dest), "    ; Load char literal: %s\n", id);
+            sprintf(dest + strlen(dest), "    mov rbx, %d                ; Load char value\n", (int)char_val);
+            sprintf(dest + strlen(dest), "    push rbx\n");
+            return 1;
+        }
+        // Check if it's a boolean literal
+        else if (strcmp(id, "1") == 0) // true represented as 1
+        {
+            sprintf(dest + strlen(dest), "    ; Load boolean literal: true\n");
+            sprintf(dest + strlen(dest), "    mov rbx, 1                ; Load true value\n");
+            sprintf(dest + strlen(dest), "    push rbx\n");
+            return 1;
+        }
+        else if (strcmp(id, "0") == 0) // false represented as 0
+        {
+            sprintf(dest + strlen(dest), "    ; Load boolean literal: false\n");
+            sprintf(dest + strlen(dest), "    mov rbx, 0                ; Load false value\n");
+            sprintf(dest + strlen(dest), "    push rbx\n");
+            return 1;
+        }
         // It's a numeric literal (integer or float)
-        if (strchr(id, '.') != NULL)
+        else if (strchr(id, '.') != NULL)
         {
             // It's a float number
             double val = atof(id);
@@ -574,7 +742,14 @@ int makeCodeLoad(char *dest, char *id, int ref)
     SymTableEntry *ret = findSymTable(&table, id);
     // Validation already done in the syntactic analyzer
 
-    sprintf(dest + strlen(dest), "    mov rbx, [%s]\n", ret->identifier);
+    if (ret->type == CHAR || ret->type == BOOL)
+    {
+        sprintf(dest + strlen(dest), "    movzx rbx, byte [%s]\n", ret->identifier);
+    }
+    else
+    {
+        sprintf(dest + strlen(dest), "    mov rbx, [%s]\n", ret->identifier);
+    }
     sprintf(dest + strlen(dest), "    push rbx\n");
 
     // Track variable operands (not literals)
@@ -640,7 +815,7 @@ void makeCodeAdd(char *dest, Type type)
         strcat(dest, "    add rbx, rcx                ; Add: rbx = rbx + rcx\n");
         strcat(dest, "    push rbx                    ; Push result\n");
     }
-    else if (type == FLOAT_TYPE)
+    else if (type == FLOAT)
     {
         sprintf(temp, "    ; Float addition operation\n");
         strcat(dest, temp);
@@ -708,7 +883,7 @@ void makeCodeSub(char *dest, Type type)
         sprintf(dest + strlen(dest), "    sub rbx, rcx                ; Subtract: rbx = rbx - rcx\n");
         sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
     }
-    else if (type == FLOAT_TYPE)
+    else if (type == FLOAT)
     {
         sprintf(dest + strlen(dest), "    ; Float subtraction operation\n");
         sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
@@ -778,7 +953,7 @@ void makeCodeMul(char *dest, Type type)
         sprintf(dest + strlen(dest), "    mov rbx, rax                ; Move result to rbx\n");
         sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
     }
-    else if (type == FLOAT_TYPE)
+    else if (type == FLOAT)
     {
         sprintf(dest + strlen(dest), "    ; Float multiplication operation\n");
         sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
@@ -856,7 +1031,7 @@ void makeCodeDiv(char *dest, Type type)
         sprintf(dest + strlen(dest), "    call exit                   ; Exit with error\n");
         sprintf(dest + strlen(dest), "\ndivision_end:\n");
     }
-    else if (type == FLOAT_TYPE)
+    else if (type == FLOAT)
     {
         sprintf(dest + strlen(dest), "    ; Float division operation with zero check\n");
         sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand (divisor)\n");
@@ -905,7 +1080,7 @@ void makeCodeNeg(char *dest, Type type)
         sprintf(dest + strlen(dest), "    neg rbx\n");
         sprintf(dest + strlen(dest), "    push rbx\n");
     }
-    else if (type == FLOAT_TYPE)
+    else if (type == FLOAT)
     {
         sprintf(dest + strlen(dest), "    ; Float negation\n");
         sprintf(dest + strlen(dest), "    pop rbx\n");
@@ -932,9 +1107,23 @@ void makeCodeRead(char *dest, char *varname, Type type)
         strcat(dest, "    mov rax, 0                  ; Clear rax for scanf\n");
         strcat(dest, "    call scanf                  ; Call scanf\n");
     }
-    else if (type == FLOAT_TYPE)
+    else if (type == FLOAT)
     {
         strcat(dest, "    lea rdi, [fmt_f]            ; Float format\n");
+        sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Variable address\n", varname);
+        strcat(dest, "    mov rax, 0                  ; Clear rax for scanf\n");
+        strcat(dest, "    call scanf                  ; Call scanf\n");
+    }
+    else if (type == CHAR)
+    {
+        strcat(dest, "    lea rdi, [fmt_c]            ; Char format\n");
+        sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Variable address\n", varname);
+        strcat(dest, "    mov rax, 0                  ; Clear rax for scanf\n");
+        strcat(dest, "    call scanf                  ; Call scanf\n");
+    }
+    else if (type == STRING)
+    {
+        strcat(dest, "    lea rdi, [fmt_s]            ; String format\n");
         sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Variable address\n", varname);
         strcat(dest, "    mov rax, 0                  ; Clear rax for scanf\n");
         strcat(dest, "    call scanf                  ; Call scanf\n");
@@ -953,7 +1142,7 @@ void makeCodeWrite(char *dest, Type type)
         strcat(dest, "    mov rax, 0                  ; Clear rax for printf\n");
         strcat(dest, "    call printf                 ; Call printf\n");
     }
-    else if (type == FLOAT_TYPE)
+    else if (type == FLOAT)
     {
         // Write operation for float
         strcat(dest, "    ; Write operation for float\n");
@@ -962,6 +1151,44 @@ void makeCodeWrite(char *dest, Type type)
         strcat(dest, "    movsd xmm0, [temp_float]    ; Load as double\n");
         strcat(dest, "    lea rdi, [fmt_fln]          ; Load float format string\n");
         strcat(dest, "    mov rax, 1                  ; One XMM register used\n");
+        strcat(dest, "    call printf                 ; Call printf\n");
+    }
+    else if (type == CHAR)
+    {
+        // Write operation for char
+        strcat(dest, "    ; Write operation for char\n");
+        strcat(dest, "    pop rbx                     ; Get value to write\n");
+        strcat(dest, "    mov rsi, rbx                ; Move to printf argument\n");
+        strcat(dest, "    lea rdi, [fmt_cln]          ; Load char format string\n");
+        strcat(dest, "    mov rax, 0                  ; Clear rax for printf\n");
+        strcat(dest, "    call printf                 ; Call printf\n");
+    }
+    else if (type == BOOL)
+    {
+        // Write operation for bool (true/false)
+        int label = label_counter++;
+        strcat(dest, "    ; Write operation for bool\n");
+        strcat(dest, "    pop rbx                     ; Get value to write\n");
+        strcat(dest, "    cmp rbx, 0                  ; Compare with 0\n");
+        sprintf(dest + strlen(dest), "    je .print_false_%d\n", label);
+        strcat(dest, "    lea rdi, [str_true]         ; Load 'true' string\n");
+        sprintf(dest + strlen(dest), "    jmp .print_bool_%d\n", label);
+        sprintf(dest + strlen(dest), ".print_false_%d:\n", label);
+        strcat(dest, "    lea rdi, [str_false]        ; Load 'false' string\n");
+        sprintf(dest + strlen(dest), ".print_bool_%d:\n", label);
+        strcat(dest, "    mov rax, 0                  ; Clear rax for printf\n");
+        strcat(dest, "    call printf                 ; Call printf\n");
+        strcat(dest, "    lea rdi, [newline]          ; Print newline\n");
+        strcat(dest, "    call printf\n");
+    }
+    else if (type == STRING)
+    {
+        // Write operation for string
+        strcat(dest, "    ; Write operation for string\n");
+        strcat(dest, "    pop rbx                     ; Get string address\n");
+        strcat(dest, "    mov rsi, rbx                ; Move to printf argument\n");
+        strcat(dest, "    lea rdi, [fmt_sln]          ; Load string format\n");
+        strcat(dest, "    mov rax, 0                  ; Clear rax for printf\n");
         strcat(dest, "    call printf                 ; Call printf\n");
     }
 }
@@ -1065,7 +1292,7 @@ void makeCodeComparison(char *dest, char *op, Type type)
             sprintf(dest + strlen(dest), "    setne al                    ; Set if not equal\n");
         }
     }
-    else if (type == FLOAT_TYPE)
+    else if (type == FLOAT)
     {
         sprintf(dest + strlen(dest), "    ; Float comparison operation: %s\n", op);
         sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");

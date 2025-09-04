@@ -65,8 +65,8 @@ const char *getErrorTypeName(ErrorType type);
   do                                                                                                                                                                           \
   {                                                                                                                                                                            \
     char buffer[256];                                                                                                                                                          \
-    const char *type1_str = (t1 == INTEGER) ? "int" : ((t1 == FLOAT_TYPE) ? "float" : "string");                                                                               \
-    const char *type2_str = (t2 == INTEGER) ? "int" : ((t2 == FLOAT_TYPE) ? "float" : "string");                                                                               \
+    const char *type1_str = (t1 == INTEGER) ? "int" : ((t1 == FLOAT) ? "float" : "string");                                                                                    \
+    const char *type2_str = (t2 == INTEGER) ? "int" : ((t2 == FLOAT) ? "float" : "string");                                                                                    \
     snprintf(buffer, sizeof(buffer), "Type mismatch in %s operation: cannot operate '%s' with '%s'. Consider using same type or explicit casting.", op, type1_str, type2_str); \
     addError(ERROR_TYPE_MISMATCH, line, 0, buffer, current_filename);                                                                                                          \
   } while (0)

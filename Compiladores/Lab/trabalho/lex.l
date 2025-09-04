@@ -28,12 +28,37 @@ digit [0-9]
 
 "int"	{
 	strcpy(yylval.c.str, yytext);
-	return INT;
+	return INT_TYPE;
 }
 
 "float"	{
 	strcpy(yylval.c.str, yytext);
-	return FLOAT;
+	return FLOAT_TYPE;
+}
+
+"char"	{
+	strcpy(yylval.c.str, yytext);
+	return CHAR_TYPE;
+}
+
+"bool"	{
+	strcpy(yylval.c.str, yytext);
+	return BOOL_TYPE;
+}
+
+"string"	{
+	strcpy(yylval.c.str, yytext);
+	return STRING_TYPE;
+}
+
+"true"	{
+	strcpy(yylval.c.str, yytext);
+	return TRUE_VAL;
+}
+
+"false"	{
+	strcpy(yylval.c.str, yytext);
+	return FALSE_VAL;
 }
 
 "if"	{
@@ -94,6 +119,11 @@ digit [0-9]
 \"[^\"]*\"  {
 	strcpy(yylval.c.str, yytext);
 	return LITERAL_STR;
+}
+
+'.'  {
+	strcpy(yylval.c.str, yytext);
+	return CHAR_LITERAL;
 }
 
 {letter}({letter}|{digit}|_)*	{
