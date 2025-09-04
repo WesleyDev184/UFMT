@@ -40,7 +40,7 @@ int initSymTable(SymTable *table)
 	table->max_size = MAX_SIZE_HASH_ARRAY;
 
 	table->array = (SymTableNode *)malloc(table->max_size * sizeof(SymTableNode));
-	if (table == NULL)
+	if (table->array == NULL)
 		return 0;
 
 	// Initialize each position of the array
@@ -150,9 +150,9 @@ int addSymTable(SymTable *table, char *identifier, Type type, char *value)
 		if (s == NULL)
 			return 0;
 
-		strncpy(s, value, n);
+		// Use strcpy instead of strncpy to avoid truncation warning
+		strcpy(s, value);
 		aux->data.value = s;
-		aux->data.value[n] = '\0';
 
 		// Length of the value string
 		aux->data.len_value = n;

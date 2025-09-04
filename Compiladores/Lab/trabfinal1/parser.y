@@ -270,6 +270,6 @@ expressao_logica: expressao '<' expressao  {
 %%
 
 void yyerror(char *s) {
-   fprintf(stderr, "Error: %s at line %d", s, cont_lines);
-   fprintf(stderr, "\n");
+   fprintf(stderr, "Syntax Error: %s at line %d\n", s, cont_lines);
+   fprintf(stderr, "Check your syntax near line %d\n", cont_lines);
 }

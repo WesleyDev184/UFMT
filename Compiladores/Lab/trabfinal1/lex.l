@@ -1,4 +1,5 @@
 %{
+	#define _POSIX_C_SOURCE 200809L
 	#include <string.h>
 	#include <stdio.h>
 	#include "parser.tab.h"
@@ -16,6 +17,13 @@ digit [0-9]
 
 "//".*\n  {
 	cont_lines++;
+}
+
+"/*"([^*]|"*"[^/])*"*/"  {
+	// Multi-line comment support
+	for (int i = 0; yytext[i] != '\0'; i++) {
+		if (yytext[i] == '\n') cont_lines++;
+	}
 }
 
 "int"	{

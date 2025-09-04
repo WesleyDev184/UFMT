@@ -28,6 +28,11 @@ int main(int argc, char const *argv[])
     }
 
     int n = strlen(argv[1]);
+    if (n > 256)
+    {
+        fprintf(stderr, "[ERROR]: Input filename too long (max 256 characters)\n");
+        return 1;
+    }
     char s[n + 10];
 
     int i;
@@ -67,7 +72,13 @@ int main(int argc, char const *argv[])
     makePreambule(argv[1]);
 
     // Initialize symbol table and parse input
-    initSymTable(&table);
+    if (!initSymTable(&table))
+    {
+        fprintf(stderr, "[ERROR]: Failed to initialize symbol table\n");
+        fclose(out_file);
+        remove(s);
+        return 1;
+    }
 
     FILE *input_file = fopen(argv[1], "r");
     if (input_file == NULL)
@@ -100,6 +111,9 @@ int main(int argc, char const *argv[])
     printf("Assembly code generated in: %s\n\n", s);
     printf("=== SYMBOL TABLE ===\n");
     printSymTable(&table);
+
+    // Free allocated memory
+    freeSymTable(&table);
 
     return 0;
 }

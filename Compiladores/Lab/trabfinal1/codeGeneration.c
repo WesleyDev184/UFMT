@@ -106,6 +106,11 @@ void makeCodeEpilogue(void)
 void makeCodeDeclaration(char *dest, char *identifier, Type type, char *value)
 {
     // Don't generate code here - variables will be declared in dumpCodeDeclarationEnd
+    // Suppress unused parameter warnings
+    (void)identifier;
+    (void)type;
+    (void)value;
+
     dest[0] = '\0'; // Empty string
 }
 
@@ -217,18 +222,27 @@ void makeCodeMul(char *dest)
 
 void makeCodeDiv(char *dest)
 {
-    sprintf(dest + strlen(dest), "    ; Float division operation\n");
+    sprintf(dest + strlen(dest), "    ; Float division operation with zero check\n");
     sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand (divisor)\n");
     sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand (dividend)\n");
+    sprintf(dest + strlen(dest), "    ; Check for division by zero\n");
+    sprintf(dest + strlen(dest), "    mov [temp_float], rcx       ; Store divisor\n");
+    sprintf(dest + strlen(dest), "    movsd xmm1, [temp_float]    ; Load divisor as double\n");
+    sprintf(dest + strlen(dest), "    xorpd xmm2, xmm2            ; Clear xmm2 (zero)\n");
+    sprintf(dest + strlen(dest), "    comisd xmm1, xmm2           ; Compare with zero\n");
+    sprintf(dest + strlen(dest), "    je division_by_zero         ; Jump if divisor is zero\n");
     sprintf(dest + strlen(dest), "    ; Convert to float for division\n");
     sprintf(dest + strlen(dest), "    mov [temp_float], rbx       ; Store dividend\n");
     sprintf(dest + strlen(dest), "    movsd xmm0, [temp_float]    ; Load as double\n");
-    sprintf(dest + strlen(dest), "    mov [temp_float], rcx       ; Store divisor\n");
-    sprintf(dest + strlen(dest), "    movsd xmm1, [temp_float]    ; Load as double\n");
     sprintf(dest + strlen(dest), "    divsd xmm0, xmm1            ; Divide: xmm0 = xmm0 / xmm1\n");
     sprintf(dest + strlen(dest), "    movsd [temp_float], xmm0    ; Store result\n");
     sprintf(dest + strlen(dest), "    mov rbx, [temp_float]       ; Load result back\n");
     sprintf(dest + strlen(dest), "    push rbx                    ; Push quotient\n");
+    sprintf(dest + strlen(dest), "    jmp division_end            ; Skip error handling\n");
+    sprintf(dest + strlen(dest), "\ndivision_by_zero:\n");
+    sprintf(dest + strlen(dest), "    mov rdi, 1                  ; Exit code 1\n");
+    sprintf(dest + strlen(dest), "    call exit                   ; Exit with error\n");
+    sprintf(dest + strlen(dest), "\ndivision_end:\n");
 }
 
 void makeCodeMod(char *dest)
@@ -323,7 +337,7 @@ void makeCodeIf(char *dest, char *condition, char *body)
     sprintf(dest + strlen(dest), "    cmp rbx, 0\n");
     sprintf(dest + strlen(dest), "    je .L%d\n", label);
     sprintf(dest + strlen(dest), "%s", body);
-    sprintf(dest + strlen(dest), ".L%d:\n", label);
+    sprintf(dest + strlen(dest), "\n.L%d:\n", label);
 }
 
 void makeCodeIfElse(char *dest, char *condition, char *ifBody, char *elseBody)
@@ -338,9 +352,9 @@ void makeCodeIfElse(char *dest, char *condition, char *ifBody, char *elseBody)
     sprintf(dest + strlen(dest), "    je .L%d\n", label1);
     sprintf(dest + strlen(dest), "%s", ifBody);
     sprintf(dest + strlen(dest), "    jmp .L%d\n", label2);
-    sprintf(dest + strlen(dest), ".L%d:\n", label1);
+    sprintf(dest + strlen(dest), "\n.L%d:\n", label1);
     sprintf(dest + strlen(dest), "%s", elseBody);
-    sprintf(dest + strlen(dest), ".L%d:\n", label2);
+    sprintf(dest + strlen(dest), "\n.L%d:\n", label2);
 }
 
 void makeCodeWhile(char *dest, char *condition, char *body)
@@ -349,14 +363,14 @@ void makeCodeWhile(char *dest, char *condition, char *body)
     int label2 = label_counter++;
     dest[0] = '\0';
 
-    sprintf(dest + strlen(dest), ".L%d:\n", label1);
+    sprintf(dest + strlen(dest), "\n.L%d:\n", label1);
     sprintf(dest + strlen(dest), "%s", condition);
     sprintf(dest + strlen(dest), "    pop rbx\n");
     sprintf(dest + strlen(dest), "    cmp rbx, 0\n");
     sprintf(dest + strlen(dest), "    je .L%d\n", label2);
     sprintf(dest + strlen(dest), "%s", body);
     sprintf(dest + strlen(dest), "    jmp .L%d\n", label1);
-    sprintf(dest + strlen(dest), ".L%d:\n", label2);
+    sprintf(dest + strlen(dest), "\n.L%d:\n", label2);
 }
 
 // Implementation of functions for comparisons
