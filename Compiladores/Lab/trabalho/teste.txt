@@ -25,6 +25,5 @@ string nome = "Wesley";
   }
   write ( impar ) ;
 
-  write(nome);
-
+  write(nome); 
 }

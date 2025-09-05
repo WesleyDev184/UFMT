@@ -45,7 +45,6 @@ void makeCodeWriteString(char *dest, char *str);
 void makeCodeComparison(char *dest, char *op, Type type);
 
 // Type checking utilities
-Type getExpressionType(char *expr);
 int checkTypeCompatibility(Type type1, Type type2);
 void printTypeMismatchError(int line, const char *operation, Type type1, Type type2);
 void makeCodeIf(char *dest, char *condition, char *body);
