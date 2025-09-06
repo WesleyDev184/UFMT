@@ -7,7 +7,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
 	return (
-		<div className="h-full flex flex-col justify-center items-center border border-red-700 border-dashed">
+		<div className="flex-1 flex items-stretch w-full p-2">
 			<ChatLayout />
 		</div>
 	);

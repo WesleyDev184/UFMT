@@ -10,7 +10,7 @@ export default function Header() {
 					<Link to="/">BananaChat</Link>
 				</div>
 			</nav>
-			<div className="px-2">
+			<div className="px-2 my-auto">
 				<ModeToggle />
 			</div>
 		</header>
