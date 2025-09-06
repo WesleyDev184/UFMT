@@ -55,7 +55,7 @@ export default function ChatLayout() {
 	const selected = conversations.find((c) => c.id === selectedId) ?? null;
 
 	return (
-		<div className="h-[80vh] max-h-[calc(100vh-4rem)] mx-auto my-8 w-[95%] md:w-4/5 lg:w-3/4 rounded-lg border bg-background shadow-sm flex overflow-hidden">
+		<div className="h-[85vh] max-h-[calc(100vh-4rem)] w-[95%] md:w-4/5 lg:w-3/4 rounded-lg border bg-background shadow-sm flex overflow-hidden">
 			<aside className="w-72 min-w-[16rem] border-r bg-muted/50 p-2">
 				<ConversationList
 					conversations={conversations}
