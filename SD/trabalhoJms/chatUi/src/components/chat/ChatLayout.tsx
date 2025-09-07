@@ -12,8 +12,8 @@ export default function ChatLayout() {
 				title: "Alice",
 				lastMessage: "Até mais!",
 				messages: [
-					{ id: "m1", text: "Oi, tudo bem?", time: "09:00" },
-					{ id: "m2", text: "Sim! E você?", fromMe: true, time: "09:01" },
+					{ id: "m1", text: "Oi, tudo bem?", time: "09:00", type: "CHAT" },
+					{ id: "m2", text: "Sim! E você?", fromMe: true, time: "09:01", type: "CHAT" },
 				],
 			},
 			{
@@ -21,8 +21,8 @@ export default function ChatLayout() {
 				title: "Grupo Trabalho",
 				lastMessage: "Vou enviar o slide",
 				messages: [
-					{ id: "m3", text: "Pessoal, reunião às 14h" },
-					{ id: "m4", text: "Perfeito", fromMe: true },
+					{ id: "m3", text: "Pessoal, reunião às 14h", type: "CHAT" },
+					{ id: "m4", text: "Perfeito", fromMe: true, type: "CHAT" },
 				],
 			},
 		],
@@ -44,7 +44,7 @@ export default function ChatLayout() {
 							lastMessage: text,
 							messages: [
 								...c.messages,
-								{ id: Date.now().toString(), text, fromMe: true, time: "now" },
+								{ id: Date.now().toString(), text, sender: "me", time: "now", type: "CHAT" },
 							],
 						}
 					: c,

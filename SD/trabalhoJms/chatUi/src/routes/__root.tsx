@@ -8,7 +8,7 @@ export const Route = createRootRoute({
 	component: () => (
 		<>
 			<Header />
-			<div className="h-[calc(100vh-6vh)] flex flex-col">
+			<div className="h-[calc(100vh-6vh)] max-h-[calc(100vh-6vh)] flex flex-col">
 				<Outlet />
 			</div>
 			<TanstackDevtools

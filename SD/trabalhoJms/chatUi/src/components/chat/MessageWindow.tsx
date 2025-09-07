@@ -26,12 +26,12 @@ export default function MessageWindow({
 				{conversation.messages.map((m: Message) => (
 					<div
 						key={m.id}
-						className={`max-w-[70%] rounded-md p-2 ${m.fromMe ? "bg-primary text-primary-foreground ml-auto" : "bg-popover text-popover-foreground"}`}
+						className={`max-w-[70%] rounded-md p-2 ${m.sender === "me" ? "bg-primary text-primary-foreground ml-auto" : "bg-popover text-popover-foreground"}`}
 					>
 						<div className="text-sm">{m.text}</div>
 						{m.time && (
 							<div
-								className={`text-xs mt-1 ${m.fromMe ? "text-primary-foreground/50" : "text-muted-foreground"}`}
+								className={`text-xs mt-1 ${m.sender === "me" ? "text-primary-foreground/50" : "text-muted-foreground"}`}
 							>
 								{m.time}
 							</div>
