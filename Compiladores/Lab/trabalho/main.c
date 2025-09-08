@@ -17,6 +17,7 @@
 FILE *out_file = NULL;
 
 SymTable table;
+FunctionTable functionTable;
 
 int cont_lines = 1;
 
@@ -84,6 +85,14 @@ int main(int argc, char const *argv[])
         return 1;
     }
 
+    if (!initFunctionTable(&functionTable))
+    {
+        fprintf(stderr, "[ERROR]: Failed to initialize function table\n");
+        fclose(out_file);
+        remove(s);
+        return 1;
+    }
+
     FILE *input_file = fopen(argv[1], "r");
     if (input_file == NULL)
     {
@@ -120,8 +129,11 @@ int main(int argc, char const *argv[])
     printf("=== SYMBOL TABLE ===\n");
     printSymTable(&table);
 
+    printFunctionTable(&functionTable);
+
     // Free allocated memory
     freeSymTable(&table);
+    freeFunctionTable(&functionTable);
     freeErrorHandler();
 
     return 0;

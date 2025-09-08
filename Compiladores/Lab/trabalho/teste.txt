@@ -1,29 +1,31 @@
-float x ;
-float y ;
-float total ;
-float media ;
-int impar ;
+float x;
+float y;
+float total;
+float media;
+int impar;
 string nome = "Wesley";
 
-{
-  write("Insira o valor de X:");
-  read ( x ) ;
-  write("Insira o valor de Y:");
-  read ( y ) ;
-  total = x + y ;
-  media = total / 2.0 ;
-  write ( media ) ;
-  impar = 0 ;
-
-  while ( total > 0.0 ) {
-    if ( impar == 0 ) {
-      impar = 1 ;
-    } else {
-      impar = 0 ;
+int main() {
+    write("Insira o valor de X:");
+    read(x);
+    write("Insira o valor de Y:");
+    read(y);
+    total = x + y;
+    
+    media = total / 2.0;
+    write(media);
+    
+    impar = 0;
+    while (total > 0.0) {
+        if (impar == 0) {
+            impar = 1;
+        } else {
+            impar = 0;
+        }
+        total = total - 1.0;
     }
-    total = total - 1.0 ;
-  }
-  write ( impar ) ;
-
-  write(nome); 
+    write(impar);
+    
+    write(nome);
+    return 0;
 }

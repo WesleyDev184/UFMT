@@ -8,6 +8,7 @@
     int yylex();
 
     extern SymTable table;
+    extern FunctionTable functionTable;
     extern int cont_lines;
 
     char s_decs[256];
@@ -23,13 +24,15 @@
 	} c;
 }
 
-%type <c> programa declaracoes declaracao bloco
+%type <c> programa declaracoes_e_funcoes item_declaracao declaracao bloco declaracoes_locais
 %type <c> declaracao_inteiro declaracao_float declaracao_char declaracao_bool declaracao_string
-%type <c> comandos comando comando_atribuicao comando_io comando_condicional comando_repeticao
+%type <c> prototipo_funcao implementacao_funcao
+%type <c> chamada_funcao
+%type <c> comandos comando comando_atribuicao comando_io comando_condicional comando_repeticao comando_retorno
 %type <c> expressao termo expressao_logica
 
 %token <c> ID NUM FLOAT_NUM LITERAL_STR CHAR_LITERAL TRUE_VAL FALSE_VAL
-%token <c> INT_TYPE FLOAT_TYPE CHAR_TYPE BOOL_TYPE STRING_TYPE WRITE READ IF ELSE WHILE EQ NE LE GE
+%token <c> INT_TYPE FLOAT_TYPE CHAR_TYPE BOOL_TYPE STRING_TYPE WRITE READ IF ELSE WHILE EQ NE LE GE RETURN
 %left '+' '-'
 %left '*' '/' '%'
 %left '<' '>' LE GE EQ NE
@@ -39,21 +42,35 @@
 %%
 
 
-programa: declaracoes bloco  {
-		// Don't write declaracoes anymore, they are written in dumpCodeDeclarationEnd
+programa: declaracoes_e_funcoes  {
+		// Write declarations and functions
 		dumpCodeDeclarationEnd();
-		fprintf(out_file, "%s", $2.str);
+		fprintf(out_file, "%s", $1.str);  // Write all content
+	}
+	| declaracoes_e_funcoes bloco  {
+		// Legacy format: declarations + block (for backwards compatibility)
+		dumpCodeDeclarationEnd();
+		fprintf(out_file, "%s", $1.str);  // Write function implementations
+		
+		// Wrap the block in a main function structure
+		char main_wrapper[8192];
+		makeCodeMain(main_wrapper, $2.str);
+		fprintf(out_file, "%s", main_wrapper);  // Write main with block content
 	}
 ;
 
 
-declaracoes: declaracao declaracoes  {
+declaracoes_e_funcoes: item_declaracao declaracoes_e_funcoes  {
 		strcpy($$.str, $1.str);
-		//printf("{%s}\n", $2.str);
 		sprintf($$.str + strlen($$.str), "%s", $2.str);
 	}
 
 	| %empty { $$.str[0] = '\0'; }
+;
+
+item_declaracao: declaracao { strcpy($$.str, $1.str); }
+	| prototipo_funcao { strcpy($$.str, $1.str); }
+	| implementacao_funcao { strcpy($$.str, $1.str); }
 ;
 
 
@@ -183,9 +200,63 @@ declaracao_string: STRING_TYPE ID ';'  {
 ;
 
 
-bloco : '{' comandos '}'  {
+prototipo_funcao: INT_TYPE ID '(' ')' ';' {
+		// Process function prototype without parameters
+		if (!addFunctionPrototype(&functionTable, $2.str, INTEGER, NULL, 0, 0)) {
+			fprintf(stderr, "Error: Function '%s' already declared at line %d\n", $2.str, cont_lines);
+			YYABORT;
+		}
+		$$.str[0] = '\0'; // No code generation for prototypes
+	}
+;
+
+implementacao_funcao: INT_TYPE ID '(' ')' bloco {
+		// Special case for main function
+		if (strcmp($2.str, "main") == 0) {
+			// This is a main function - treat it specially
+			if (!addFunctionPrototype(&functionTable, "main", INTEGER, NULL, 0, 1)) {
+				fprintf(stderr, "Error: Main function already declared at line %d\n", cont_lines);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, "main");
+			makeCodeMain($$.str, $5.str);
+		} else {
+			// Regular function logic
+			FunctionEntry *func = findFunction(&functionTable, $2.str);
+			if (func != NULL) {
+				if (func->isDefined) {
+					fprintf(stderr, "Error: Function '%s' already defined at line %d\n", $2.str, cont_lines);
+					YYABORT;
+				}
+				// Check signature compatibility here
+				markFunctionDefined(&functionTable, $2.str);
+			} else {
+				// Add as new function if not prototyped
+				if (!addFunctionPrototype(&functionTable, $2.str, INTEGER, NULL, 0, 0)) {
+					YYABORT;
+				}
+				markFunctionDefined(&functionTable, $2.str);
+			}
+			makeCodeFunction($$.str, $2.str, INTEGER, $5.str);
+		}
+	}
+;
+
+
+bloco : '{' declaracoes_locais comandos '}'  {
+		strcpy($$.str, $2.str);  // Local declarations first
+		sprintf($$.str + strlen($$.str), "%s", $3.str);  // Then commands
+	}
+	| '{' comandos '}'  {
 		strcpy($$.str, $2.str);
 	}
+;
+
+declaracoes_locais: declaracao declaracoes_locais  {
+		strcpy($$.str, $1.str);
+		sprintf($$.str + strlen($$.str), "%s", $2.str);
+	}
+	| %empty { $$.str[0] = '\0'; }
 ;
 
 
@@ -200,6 +271,8 @@ comando: comando_atribuicao { strcpy($$.str, $1.str); }
 	| comando_io { strcpy($$.str, $1.str); }
 	| comando_condicional { strcpy($$.str, $1.str); }
 	| comando_repeticao { strcpy($$.str, $1.str); }
+	| comando_retorno { strcpy($$.str, $1.str); }
+	| chamada_funcao { strcpy($$.str, $1.str); }
 ;
 
 comando_atribuicao: ID '=' expressao ';'  {
@@ -243,6 +316,24 @@ comando_condicional: IF '(' expressao_logica ')' bloco  {
 
 comando_repeticao: WHILE '(' expressao_logica ')' bloco  {
 		makeCodeWhile($$.str, $3.str, $5.str);
+	}
+;
+
+comando_retorno: RETURN expressao ';'  {
+		makeCodeReturn($$.str, $2.str, (Type)$2.type);
+	}
+;
+
+chamada_funcao: ID '(' ')' ';'  {
+		// Check if function exists
+		FunctionEntry* func = findFunction(&functionTable, $1.str);
+		if (func == NULL) {
+			fprintf(stderr, "Error: Function '%s' not declared at line %d\n", $1.str, cont_lines);
+			YYABORT;
+		}
+		
+		// Generate call code without arguments
+		makeCodeFunctionCall($$.str, $1.str, "", func->returnType);
 	}
 ;
 
@@ -355,6 +446,17 @@ termo: NUM  {
 		if (!makeCodeLoad($$.str, $1.str, 1))
 			YYABORT;
 		$$.type = var->type;
+	}
+	| ID '(' ')'  {
+		// Function call in expression without arguments
+		FunctionEntry* func = findFunction(&functionTable, $1.str);
+		if (func == NULL) {
+			fprintf(stderr, "Error: Function '%s' not declared at line %d\n", $1.str, cont_lines);
+			YYABORT;
+		}
+		
+		makeCodeFunctionCallExpression($$.str, $1.str, "", func->returnType);
+		$$.type = func->returnType;
 	}
 ;
 

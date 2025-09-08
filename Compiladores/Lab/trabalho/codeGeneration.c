@@ -487,15 +487,6 @@ void dumpCodeDeclarationEnd()
     fprintf(out_file, "\nsection .text\n");
     fprintf(out_file, "global main\n");
     fprintf(out_file, "\n");
-    fprintf(out_file, "; ===============================================\n");
-    fprintf(out_file, "; Main program entry point\n");
-    fprintf(out_file, "; ===============================================\n");
-    fprintf(out_file, "main:\n");
-    fprintf(out_file, "    ; Initialize stack frame\n");
-    fprintf(out_file, "    push rbp                    ; Save base pointer\n");
-    fprintf(out_file, "    mov rbp, rsp                ; Set new base pointer\n");
-    fprintf(out_file, "\n");
-    fprintf(out_file, "    ; Program execution starts here\n");
 }
 
 // Function to create assembly file epilogue
@@ -1291,4 +1282,76 @@ void makeCodeNot(char *dest)
     sprintf(dest + strlen(dest), "sete al\n");
     sprintf(dest + strlen(dest), "movzx rbx, al\n");
     sprintf(dest + strlen(dest), "push rbx\n");
+}
+
+// ===============================================
+// FUNCTION CODE GENERATION
+// ===============================================
+
+void makeCodeFunction(char *dest, char *funcName, Type returnType, char *body)
+{
+    sprintf(dest, "; ===============================================\n");
+    sprintf(dest + strlen(dest), "; Function: %s\n", funcName);
+    sprintf(dest + strlen(dest), "; ===============================================\n");
+    sprintf(dest + strlen(dest), "%s:\n", funcName);
+    sprintf(dest + strlen(dest), "    ; Function prologue\n");
+    sprintf(dest + strlen(dest), "    push rbp                    ; Save old base pointer\n");
+    sprintf(dest + strlen(dest), "    mov rbp, rsp                ; Set new base pointer\n");
+    sprintf(dest + strlen(dest), "\n");
+    sprintf(dest + strlen(dest), "    ; Function body\n");
+    sprintf(dest + strlen(dest), "%s", body);
+    sprintf(dest + strlen(dest), "\n");
+    sprintf(dest + strlen(dest), "    ; Function epilogue (if no explicit return)\n");
+    sprintf(dest + strlen(dest), "    mov eax, 0                  ; Default return value\n");
+    sprintf(dest + strlen(dest), "    mov rsp, rbp                ; Restore stack pointer\n");
+    sprintf(dest + strlen(dest), "    pop rbp                     ; Restore base pointer\n");
+    sprintf(dest + strlen(dest), "    ret                         ; Return to caller\n\n");
+}
+
+void makeCodeMain(char *dest, char *body)
+{
+    sprintf(dest, "; ===============================================\n");
+    sprintf(dest + strlen(dest), "; Main program entry point\n");
+    sprintf(dest + strlen(dest), "; ===============================================\n");
+    sprintf(dest + strlen(dest), "main:\n");
+    sprintf(dest + strlen(dest), "    ; Initialize stack frame\n");
+    sprintf(dest + strlen(dest), "    push rbp                    ; Save base pointer\n");
+    sprintf(dest + strlen(dest), "    mov rbp, rsp                ; Set new base pointer\n");
+    sprintf(dest + strlen(dest), "\n");
+    sprintf(dest + strlen(dest), "    ; Program execution starts here\n");
+    sprintf(dest + strlen(dest), "%s", body);
+    sprintf(dest + strlen(dest), "\n");
+    sprintf(dest + strlen(dest), "    ; Program cleanup and exit\n");
+    sprintf(dest + strlen(dest), "    mov rsp, rbp                ; Restore stack pointer\n");
+    sprintf(dest + strlen(dest), "    pop rbp                     ; Restore base pointer\n");
+    sprintf(dest + strlen(dest), "    mov rdi, 0                  ; Exit status\n");
+    sprintf(dest + strlen(dest), "    call exit                   ; Exit program\n\n");
+}
+
+void makeCodeReturn(char *dest, char *expr, Type type)
+{
+    sprintf(dest, "    ; Return statement\n");
+    sprintf(dest + strlen(dest), "%s", expr);
+    sprintf(dest + strlen(dest), "    pop rax                     ; Get return value\n");
+    sprintf(dest + strlen(dest), "    mov rsp, rbp                ; Restore stack pointer\n");
+    sprintf(dest + strlen(dest), "    pop rbp                     ; Restore base pointer\n");
+    sprintf(dest + strlen(dest), "    ret                         ; Return to caller\n");
+}
+
+void makeCodeFunctionCall(char *dest, char *funcName, char *args, Type returnType)
+{
+    sprintf(dest, "    ; Function call: %s\n", funcName);
+    sprintf(dest + strlen(dest), "%s", args); // Push arguments (in reverse order)
+    sprintf(dest + strlen(dest), "    call %s                     ; Call function\n", funcName);
+    sprintf(dest + strlen(dest), "    ; Clean up stack (simplified - should calculate actual size)\n");
+    sprintf(dest + strlen(dest), "    ; Return value is in eax\n");
+}
+
+void makeCodeFunctionCallExpression(char *dest, char *funcName, char *args, Type returnType)
+{
+    sprintf(dest, "    ; Function call in expression: %s\n", funcName);
+    sprintf(dest + strlen(dest), "%s", args); // Push arguments (in reverse order)
+    sprintf(dest + strlen(dest), "    call %s                     ; Call function\n", funcName);
+    sprintf(dest + strlen(dest), "    ; Clean up stack (simplified - should calculate actual size)\n");
+    sprintf(dest + strlen(dest), "    push rax                    ; Push return value on stack\n");
 }

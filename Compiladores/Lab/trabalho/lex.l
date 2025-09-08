@@ -86,6 +86,11 @@ digit [0-9]
 	return WRITE;
 }
 
+"return"	{
+	strcpy(yylval.c.str, yytext);
+	return RETURN;
+}
+
 "=="	{
 	strcpy(yylval.c.str, yytext);
 	return EQ;

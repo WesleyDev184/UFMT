@@ -54,4 +54,11 @@ void makeCodeWhile(char *dest, char *condition, char *body);
 // Logical operations
 void makeCodeNot(char *dest);
 
+// Function operations
+void makeCodeFunction(char *dest, char *funcName, Type returnType, char *body);
+void makeCodeMain(char *dest, char *body);
+void makeCodeReturn(char *dest, char *expr, Type type);
+void makeCodeFunctionCall(char *dest, char *funcName, char *args, Type returnType);
+void makeCodeFunctionCallExpression(char *dest, char *funcName, char *args, Type returnType);
+
 #endif
