@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Client } from "@stomp/stompjs";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -16,6 +17,7 @@ type ChatMessage = {
   content: string;
   type: "CHAT" | "JOIN" | "LEAVE";
   timestamp?: string;
+  isNewMessage?: boolean; // Indica se é uma mensagem nova (via WebSocket) ou do histórico
 };
 
 type ChatHistoryDto = {
@@ -36,20 +38,92 @@ function Chat() {
   const [isAutoUpdating, setIsAutoUpdating] = useState<boolean>(false);
   const stompClient = useRef<Client | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // useEffect para converter mensagens "novas" para mostrarem o horário real após 1 minuto
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMessages((prevMessages) => {
+        const updatedMessages = prevMessages.map((msg) => {
+          // Se a mensagem está marcada como nova e tem mais de 1 minuto
+          if (msg.isNewMessage && msg.timestamp) {
+            const messageTime = new Date(msg.timestamp);
+            const now = new Date();
+            const diffInMinutes =
+              (now.getTime() - messageTime.getTime()) / (1000 * 60);
+
+            // Se passou mais de 1 minuto, remove a flag de nova
+            if (diffInMinutes > 1) {
+              return { ...msg, isNewMessage: false };
+            }
+          }
+          return msg;
+        });
+
+        // Só atualiza se houve mudanças
+        const hasChanges = updatedMessages.some(
+          (msg, index) => msg.isNewMessage !== prevMessages[index].isNewMessage
+        );
+
+        return hasChanges ? updatedMessages : prevMessages;
+      });
+    }, 10000); // Verifica a cada 10 segundos
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Função para ordenar mensagens por timestamp
+  const sortMessagesByTimestamp = useCallback(
+    (messages: ChatMessage[]): ChatMessage[] => {
+      return [...messages].sort((a, b) => {
+        // Se uma mensagem não tem timestamp, coloca ela no final
+        if (!a.timestamp && !b.timestamp) return 0;
+        if (!a.timestamp) return 1;
+        if (!b.timestamp) return -1;
+
+        // Compara os timestamps
+        const dateA = new Date(a.timestamp);
+        const dateB = new Date(b.timestamp);
+
+        return dateA.getTime() - dateB.getTime();
+      });
+    },
+    []
+  );
 
   // Auto scroll para a última mensagem
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+    // Fallback: scroll direto no container se a ref não funcionar
+    if (scrollAreaRef.current) {
+      const scrollContainer = scrollAreaRef.current.querySelector(
+        "[data-radix-scroll-area-viewport]"
+      );
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }
+    }
   }, []);
 
+  // Scroll automático sempre que as mensagens mudarem
   useEffect(() => {
-    scrollToBottom();
-  }, [scrollToBottom]);
+    const timeoutId = setTimeout(() => {
+      scrollToBottom();
+    }, 100); // Pequeno delay para garantir que o DOM foi atualizado
+
+    return () => clearTimeout(timeoutId);
+  }, [messages, scrollToBottom]);
 
   // Função para recarregar histórico manualmente
   const refreshHistory = async () => {
     const historyMessages = await fetchChatHistory();
-    setMessages(historyMessages);
+    // Garante que o histórico está ordenado
+    const sortedHistory = sortMessagesByTimestamp(historyMessages);
+    setMessages(sortedHistory);
+    // Força o scroll após atualizar manualmente
+    setTimeout(() => scrollToBottom(), 150);
   };
 
   // Atualização automática do histórico a cada 30 segundos quando o usuário está no chat
@@ -65,7 +139,11 @@ function Chat() {
           // Verifica se há novas mensagens para evitar atualizações desnecessárias
           if (latestHistory.length !== prevMessages.length) {
             console.log("Novas mensagens encontradas, atualizando...");
-            return latestHistory;
+            // Garante que as mensagens estão ordenadas
+            const sortedHistory = sortMessagesByTimestamp(latestHistory);
+            // Força o scroll após a atualização
+            setTimeout(() => scrollToBottom(), 150);
+            return sortedHistory;
           }
           return prevMessages;
         });
@@ -90,7 +168,11 @@ function Chat() {
       setIsAutoUpdating(true);
       try {
         const latestHistory = await fetchChatHistory();
-        setMessages(latestHistory);
+        // Garante que as mensagens estão ordenadas
+        const sortedHistory = sortMessagesByTimestamp(latestHistory);
+        setMessages(sortedHistory);
+        // Força o scroll após carregar o histórico
+        setTimeout(() => scrollToBottom(), 150);
       } catch (error) {
         console.error("Erro ao atualizar histórico no foco:", error);
       } finally {
@@ -123,10 +205,14 @@ function Chat() {
         content: item.content,
         type: item.type as "CHAT" | "JOIN" | "LEAVE",
         timestamp: item.timestamp,
+        isNewMessage: false, // Mensagens do histórico não são novas
       }));
 
-      console.log("Mensagens convertidas:", convertedMessages);
-      return convertedMessages;
+      // Ordena as mensagens por timestamp
+      const sortedMessages = sortMessagesByTimestamp(convertedMessages);
+
+      console.log("Mensagens convertidas e ordenadas:", sortedMessages);
+      return sortedMessages;
     } catch (error) {
       console.error("Erro ao buscar histórico:", error);
       return [];
@@ -142,7 +228,14 @@ function Chat() {
 
       // 1. Primeiro busca o histórico
       const historyMessages = await fetchChatHistory();
-      setMessages(historyMessages);
+      // Garante que o histórico inicial está ordenado
+      const sortedHistoryMessages = sortMessagesByTimestamp(historyMessages);
+      setMessages(sortedHistoryMessages);
+
+      // Força scroll após carregar histórico inicial
+      if (sortedHistoryMessages.length > 0) {
+        setTimeout(() => scrollToBottom(), 300);
+      }
 
       // 2. Depois conecta ao WebSocket
       console.log("Tentando conectar ao WebSocket:", WEBSOCKET_URL);
@@ -167,14 +260,21 @@ function Chat() {
                   receivedMessage.timestamp = new Date().toISOString();
                 }
 
+                // Marca como mensagem nova
+                receivedMessage.isNewMessage = true;
+
                 setMessages((prev) => {
                   console.log(
                     "Adicionando mensagem às mensagens anteriores:",
                     prev
                   );
                   const newMessages = [...prev, receivedMessage];
-                  console.log("Novas mensagens:", newMessages);
-                  return newMessages;
+                  // Ordena as mensagens para manter a ordem cronológica
+                  const sortedMessages = sortMessagesByTimestamp(newMessages);
+                  console.log("Novas mensagens ordenadas:", sortedMessages);
+                  // Força o scroll após adicionar nova mensagem
+                  setTimeout(() => scrollToBottom(), 100);
+                  return sortedMessages;
                 });
               } catch (error) {
                 console.error("Erro ao parsear mensagem:", error);
@@ -223,12 +323,18 @@ function Chat() {
     // Atualiza o histórico automaticamente quando o usuário entra
     console.log("Atualizando histórico antes de entrar no chat...");
     const latestHistory = await fetchChatHistory();
-    setMessages(latestHistory);
+    // Garante que o histórico está ordenado
+    const sortedHistory = sortMessagesByTimestamp(latestHistory);
+    setMessages(sortedHistory);
+    // Força o scroll após carregar o histórico inicial
+    setTimeout(() => scrollToBottom(), 200);
 
     const joinMessage: ChatMessage = {
       sender: username,
       content: `${username} entrou no chat`,
       type: "JOIN",
+      timestamp: new Date().toISOString(), // Adiciona timestamp atual
+      isNewMessage: true, // Mensagem de entrada é considerada nova
     };
 
     try {
@@ -249,10 +355,19 @@ function Chat() {
       sender: "Sistema",
       content: "Mensagem de teste local",
       type: "CHAT",
+      timestamp: new Date().toISOString(), // Adiciona timestamp atual
+      isNewMessage: true, // Mensagem de teste é considerada nova
     };
 
     console.log("Adicionando mensagem de teste:", testMessage);
-    setMessages((prev) => [...prev, testMessage]);
+    setMessages((prev) => {
+      const newMessages = [...prev, testMessage];
+      // Ordena as mensagens para manter a ordem cronológica
+      const sortedMessages = sortMessagesByTimestamp(newMessages);
+      // Força o scroll após adicionar mensagem de teste
+      setTimeout(() => scrollToBottom(), 100);
+      return sortedMessages;
+    });
   };
 
   // Função para enviar mensagem
@@ -268,6 +383,8 @@ function Chat() {
       sender: username,
       content: messageInput,
       type: "CHAT",
+      timestamp: new Date().toISOString(), // Adiciona timestamp atual
+      isNewMessage: true, // Mensagem enviada é considerada nova
     };
 
     try {
@@ -277,6 +394,7 @@ function Chat() {
       });
       setMessageInput("");
       console.log("Mensagem enviada:", message);
+      // Força o scroll após enviar mensagem (será executado quando a mensagem for recebida via WebSocket)
     } catch (error) {
       console.error("Erro ao enviar mensagem:", error);
     }
@@ -289,6 +407,8 @@ function Chat() {
         sender: username,
         content: `${username} saiu do chat`,
         type: "LEAVE",
+        timestamp: new Date().toISOString(), // Adiciona timestamp atual
+        isNewMessage: true, // Mensagem de saída é considerada nova
       };
 
       stompClient.current.publish({
@@ -320,8 +440,15 @@ function Chat() {
     const isOwnMessage = msg.sender === username && msg.type === "CHAT";
 
     // Formatar timestamp
-    const formatTimestamp = (timestamp?: string) => {
+    const formatTimestamp = (timestamp?: string, isNewMessage?: boolean) => {
       if (!timestamp) return "";
+
+      // Se é uma mensagem nova, mostra "agora"
+      if (isNewMessage) {
+        return "agora";
+      }
+
+      // Se é do histórico, mostra o tempo normal
       try {
         const date = new Date(timestamp);
         return date.toLocaleTimeString("pt-BR", {
@@ -339,7 +466,7 @@ function Chat() {
 
     return (
       <li
-        key={`${msg.sender}-${msg.content}-${idx}-${msg.timestamp}`}
+        key={`${msg.timestamp || Date.now()}-${msg.sender}-${idx}`}
         className={`p-3 rounded-lg ${
           isSystemMessage
             ? "bg-gray-800 text-gray-400 text-center italic border border-gray-700"
@@ -363,7 +490,7 @@ function Chat() {
                   isOwnMessage ? "text-blue-200" : "text-gray-400"
                 }`}
               >
-                {formatTimestamp(msg.timestamp)}
+                {formatTimestamp(msg.timestamp, msg.isNewMessage)}
               </div>
             )}
           </div>
@@ -373,7 +500,7 @@ function Chat() {
         </div>
         {isSystemMessage && msg.timestamp && (
           <div className="text-xs text-gray-500 mt-1">
-            {formatTimestamp(msg.timestamp)}
+            {formatTimestamp(msg.timestamp, msg.isNewMessage)}
           </div>
         )}
       </li>
@@ -491,7 +618,10 @@ function Chat() {
         {/* Área de mensagens */}
         <div className="flex-1 bg-gray-900 overflow-hidden">
           <div className="h-full flex flex-col">
-            <div className="flex-1 overflow-y-auto p-4">
+            <ScrollArea
+              ref={scrollAreaRef}
+              className="flex-1 overflow-y-auto p-4"
+            >
               {messages.length > 0 && (
                 <div className="text-center mb-4 space-y-2">
                   <div className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-gray-700 text-gray-300 border border-gray-600">
@@ -510,8 +640,8 @@ function Chat() {
                   return renderMessage(msg, idx);
                 })}
               </ul>
-              <div ref={messagesEndRef} />
-            </div>
+              <div ref={messagesEndRef} className="h-1" />
+            </ScrollArea>
 
             {/* Input de mensagem */}
             <div className="bg-gray-800 border-t border-gray-700 p-4">
