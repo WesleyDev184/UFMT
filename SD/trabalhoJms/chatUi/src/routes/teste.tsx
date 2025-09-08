@@ -1,4 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Client } from "@stomp/stompjs";
 import { createFileRoute } from "@tanstack/react-router";
@@ -521,12 +524,10 @@ function Chat() {
               <div className="text-sm text-yellow-400 mb-2">
                 Carregando histórico de mensagens...
               </div>
-              <div className="w-full bg-gray-700 rounded-full h-2">
-                <div
-                  className="bg-yellow-400 h-2 rounded-full animate-pulse"
-                  style={{ width: "60%" }}
-                ></div>
-              </div>
+              <Progress
+                value={60}
+                className="w-full bg-gray-700 animate-pulse"
+              />
             </div>
           )}
 
@@ -547,13 +548,13 @@ function Chat() {
 
           <div className="space-y-4">
             <div>
-              <label
+              <Label
                 htmlFor="username-input"
                 className="block text-sm font-medium text-gray-300 mb-2"
               >
                 Digite seu nome:
-              </label>
-              <input
+              </Label>
+              <Input
                 id="username-input"
                 type="text"
                 value={username}
@@ -665,7 +666,7 @@ function Chat() {
                 </Button>
               </div>
               <div className="flex space-x-2">
-                <input
+                <Input
                   type="text"
                   value={messageInput}
                   onChange={(e) => setMessageInput(e.target.value)}
