@@ -43,19 +43,16 @@
 
 
 programa: declaracoes_e_funcoes  {
+		// Check if main function was defined
+		FunctionEntry *mainFunc = findFunction(&functionTable, "main");
+		if (mainFunc == NULL || !mainFunc->isDefined) {
+			fprintf(stderr, "Error: Main function must be defined\n");
+			YYABORT;
+		}
+		
 		// Write declarations and functions
 		dumpCodeDeclarationEnd();
 		fprintf(out_file, "%s", $1.str);  // Write all content
-	}
-	| declaracoes_e_funcoes bloco  {
-		// Legacy format: declarations + block (for backwards compatibility)
-		dumpCodeDeclarationEnd();
-		fprintf(out_file, "%s", $1.str);  // Write function implementations
-		
-		// Wrap the block in a main function structure
-		char main_wrapper[8192];
-		makeCodeMain(main_wrapper, $2.str);
-		fprintf(out_file, "%s", main_wrapper);  // Write main with block content
 	}
 ;
 
