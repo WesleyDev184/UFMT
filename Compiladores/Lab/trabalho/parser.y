@@ -18,7 +18,7 @@
 %union {
 	struct code_t
 	{
-		char str[16384]; // string para o codigo asm (increased to 16KB)
+		char str[32768]; // string para o codigo asm (increased to 32KB)
 		int op; // opcoes (por exemplo nos jumps)
 		int type; // type information for expressions (using int instead of Type enum)
 	} c;

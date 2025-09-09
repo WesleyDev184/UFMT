@@ -1270,6 +1270,54 @@ void makeCodeComparison(char *dest, char *op, Type type)
             sprintf(dest + strlen(dest), "    setne al                    ; Set if not equal\n");
         }
     }
+    else if (type == BOOL)
+    {
+        sprintf(dest + strlen(dest), "    ; Boolean comparison operation: %s\n", op);
+        sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
+        sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand\n");
+        sprintf(dest + strlen(dest), "    cmp rbx, rcx                ; Compare booleans\n");
+
+        if (strcmp(op, "==") == 0)
+        {
+            sprintf(dest + strlen(dest), "    sete al                     ; Set if equal\n");
+        }
+        else if (strcmp(op, "!=") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setne al                    ; Set if not equal\n");
+        }
+    }
+    else if (type == CHAR)
+    {
+        sprintf(dest + strlen(dest), "    ; Character comparison operation: %s\n", op);
+        sprintf(dest + strlen(dest), "    pop rcx                     ; Get second operand\n");
+        sprintf(dest + strlen(dest), "    pop rbx                     ; Get first operand\n");
+        sprintf(dest + strlen(dest), "    cmp rbx, rcx                ; Compare characters\n");
+
+        if (strcmp(op, "<") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setl al                     ; Set if less than\n");
+        }
+        else if (strcmp(op, ">") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setg al                     ; Set if greater than\n");
+        }
+        else if (strcmp(op, "<=") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setle al                    ; Set if less or equal\n");
+        }
+        else if (strcmp(op, ">=") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setge al                    ; Set if greater or equal\n");
+        }
+        else if (strcmp(op, "==") == 0)
+        {
+            sprintf(dest + strlen(dest), "    sete al                     ; Set if equal\n");
+        }
+        else if (strcmp(op, "!=") == 0)
+        {
+            sprintf(dest + strlen(dest), "    setne al                    ; Set if not equal\n");
+        }
+    }
 
     sprintf(dest + strlen(dest), "    movzx rbx, al               ; Zero-extend result\n");
     sprintf(dest + strlen(dest), "    push rbx                    ; Push result\n");
