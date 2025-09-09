@@ -1,65 +1,6 @@
-float x;
-float y;
-float total;
-float media;
-int impar;
-string nome = "Wesley";
-bool flag = true;
+int soma(int a,int b);
 
-int lerValores();
-int calcularMedia();
-int verificarFlag();
-int calcularImpar();
-int exibirResultados();
-int teste(int x,int y);
-
-int lerValores() {
-    write("Insira o valor de X:");
-    read(x);
-    write("Insira o valor de Y:");
-    read(y);
-    total = x + y;
-    return 0;
-}
-
-int calcularMedia() {
-    media = total / 2.0;
-    write(media);
-    return 0;
-}
-
-int verificarFlag() {
-    if (total < 10.0){
-        flag = false;
-    }
-    return 0;
-}
-
-int calcularImpar() {
-    impar = 0;
-    while (total > 0.0 && flag == true) {
-        if (impar == 0) {
-            impar = 1;
-        } else {
-            impar = 0;
-        }
-        total = total - 1.0;
-        write(impar);
-    }
-    return 0;
-}
-
-int exibirResultados() {
-    write(nome);
-    write(flag);
-    return 0;
-}
-
-int main() {
-    lerValores();
-    calcularMedia();
-    verificarFlag();
-    calcularImpar();
-    exibirResultados();
+int main(){
+    write("teste");
     return 0;
 }

@@ -1,11 +1,14 @@
 %{
+    #define _GNU_SOURCE
     #include <string.h>
     #include <stdio.h>
+    #include <stdlib.h>
 	#include "symbolTable.h"
 	#include "codeGeneration.h"
 
     void yyerror(char*);
     int yylex();
+    Parameter* parseParameterString(char* paramStr, int* paramCount);
 
     extern SymTable table;
     extern FunctionTable functionTable;
@@ -27,6 +30,7 @@
 %type <c> programa declaracoes_e_funcoes item_declaracao declaracao bloco declaracoes_locais
 %type <c> declaracao_inteiro declaracao_float declaracao_char declaracao_bool declaracao_string
 %type <c> prototipo_funcao implementacao_funcao
+%type <c> lista_parametros parametro
 %type <c> chamada_funcao
 %type <c> comandos comando comando_atribuicao comando_io comando_condicional comando_repeticao comando_retorno
 %type <c> expressao termo expressao_logica
@@ -204,6 +208,18 @@ prototipo_funcao: INT_TYPE ID '(' ')' ';' {
 		// Process function prototype without parameters
 		if (!addFunctionPrototype(&functionTable, $2.str, INTEGER, NULL, 0, 0)) {
 			fprintf(stderr, "Error: Function '%s' already declared at line %d\n", $2.str, cont_lines);
+			YYABORT;
+		}
+		$$.str[0] = '\0'; // No code generation for prototypes
+	}
+	| INT_TYPE ID '(' lista_parametros ')' ';' {
+		// Process function prototype with parameters
+		int paramCount = 0;
+		Parameter *params = parseParameterString($4.str, &paramCount);
+		
+		if (!addFunctionPrototype(&functionTable, $2.str, INTEGER, params, paramCount, 0)) {
+			fprintf(stderr, "Error: Function '%s' already declared at line %d\n", $2.str, cont_lines);
+			freeParameters(params);
 			YYABORT;
 		}
 		$$.str[0] = '\0'; // No code generation for prototypes
@@ -569,10 +585,102 @@ expressao_logica: expressao '<' expressao  {
 	}
 ;
 
+lista_parametros: parametro {
+		strcpy($$.str, $1.str);
+	}
+	| lista_parametros ',' parametro {
+		strcpy($$.str, $1.str);
+		strcat($$.str, ",");
+		strcat($$.str, $3.str);
+	}
+;
+
+parametro: INT_TYPE ID {
+		strcpy($$.str, "int ");
+		strcat($$.str, $2.str);
+	}
+	| FLOAT_TYPE ID {
+		strcpy($$.str, "float ");
+		strcat($$.str, $2.str);
+	}
+	| CHAR_TYPE ID {
+		strcpy($$.str, "char ");
+		strcat($$.str, $2.str);
+	}
+	| BOOL_TYPE ID {
+		strcpy($$.str, "bool ");
+		strcat($$.str, $2.str);
+	}
+	| STRING_TYPE ID {
+		strcpy($$.str, "string ");
+		strcat($$.str, $2.str);
+	}
+;
+
 
 %%
 
 void yyerror(char *s) {
    fprintf(stderr, "Syntax Error: %s at line %d\n", s, cont_lines);
    fprintf(stderr, "Check your syntax near line %d\n", cont_lines);
+}
+
+// Parse parameter string and create parameter list
+Parameter* parseParameterString(char* paramStr, int* paramCount) {
+    if (paramStr == NULL || strlen(paramStr) == 0) {
+        *paramCount = 0;
+        return NULL;
+    }
+    
+    Parameter* head = NULL;
+    Parameter* tail = NULL;
+    *paramCount = 0;
+    
+    // Make a copy of the string to tokenize
+    char* str = strdup(paramStr);
+    char* token = strtok(str, ",");
+    
+    while (token != NULL) {
+        // Remove leading whitespace
+        while (*token == ' ') token++;
+        
+        // Parse "type name" format
+        char* space = strchr(token, ' ');
+        if (space != NULL) {
+            *space = '\0';
+            char* typeName = token;
+            char* varName = space + 1;
+            
+            // Remove trailing whitespace from varName
+            int len = strlen(varName);
+            while (len > 0 && varName[len-1] == ' ') {
+                varName[len-1] = '\0';
+                len--;
+            }
+            
+            Type type;
+            if (strcmp(typeName, "int") == 0) type = INTEGER;
+            else if (strcmp(typeName, "float") == 0) type = FLOAT;
+            else if (strcmp(typeName, "char") == 0) type = CHAR;
+            else if (strcmp(typeName, "bool") == 0) type = BOOL;
+            else if (strcmp(typeName, "string") == 0) type = STRING;
+            else type = INTEGER; // default
+            
+            Parameter* param = createParameter(varName, type);
+            if (param != NULL) {
+                if (head == NULL) {
+                    head = tail = param;
+                } else {
+                    tail->next = param;
+                    tail = param;
+                }
+                (*paramCount)++;
+            }
+        }
+        
+        token = strtok(NULL, ",");
+    }
+    
+    free(str);
+    return head;
 }
