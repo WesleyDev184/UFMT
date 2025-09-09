@@ -111,6 +111,16 @@ digit [0-9]
 	return GE;
 }
 
+"&&"	{
+	strcpy(yylval.c.str, yytext);
+	return AND;
+}
+
+"||"	{
+	strcpy(yylval.c.str, yytext);
+	return OR;
+}
+
 {digit}+  {
 	strcpy(yylval.c.str, yytext);
 	return NUM;

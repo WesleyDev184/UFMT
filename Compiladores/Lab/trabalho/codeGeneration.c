@@ -1284,6 +1284,40 @@ void makeCodeNot(char *dest)
     sprintf(dest + strlen(dest), "push rbx\n");
 }
 
+void makeCodeAnd(char *dest)
+{
+    int label = label_counter++;
+    sprintf(dest + strlen(dest), "    pop rbx                     ; Get second operand\n");
+    sprintf(dest + strlen(dest), "    pop rax                     ; Get first operand\n");
+    sprintf(dest + strlen(dest), "    cmp rax, 0                  ; Check if first is false\n");
+    sprintf(dest + strlen(dest), "    je .and_false_%d            ; Jump if first is false\n", label);
+    sprintf(dest + strlen(dest), "    cmp rbx, 0                  ; Check if second is false\n");
+    sprintf(dest + strlen(dest), "    je .and_false_%d            ; Jump if second is false\n", label);
+    sprintf(dest + strlen(dest), "    mov rax, 1                  ; Both true, result is 1\n");
+    sprintf(dest + strlen(dest), "    jmp .and_end_%d             ; Skip false case\n", label);
+    sprintf(dest + strlen(dest), ".and_false_%d:\n", label);
+    sprintf(dest + strlen(dest), "    mov rax, 0                  ; Result is 0 (false)\n");
+    sprintf(dest + strlen(dest), ".and_end_%d:\n", label);
+    sprintf(dest + strlen(dest), "    push rax                    ; Push result\n");
+}
+
+void makeCodeOr(char *dest)
+{
+    int label = label_counter++;
+    sprintf(dest + strlen(dest), "    pop rbx                     ; Get second operand\n");
+    sprintf(dest + strlen(dest), "    pop rax                     ; Get first operand\n");
+    sprintf(dest + strlen(dest), "    cmp rax, 0                  ; Check if first is true\n");
+    sprintf(dest + strlen(dest), "    jne .or_true_%d             ; Jump if first is true\n", label);
+    sprintf(dest + strlen(dest), "    cmp rbx, 0                  ; Check if second is true\n");
+    sprintf(dest + strlen(dest), "    jne .or_true_%d             ; Jump if second is true\n", label);
+    sprintf(dest + strlen(dest), "    mov rax, 0                  ; Both false, result is 0\n");
+    sprintf(dest + strlen(dest), "    jmp .or_end_%d              ; Skip true case\n", label);
+    sprintf(dest + strlen(dest), ".or_true_%d:\n", label);
+    sprintf(dest + strlen(dest), "    mov rax, 1                  ; Result is 1 (true)\n");
+    sprintf(dest + strlen(dest), ".or_end_%d:\n", label);
+    sprintf(dest + strlen(dest), "    push rax                    ; Push result\n");
+}
+
 // ===============================================
 // FUNCTION CODE GENERATION
 // ===============================================

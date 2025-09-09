@@ -18,7 +18,7 @@
 %union {
 	struct code_t
 	{
-		char str[8192]; // string para o codigo asm (increased from 2044)
+		char str[16384]; // string para o codigo asm (increased to 16KB)
 		int op; // opcoes (por exemplo nos jumps)
 		int type; // type information for expressions (using int instead of Type enum)
 	} c;
@@ -32,10 +32,13 @@
 %type <c> expressao termo expressao_logica
 
 %token <c> ID NUM FLOAT_NUM LITERAL_STR CHAR_LITERAL TRUE_VAL FALSE_VAL
-%token <c> INT_TYPE FLOAT_TYPE CHAR_TYPE BOOL_TYPE STRING_TYPE WRITE READ IF ELSE WHILE EQ NE LE GE RETURN
+%token <c> INT_TYPE FLOAT_TYPE CHAR_TYPE BOOL_TYPE STRING_TYPE WRITE READ IF ELSE WHILE EQ NE LE GE RETURN AND OR
+%left OR
+%left AND
+%right '!'
+%left '<' '>' LE GE EQ NE
 %left '+' '-'
 %left '*' '/' '%'
-%left '<' '>' LE GE EQ NE
 %right UMINUS
 
 
@@ -524,6 +527,18 @@ expressao_logica: expressao '<' expressao  {
 		makeCodeComparison($$.str, "!=", (Type)$1.type);
 		$$.type = INTEGER;
 	}
+	| expressao_logica AND expressao_logica  {
+		strcpy($$.str, $1.str);
+		strcat($$.str, $3.str);
+		makeCodeAnd($$.str);
+		$$.type = INTEGER;
+	}
+	| expressao_logica OR expressao_logica  {
+		strcpy($$.str, $1.str);
+		strcat($$.str, $3.str);
+		makeCodeOr($$.str);
+		$$.type = INTEGER;
+	}
 	| '!' expressao_logica  {
 		strcpy($$.str, $2.str);
 		makeCodeNot($$.str);
@@ -532,6 +547,25 @@ expressao_logica: expressao '<' expressao  {
 	| '(' expressao_logica ')'  {
 		strcpy($$.str, $2.str);
 		$$.type = $2.type;
+	}
+	| TRUE_VAL  {
+		makeCodeLoad($$.str, "1", 0);
+		$$.type = BOOL;
+	}
+	| FALSE_VAL  {
+		makeCodeLoad($$.str, "0", 0);
+		$$.type = BOOL;
+	}
+	| ID  {
+		// Check if variable was declared before using
+		SymTableEntry* var = findSymTable(&table, $1.str);
+		if (var == NULL) {
+			fprintf(stderr, "Error: Variable '%s' not declared at line %d\n", $1.str, cont_lines);
+			YYABORT;
+		}
+		if (!makeCodeLoad($$.str, $1.str, 1))
+			YYABORT;
+		$$.type = var->type;
 	}
 ;
 

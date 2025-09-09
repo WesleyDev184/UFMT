@@ -53,6 +53,8 @@ void makeCodeWhile(char *dest, char *condition, char *body);
 
 // Logical operations
 void makeCodeNot(char *dest);
+void makeCodeAnd(char *dest);
+void makeCodeOr(char *dest);
 
 // Function operations
 void makeCodeFunction(char *dest, char *funcName, Type returnType, char *body);

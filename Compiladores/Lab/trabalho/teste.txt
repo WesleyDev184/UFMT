@@ -4,6 +4,7 @@ float total;
 float media;
 int impar;
 string nome = "Wesley";
+bool flag = true;
 
 int main() {
     write("Insira o valor de X:");
@@ -14,9 +15,13 @@ int main() {
     
     media = total / 2.0;
     write(media);
+
+    if (total < 10.0){
+        flag = false;
+    }
     
     impar = 0;
-    while (total > 0.0) {
+    while (total > 0.0 && flag == true) {
         if (impar == 0) {
             impar = 1;
         } else {
@@ -27,5 +32,6 @@ int main() {
     write(impar);
     
     write(nome);
+    write(flag);
     return 0;
 }
