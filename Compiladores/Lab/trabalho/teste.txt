@@ -11,6 +11,7 @@ int calcularMedia();
 int verificarFlag();
 int calcularImpar();
 int exibirResultados();
+int teste(int x,int y);
 
 int lerValores() {
     write("Insira o valor de X:");

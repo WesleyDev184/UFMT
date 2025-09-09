@@ -1372,6 +1372,7 @@ void makeCodeOr(char *dest)
 
 void makeCodeFunction(char *dest, char *funcName, Type returnType, char *body)
 {
+    (void)returnType;
     sprintf(dest, "; ===============================================\n");
     sprintf(dest + strlen(dest), "; Function: %s\n", funcName);
     sprintf(dest + strlen(dest), "; ===============================================\n");
@@ -1412,6 +1413,7 @@ void makeCodeMain(char *dest, char *body)
 
 void makeCodeReturn(char *dest, char *expr, Type type)
 {
+    (void)type;
     sprintf(dest, "    ; Return statement\n");
     sprintf(dest + strlen(dest), "%s", expr);
     sprintf(dest + strlen(dest), "    pop rax                     ; Get return value\n");
@@ -1422,6 +1424,7 @@ void makeCodeReturn(char *dest, char *expr, Type type)
 
 void makeCodeFunctionCall(char *dest, char *funcName, char *args, Type returnType)
 {
+    (void)returnType;
     sprintf(dest, "    ; Function call: %s\n", funcName);
     sprintf(dest + strlen(dest), "%s", args); // Push arguments (in reverse order)
     sprintf(dest + strlen(dest), "    call %s                     ; Call function\n", funcName);
@@ -1431,6 +1434,7 @@ void makeCodeFunctionCall(char *dest, char *funcName, char *args, Type returnTyp
 
 void makeCodeFunctionCallExpression(char *dest, char *funcName, char *args, Type returnType)
 {
+    (void)returnType;
     sprintf(dest, "    ; Function call in expression: %s\n", funcName);
     sprintf(dest + strlen(dest), "%s", args); // Push arguments (in reverse order)
     sprintf(dest + strlen(dest), "    call %s                     ; Call function\n", funcName);

@@ -65,6 +65,8 @@ int main(int argc, char const *argv[])
 
     // Initialize error handling system
     initErrorHandler();
+    // Set current filename for accurate error reporting
+    current_filename = argv[1];
 
     out_file = fopen(s, "w");
     if (out_file == NULL)

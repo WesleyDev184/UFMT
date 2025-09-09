@@ -2,8 +2,11 @@
 	#define _POSIX_C_SOURCE 200809L
 	#include <string.h>
 	#include <stdio.h>
+	#include <unistd.h>
 	#include "parser.tab.h"
 	#include "symbolTable.h"
+	/* Ensure fileno is declared for generated scanner code */
+	int fileno(FILE *stream);
 	void yyerror(char *); 
 %}
 

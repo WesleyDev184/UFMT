@@ -45,6 +45,8 @@ extern ErrorList *error_list;
 extern int error_count;
 extern int warning_count;
 extern int show_warnings;
+// Current input filename used by REPORT_ERROR/REPORT_WARNING macros
+extern const char *current_filename;
 
 // Function declarations
 void initErrorHandler(void);
