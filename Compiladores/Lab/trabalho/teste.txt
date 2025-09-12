@@ -4,6 +4,15 @@ bool impar;
 string empresa;
 
 float soma(float a, float b);
+string getName();
+
+string getName(){
+    string nome;
+    write("Escreva seu nome:");
+    read(nome);
+
+    return nome;
+}
 
 int main() {
     string nome;
@@ -12,8 +21,7 @@ int main() {
     
     empresa = "UFMT";
 
-    write("Escreva seu nome:");
-    read(nome);
+    nome = getName();
     write("Escreva X:");
     read(x);
     write("Escreva Y:");

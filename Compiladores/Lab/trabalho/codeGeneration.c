@@ -55,6 +55,61 @@ extern SymTable table;
 extern FILE *out_file;
 static int label_counter = 0;
 
+// Helper function to resolve variable name based on scope
+static char *resolveVariableName(const char *identifier, Type *foundType, int *isFromGlobal)
+{
+    static char resolvedName[MAX_SIZE_SYMBOL + 32];
+
+    // First check scoped table
+    ScopedSymTableEntry *scopedEntry = findScopedSymbol(&scopedTable, (char *)identifier);
+    if (scopedEntry != NULL)
+    {
+        *foundType = scopedEntry->type;
+        *isFromGlobal = 0;
+
+        // Check if also exists in global table
+        SymTableEntry *globalEntry = findSymTable(&table, (char *)identifier);
+        if (globalEntry != NULL)
+        {
+            // Variable exists in both - use scoped version with unique name
+            if (scopedEntry->scopeType == SCOPE_FUNCTION)
+            {
+                snprintf(resolvedName, sizeof(resolvedName), "%s_func_%d", identifier, scopedEntry->scopeLevel);
+            }
+            else
+            {
+                snprintf(resolvedName, sizeof(resolvedName), "%s_scope_%d", identifier, scopedEntry->scopeLevel);
+            }
+        }
+        else
+        {
+            // Only in scoped table - still use unique name for consistency
+            if (scopedEntry->scopeType == SCOPE_FUNCTION)
+            {
+                snprintf(resolvedName, sizeof(resolvedName), "%s_func_%d", identifier, scopedEntry->scopeLevel);
+            }
+            else
+            {
+                snprintf(resolvedName, sizeof(resolvedName), "%s_scope_%d", identifier, scopedEntry->scopeLevel);
+            }
+        }
+        return resolvedName;
+    }
+
+    // Check global table
+    SymTableEntry *globalEntry = findSymTable(&table, (char *)identifier);
+    if (globalEntry != NULL)
+    {
+        *foundType = globalEntry->type;
+        *isFromGlobal = 1;
+        strcpy(resolvedName, identifier);
+        return resolvedName;
+    }
+
+    // Not found
+    return NULL;
+}
+
 // Optimization tracking - store last two loaded values
 static char last_left_operand[64] = "";
 static char last_right_operand[64] = "";
@@ -474,7 +529,7 @@ void dumpCodeDeclarationEnd()
         }
     }
 
-    // Add scoped variables to the data section
+    // Add scoped variables to the data section (only if not already declared in global table)
     if (scopedTable.array != NULL)
     {
         for (int i = 0; i < scopedTable.max_size; i++)
@@ -485,74 +540,144 @@ void dumpCodeDeclarationEnd()
                 ScopedSymTableEntry *entry = &node->data;
                 while (entry != NULL)
                 {
-                    if (entry->type == STRING)
+                    // Check if this identifier already exists in global table
+                    int alreadyDeclared = 0;
+                    for (int j = 0; j < table.max_size; j++)
                     {
-                        if (entry->value != NULL)
+                        if (table.array[j].data.identifier[0] != '\0')
                         {
-                            char *label = addStringLiteral(entry->value);
-                            if (label != NULL)
+                            SymTableNode *globalNode = &table.array[j];
+                            while (globalNode != NULL)
                             {
-                                fprintf(out_file, "    %s:          dq %s              ; Scoped string variable = %s\n",
-                                        entry->identifier, label, entry->value);
+                                if (strcmp(globalNode->data.identifier, entry->identifier) == 0)
+                                {
+                                    alreadyDeclared = 1;
+                                    break;
+                                }
+                                globalNode = globalNode->next;
+                            }
+                            if (alreadyDeclared)
+                                break;
+                        }
+                    }
+
+                    // Only declare if not already in global table OR if it needs a unique name
+                    if (!alreadyDeclared)
+                    {
+                        // Generate unique label for scoped variables
+                        char uniqueLabel[MAX_SIZE_SYMBOL + 32];
+                        if (entry->scopeType == SCOPE_FUNCTION)
+                        {
+                            snprintf(uniqueLabel, sizeof(uniqueLabel), "%s_func_%d", entry->identifier, entry->scopeLevel);
+                        }
+                        else
+                        {
+                            snprintf(uniqueLabel, sizeof(uniqueLabel), "%s_scope_%d", entry->identifier, entry->scopeLevel);
+                        }
+
+                        if (entry->type == STRING)
+                        {
+                            if (entry->value != NULL)
+                            {
+                                char *label = addStringLiteral(entry->value);
+                                if (label != NULL)
+                                {
+                                    fprintf(out_file, "    %s:          dq %s              ; Scoped string variable = %s\n",
+                                            uniqueLabel, label, entry->value);
+                                }
+                                else
+                                {
+                                    fprintf(out_file, "    %s:          times 256 db 0    ; Scoped string variable (256 bytes buffer)\n", uniqueLabel);
+                                }
                             }
                             else
                             {
-                                fprintf(out_file, "    %s:          times 256 db 0    ; Scoped string variable (256 bytes buffer)\n", entry->identifier);
+                                fprintf(out_file, "    %s:          times 256 db 0    ; Scoped string variable (256 bytes buffer)\n", uniqueLabel);
+                            }
+                        }
+                        else if (entry->type == CHAR)
+                        {
+                            if (entry->value != NULL)
+                            {
+                                char c = entry->value[1];
+                                fprintf(out_file, "    %s:          db %d              ; Scoped char variable = %s\n",
+                                        uniqueLabel, (int)c, entry->value);
+                            }
+                            else
+                            {
+                                fprintf(out_file, "    %s:          db 0              ; Scoped char variable\n", uniqueLabel);
+                            }
+                        }
+                        else if (entry->type == BOOL)
+                        {
+                            if (entry->value != NULL)
+                            {
+                                int val = (strcmp(entry->value, "true") == 0) ? 1 : 0;
+                                fprintf(out_file, "    %s:          db %d              ; Scoped bool variable = %s\n",
+                                        uniqueLabel, val, entry->value);
+                            }
+                            else
+                            {
+                                fprintf(out_file, "    %s:          db 0              ; Scoped bool variable\n", uniqueLabel);
+                            }
+                        }
+                        else if (entry->type == FLOAT)
+                        {
+                            if (entry->value != NULL)
+                            {
+                                fprintf(out_file, "    %s:          dq %s              ; Scoped float variable = %s\n",
+                                        uniqueLabel, entry->value, entry->value);
+                            }
+                            else
+                            {
+                                fprintf(out_file, "    %s:          dq 0.0              ; Scoped float variable\n", uniqueLabel);
                             }
                         }
                         else
-                        {
-                            fprintf(out_file, "    %s:          times 256 db 0    ; Scoped string variable (256 bytes buffer)\n", entry->identifier);
-                        }
-                    }
-                    else if (entry->type == CHAR)
-                    {
-                        if (entry->value != NULL)
-                        {
-                            char c = entry->value[1];
-                            fprintf(out_file, "    %s:          db %d              ; Scoped char variable = %s\n",
-                                    entry->identifier, (int)c, entry->value);
-                        }
-                        else
-                        {
-                            fprintf(out_file, "    %s:          db 0              ; Scoped char variable\n", entry->identifier);
-                        }
-                    }
-                    else if (entry->type == BOOL)
-                    {
-                        if (entry->value != NULL)
-                        {
-                            int val = (strcmp(entry->value, "true") == 0) ? 1 : 0;
-                            fprintf(out_file, "    %s:          db %d              ; Scoped bool variable = %s\n",
-                                    entry->identifier, val, entry->value);
-                        }
-                        else
-                        {
-                            fprintf(out_file, "    %s:          db 0              ; Scoped bool variable\n", entry->identifier);
-                        }
-                    }
-                    else if (entry->type == FLOAT)
-                    {
-                        if (entry->value != NULL)
-                        {
-                            fprintf(out_file, "    %s:          dq %s              ; Scoped float variable = %s\n",
-                                    entry->identifier, entry->value, entry->value);
-                        }
-                        else
-                        {
-                            fprintf(out_file, "    %s:          dq 0.0              ; Scoped float variable\n", entry->identifier);
+                        { // INTEGER
+                            if (entry->value != NULL)
+                            {
+                                fprintf(out_file, "    %s:          dq %s              ; Scoped integer variable = %s\n",
+                                        uniqueLabel, entry->value, entry->value);
+                            }
+                            else
+                            {
+                                fprintf(out_file, "    %s:          dq 0              ; Scoped integer variable\n", uniqueLabel);
+                            }
                         }
                     }
                     else
-                    { // INTEGER
-                        if (entry->value != NULL)
+                    {
+                        // Already declared in global, but we still need the scoped version
+                        char uniqueLabel[MAX_SIZE_SYMBOL + 32];
+                        if (entry->scopeType == SCOPE_FUNCTION)
                         {
-                            fprintf(out_file, "    %s:          dq %s              ; Scoped integer variable = %s\n",
-                                    entry->identifier, entry->value, entry->value);
+                            snprintf(uniqueLabel, sizeof(uniqueLabel), "%s_func_%d", entry->identifier, entry->scopeLevel);
                         }
                         else
                         {
-                            fprintf(out_file, "    %s:          dq 0              ; Scoped integer variable\n", entry->identifier);
+                            snprintf(uniqueLabel, sizeof(uniqueLabel), "%s_scope_%d", entry->identifier, entry->scopeLevel);
+                        }
+
+                        if (entry->type == STRING)
+                        {
+                            fprintf(out_file, "    %s:          times 256 db 0    ; Scoped string variable (shadows global)\n", uniqueLabel);
+                        }
+                        else if (entry->type == CHAR)
+                        {
+                            fprintf(out_file, "    %s:          db 0              ; Scoped char variable (shadows global)\n", uniqueLabel);
+                        }
+                        else if (entry->type == BOOL)
+                        {
+                            fprintf(out_file, "    %s:          db 0              ; Scoped bool variable (shadows global)\n", uniqueLabel);
+                        }
+                        else if (entry->type == FLOAT)
+                        {
+                            fprintf(out_file, "    %s:          dq 0.0              ; Scoped float variable (shadows global)\n", uniqueLabel);
+                        }
+                        else
+                        { // INTEGER
+                            fprintf(out_file, "    %s:          dq 0              ; Scoped integer variable (shadows global)\n", uniqueLabel);
                         }
                     }
 
@@ -616,15 +741,15 @@ int makeCodeAssignment(char *dest, char *id, char *expr)
 
     dest[0] = '\0';
 
-    // Use hybrid search to find in all scopes
-    if (!findSymbolHybrid(&scopedTable, &table, id, &foundType, &isFromGlobal))
+    // Resolve variable name and check if it exists
+    char *varIdentifier = resolveVariableName(id, &foundType, &isFromGlobal);
+    if (varIdentifier == NULL)
     {
         fprintf(stderr, "Variable '%s' not found for assignment at line %d\n", id, cont_lines);
         return 0;
     }
 
     Type varType = foundType;
-    char *varIdentifier = id;
 
     // Generate code based on variable type
     if (varType == INTEGER || varType == FLOAT)
@@ -647,15 +772,15 @@ int makeCodeAssignment(char *dest, char *id, char *expr)
         sprintf(dest + strlen(dest), "    mov rsi, rbx                ; Source string address\n");
         sprintf(dest + strlen(dest), "    lea rdi, [%s]               ; Destination string buffer\n", varIdentifier);
         sprintf(dest + strlen(dest), "    ; Simple string copy loop\n");
-        sprintf(dest + strlen(dest), ".copy_loop_%s:\n", varIdentifier);
+        sprintf(dest + strlen(dest), ".copy_loop_%s:\n", id); // Use original identifier for labels
         sprintf(dest + strlen(dest), "    mov al, [rsi]               ; Load byte from source\n");
         sprintf(dest + strlen(dest), "    mov [rdi], al               ; Store byte to destination\n");
         sprintf(dest + strlen(dest), "    test al, al                 ; Check if null terminator\n");
-        sprintf(dest + strlen(dest), "    jz .copy_done_%s            ; If zero, end copy\n", varIdentifier);
+        sprintf(dest + strlen(dest), "    jz .copy_done_%s            ; If zero, end copy\n", id);
         sprintf(dest + strlen(dest), "    inc rsi                     ; Move to next source byte\n");
         sprintf(dest + strlen(dest), "    inc rdi                     ; Move to next dest byte\n");
-        sprintf(dest + strlen(dest), "    jmp .copy_loop_%s           ; Continue loop\n", varIdentifier);
-        sprintf(dest + strlen(dest), ".copy_done_%s:\n", varIdentifier);
+        sprintf(dest + strlen(dest), "    jmp .copy_loop_%s           ; Continue loop\n", id);
+        sprintf(dest + strlen(dest), ".copy_done_%s:\n", id);
     }
     else
     {
@@ -801,19 +926,19 @@ int makeCodeLoad(char *dest, char *id, int ref)
         return 1;
     }
 
-    // Variable reference - use hybrid search
+    // Variable reference - use helper function to resolve name
     Type foundType;
     int isFromGlobal;
 
-    // Use hybrid search to find in all scopes
-    if (!findSymbolHybrid(&scopedTable, &table, id, &foundType, &isFromGlobal))
+    // Resolve variable name and check if it exists
+    char *varIdentifier = resolveVariableName(id, &foundType, &isFromGlobal);
+    if (varIdentifier == NULL)
     {
         fprintf(stderr, "Variable '%s' not found for load at line %d\n", id, cont_lines);
         return 0;
     }
 
     Type varType = foundType;
-    char *varIdentifier = id;
 
     if (varType == CHAR || varType == BOOL)
     {
@@ -1177,31 +1302,41 @@ void makeCodeRead(char *dest, char *varname, Type type)
     // Initialize dest string
     dest[0] = '\0';
 
+    // Resolve variable name for scoped variables
+    Type foundType;
+    int isFromGlobal;
+    char *resolvedVarname = resolveVariableName(varname, &foundType, &isFromGlobal);
+    if (resolvedVarname == NULL)
+    {
+        // If not found in symbol tables, use original name (might be parameter or undeclared)
+        resolvedVarname = varname;
+    }
+
     if (type == INTEGER)
     {
         strcat(dest, "    lea rdi, [fmt_d]            ; Integer format\n");
-        sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Variable address\n", varname);
+        sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Variable address\n", resolvedVarname);
         strcat(dest, "    mov rax, 0                  ; Clear rax for scanf\n");
         strcat(dest, "    call scanf                  ; Call scanf\n");
     }
     else if (type == FLOAT)
     {
         strcat(dest, "    lea rdi, [fmt_f]            ; Float format\n");
-        sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Variable address\n", varname);
+        sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Variable address\n", resolvedVarname);
         strcat(dest, "    mov rax, 0                  ; Clear rax for scanf\n");
         strcat(dest, "    call scanf                  ; Call scanf\n");
     }
     else if (type == CHAR)
     {
         strcat(dest, "    lea rdi, [fmt_c]            ; Char format\n");
-        sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Variable address\n", varname);
+        sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Variable address\n", resolvedVarname);
         strcat(dest, "    mov rax, 0                  ; Clear rax for scanf\n");
         strcat(dest, "    call scanf                  ; Call scanf\n");
     }
     else if (type == STRING)
     {
         strcat(dest, "    lea rdi, [fmt_s]            ; String format\n");
-        sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Variable address\n", varname);
+        sprintf(dest + strlen(dest), "    lea rsi, [%s]               ; Variable address\n", resolvedVarname);
         strcat(dest, "    mov rax, 0                  ; Clear rax for scanf\n");
         strcat(dest, "    call scanf                  ; Call scanf\n");
     }
@@ -1551,10 +1686,14 @@ void makeCodeFunctionWithParams(char *dest, char *funcName, Type returnType, cha
 
         while (param != NULL)
         {
+            // For function parameters, always use the scoped name format
+            char resolvedName[MAX_SIZE_SYMBOL + 32];
+            snprintf(resolvedName, sizeof(resolvedName), "%s_func_1", param->name);
+
             sprintf(dest + strlen(dest), "    mov rbx, [rbp + %d]         ; Get parameter %s from stack\n",
                     offset, param->name);
             sprintf(dest + strlen(dest), "    mov [%s], rbx               ; Store in variable %s\n",
-                    param->name, param->name);
+                    resolvedName, param->name);
             offset += 8; // Each parameter is 8 bytes
             param = param->next;
         }
