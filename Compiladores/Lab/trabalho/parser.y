@@ -28,7 +28,7 @@
 	} c;
 }
 
-%type <c> programa declaracoes_e_funcoes item_declaracao declaracao bloco declaracoes_locais
+%type <c> programa declaracoes_e_funcoes item_declaracao declaracao bloco lista_instrucoes instrucao
 %type <c> declaracao_inteiro declaracao_float declaracao_char declaracao_bool declaracao_string
 %type <c> prototipo_funcao implementacao_funcao
 %type <c> lista_parametros parametro
@@ -45,6 +45,8 @@
 %left '+' '-'
 %left '*' '/' '%'
 %right UMINUS
+%right '=' 
+%left ';'
 
 
 %%
@@ -846,20 +848,23 @@ implementacao_funcao: INT_TYPE ID '(' ')' {
 ;
 
 
-bloco : '{' declaracoes_locais comandos '}'  {
-		strcpy($$.str, $2.str);  // Local declarations first
-		sprintf($$.str + strlen($$.str), "%s", $3.str);  // Then commands
-	}
-	| '{' comandos '}'  {
+bloco : '{' lista_instrucoes '}'  {
 		strcpy($$.str, $2.str);
+	}
+	| '{' '}'  {
+		$$.str[0] = '\0';
 	}
 ;
 
-declaracoes_locais: declaracao declaracoes_locais  {
+lista_instrucoes: instrucao lista_instrucoes  {
 		strcpy($$.str, $1.str);
 		sprintf($$.str + strlen($$.str), "%s", $2.str);
 	}
 	| %empty { $$.str[0] = '\0'; }
+;
+
+instrucao: declaracao { strcpy($$.str, $1.str); }
+	| comando { strcpy($$.str, $1.str); }
 ;
 
 

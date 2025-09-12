@@ -1,0 +1,2920 @@
+Rules useless in parser due to conflicts
+
+   69 $@4: ε
+
+
+State 40 conflicts: 1 shift/reduce
+State 58 conflicts: 1 shift/reduce
+State 59 conflicts: 1 shift/reduce
+State 64 conflicts: 1 shift/reduce
+State 68 conflicts: 1 shift/reduce
+State 69 conflicts: 1 shift/reduce
+State 73 conflicts: 1 shift/reduce
+State 100 conflicts: 6 shift/reduce, 1 reduce/reduce
+State 178 conflicts: 1 shift/reduce
+State 181 conflicts: 1 reduce/reduce
+State 182 conflicts: 1 reduce/reduce
+State 183 conflicts: 1 reduce/reduce
+State 207 conflicts: 1 reduce/reduce
+
+
+Grammar
+
+    0 $accept: programa $end
+
+    1 programa: declaracoes_e_funcoes
+
+    2 declaracoes_e_funcoes: item_declaracao declaracoes_e_funcoes
+    3                      | ε
+
+    4 item_declaracao: declaracao
+    5                | prototipo_funcao
+    6                | implementacao_funcao
+
+    7 declaracao: declaracao_inteiro
+    8           | declaracao_float
+    9           | declaracao_char
+   10           | declaracao_bool
+   11           | declaracao_string
+
+   12 declaracao_inteiro: INT_TYPE ID ';'
+   13                   | INT_TYPE ID '=' NUM ';'
+   14                   | INT_TYPE ID '=' expressao ';'
+
+   15 declaracao_float: FLOAT_TYPE ID ';'
+   16                 | FLOAT_TYPE ID '=' FLOAT_NUM ';'
+   17                 | FLOAT_TYPE ID '=' NUM ';'
+   18                 | FLOAT_TYPE ID '=' expressao ';'
+
+   19 declaracao_char: CHAR_TYPE ID ';'
+   20                | CHAR_TYPE ID '=' CHAR_LITERAL ';'
+   21                | CHAR_TYPE ID '=' expressao ';'
+
+   22 declaracao_bool: BOOL_TYPE ID ';'
+   23                | BOOL_TYPE ID '=' TRUE_VAL ';'
+   24                | BOOL_TYPE ID '=' FALSE_VAL ';'
+   25                | BOOL_TYPE ID '=' expressao ';'
+
+   26 declaracao_string: STRING_TYPE ID ';'
+   27                  | STRING_TYPE ID '=' LITERAL_STR ';'
+   28                  | STRING_TYPE ID '=' expressao ';'
+
+   29 prototipo_funcao: INT_TYPE ID '(' ')' ';'
+   30                 | INT_TYPE ID '(' lista_parametros ')' ';'
+   31                 | FLOAT_TYPE ID '(' ')' ';'
+   32                 | FLOAT_TYPE ID '(' lista_parametros ')' ';'
+   33                 | CHAR_TYPE ID '(' ')' ';'
+   34                 | CHAR_TYPE ID '(' lista_parametros ')' ';'
+   35                 | BOOL_TYPE ID '(' ')' ';'
+   36                 | BOOL_TYPE ID '(' lista_parametros ')' ';'
+   37                 | STRING_TYPE ID '(' ')' ';'
+   38                 | STRING_TYPE ID '(' lista_parametros ')' ';'
+
+   39 $@1: ε
+
+   40 implementacao_funcao: INT_TYPE ID '(' ')' $@1 bloco
+
+   41 $@2: ε
+
+   42 implementacao_funcao: INT_TYPE ID '(' lista_parametros ')' $@2 bloco
+   43                     | FLOAT_TYPE ID '(' ')' bloco
+   44                     | FLOAT_TYPE ID '(' lista_parametros ')' bloco
+   45                     | CHAR_TYPE ID '(' ')' bloco
+   46                     | CHAR_TYPE ID '(' lista_parametros ')' bloco
+   47                     | BOOL_TYPE ID '(' ')' bloco
+   48                     | BOOL_TYPE ID '(' lista_parametros ')' bloco
+   49                     | STRING_TYPE ID '(' ')' bloco
+   50                     | STRING_TYPE ID '(' lista_parametros ')' bloco
+
+   51 bloco: '{' declaracoes_locais comandos '}'
+   52      | '{' comandos '}'
+
+   53 declaracoes_locais: declaracao declaracoes_locais
+   54                   | ε
+
+   55 comandos: comando comandos
+   56         | ε
+
+   57 comando: comando_atribuicao
+   58        | comando_io
+   59        | comando_condicional
+   60        | comando_repeticao
+   61        | comando_retorno
+   62        | chamada_funcao
+
+   63 comando_atribuicao: ID '=' expressao ';'
+
+   64 comando_io: READ '(' ID ')' ';'
+   65           | WRITE '(' expressao ')' ';'
+   66           | WRITE '(' LITERAL_STR ')' ';'
+
+   67 $@3: ε
+
+   68 comando_condicional: IF '(' expressao_logica ')' $@3 bloco
+
+   69 $@4: ε
+
+   70 $@5: ε
+
+   71 comando_condicional: IF '(' expressao_logica ')' $@4 bloco ELSE $@5 bloco
+
+   72 $@6: ε
+
+   73 comando_repeticao: WHILE '(' expressao_logica ')' $@6 bloco
+
+   74 comando_retorno: RETURN expressao ';'
+
+   75 chamada_funcao: ID '(' ')' ';'
+
+   76 expressao: termo
+   77          | expressao '+' expressao
+   78          | expressao '-' expressao
+   79          | expressao '*' expressao
+   80          | expressao '/' expressao
+   81          | expressao '%' expressao
+   82          | '-' expressao
+   83          | '(' expressao ')'
+
+   84 termo: NUM
+   85      | FLOAT_NUM
+   86      | CHAR_LITERAL
+   87      | TRUE_VAL
+   88      | FALSE_VAL
+   89      | LITERAL_STR
+   90      | ID
+   91      | ID '(' ')'
+
+   92 expressao_logica: expressao '<' expressao
+   93                 | expressao '>' expressao
+   94                 | expressao LE expressao
+   95                 | expressao GE expressao
+   96                 | expressao EQ expressao
+   97                 | expressao NE expressao
+   98                 | expressao_logica AND expressao_logica
+   99                 | expressao_logica OR expressao_logica
+  100                 | '!' expressao_logica
+  101                 | '(' expressao_logica ')'
+  102                 | TRUE_VAL
+  103                 | FALSE_VAL
+  104                 | ID
+
+  105 lista_parametros: parametro
+  106                 | lista_parametros ',' parametro
+
+  107 parametro: INT_TYPE ID
+  108          | FLOAT_TYPE ID
+  109          | CHAR_TYPE ID
+  110          | BOOL_TYPE ID
+  111          | STRING_TYPE ID
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    '!' (33) 100
+    '%' (37) 81
+    '(' (40) 29 30 31 32 33 34 35 36 37 38 40 42 43 44 45 46 47 48 49 50 64 65 66 68 71 73 75 83 91 101
+    ')' (41) 29 30 31 32 33 34 35 36 37 38 40 42 43 44 45 46 47 48 49 50 64 65 66 68 71 73 75 83 91 101
+    '*' (42) 79
+    '+' (43) 77
+    ',' (44) 106
+    '-' (45) 78 82
+    '/' (47) 80
+    ';' (59) 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 63 64 65 66 74 75
+    '<' (60) 92
+    '=' (61) 13 14 16 17 18 20 21 23 24 25 27 28 63
+    '>' (62) 93
+    '{' (123) 51 52
+    '}' (125) 51 52
+    error (256)
+    ID <c> (258) 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 40 42 43 44 45 46 47 48 49 50 63 64 75 90 91 104 107 108 109 110 111
+    NUM <c> (259) 13 17 84
+    FLOAT_NUM <c> (260) 16 85
+    LITERAL_STR <c> (261) 27 66 89
+    CHAR_LITERAL <c> (262) 20 86
+    TRUE_VAL <c> (263) 23 87 102
+    FALSE_VAL <c> (264) 24 88 103
+    INT_TYPE <c> (265) 12 13 14 29 30 40 42 107
+    FLOAT_TYPE <c> (266) 15 16 17 18 31 32 43 44 108
+    CHAR_TYPE <c> (267) 19 20 21 33 34 45 46 109
+    BOOL_TYPE <c> (268) 22 23 24 25 35 36 47 48 110
+    STRING_TYPE <c> (269) 26 27 28 37 38 49 50 111
+    WRITE <c> (270) 65 66
+    READ <c> (271) 64
+    IF <c> (272) 68 71
+    ELSE <c> (273) 71
+    WHILE <c> (274) 73
+    EQ <c> (275) 96
+    NE <c> (276) 97
+    LE <c> (277) 94
+    GE <c> (278) 95
+    RETURN <c> (279) 74
+    AND <c> (280) 98
+    OR <c> (281) 99
+    UMINUS (282)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (43)
+        on left: 0
+    programa <c> (44)
+        on left: 1
+        on right: 0
+    declaracoes_e_funcoes <c> (45)
+        on left: 2 3
+        on right: 1 2
+    item_declaracao <c> (46)
+        on left: 4 5 6
+        on right: 2
+    declaracao <c> (47)
+        on left: 7 8 9 10 11
+        on right: 4 53
+    declaracao_inteiro <c> (48)
+        on left: 12 13 14
+        on right: 7
+    declaracao_float <c> (49)
+        on left: 15 16 17 18
+        on right: 8
+    declaracao_char <c> (50)
+        on left: 19 20 21
+        on right: 9
+    declaracao_bool <c> (51)
+        on left: 22 23 24 25
+        on right: 10
+    declaracao_string <c> (52)
+        on left: 26 27 28
+        on right: 11
+    prototipo_funcao <c> (53)
+        on left: 29 30 31 32 33 34 35 36 37 38
+        on right: 5
+    implementacao_funcao <c> (54)
+        on left: 40 42 43 44 45 46 47 48 49 50
+        on right: 6
+    $@1 (55)
+        on left: 39
+        on right: 40
+    $@2 (56)
+        on left: 41
+        on right: 42
+    bloco <c> (57)
+        on left: 51 52
+        on right: 40 42 43 44 45 46 47 48 49 50 68 71 73
+    declaracoes_locais <c> (58)
+        on left: 53 54
+        on right: 51 53
+    comandos <c> (59)
+        on left: 55 56
+        on right: 51 52 55
+    comando <c> (60)
+        on left: 57 58 59 60 61 62
+        on right: 55
+    comando_atribuicao <c> (61)
+        on left: 63
+        on right: 57
+    comando_io <c> (62)
+        on left: 64 65 66
+        on right: 58
+    comando_condicional <c> (63)
+        on left: 68 71
+        on right: 59
+    $@3 (64)
+        on left: 67
+        on right: 68
+    $@4 (65)
+        on left: 69
+        on right: 71
+    $@5 (66)
+        on left: 70
+        on right: 71
+    comando_repeticao <c> (67)
+        on left: 73
+        on right: 60
+    $@6 (68)
+        on left: 72
+        on right: 73
+    comando_retorno <c> (69)
+        on left: 74
+        on right: 61
+    chamada_funcao <c> (70)
+        on left: 75
+        on right: 62
+    expressao <c> (71)
+        on left: 76 77 78 79 80 81 82 83
+        on right: 14 18 21 25 28 63 65 74 77 78 79 80 81 82 83 92 93 94 95 96 97
+    termo <c> (72)
+        on left: 84 85 86 87 88 89 90 91
+        on right: 76
+    expressao_logica <c> (73)
+        on left: 92 93 94 95 96 97 98 99 100 101 102 103 104
+        on right: 68 71 73 98 99 100 101
+    lista_parametros <c> (74)
+        on left: 105 106
+        on right: 30 32 34 36 38 42 44 46 48 50 106
+    parametro <c> (75)
+        on left: 107 108 109 110 111
+        on right: 105 106
+
+
+State 0
+
+    0 $accept: • programa $end
+
+    INT_TYPE     shift, and go to state 1
+    FLOAT_TYPE   shift, and go to state 2
+    CHAR_TYPE    shift, and go to state 3
+    BOOL_TYPE    shift, and go to state 4
+    STRING_TYPE  shift, and go to state 5
+
+    $default  reduce using rule 3 (declaracoes_e_funcoes)
+
+    programa               go to state 6
+    declaracoes_e_funcoes  go to state 7
+    item_declaracao        go to state 8
+    declaracao             go to state 9
+    declaracao_inteiro     go to state 10
+    declaracao_float       go to state 11
+    declaracao_char        go to state 12
+    declaracao_bool        go to state 13
+    declaracao_string      go to state 14
+    prototipo_funcao       go to state 15
+    implementacao_funcao   go to state 16
+
+
+State 1
+
+   12 declaracao_inteiro: INT_TYPE • ID ';'
+   13                   | INT_TYPE • ID '=' NUM ';'
+   14                   | INT_TYPE • ID '=' expressao ';'
+   29 prototipo_funcao: INT_TYPE • ID '(' ')' ';'
+   30                 | INT_TYPE • ID '(' lista_parametros ')' ';'
+   40 implementacao_funcao: INT_TYPE • ID '(' ')' $@1 bloco
+   42                     | INT_TYPE • ID '(' lista_parametros ')' $@2 bloco
+
+    ID  shift, and go to state 17
+
+
+State 2
+
+   15 declaracao_float: FLOAT_TYPE • ID ';'
+   16                 | FLOAT_TYPE • ID '=' FLOAT_NUM ';'
+   17                 | FLOAT_TYPE • ID '=' NUM ';'
+   18                 | FLOAT_TYPE • ID '=' expressao ';'
+   31 prototipo_funcao: FLOAT_TYPE • ID '(' ')' ';'
+   32                 | FLOAT_TYPE • ID '(' lista_parametros ')' ';'
+   43 implementacao_funcao: FLOAT_TYPE • ID '(' ')' bloco
+   44                     | FLOAT_TYPE • ID '(' lista_parametros ')' bloco
+
+    ID  shift, and go to state 18
+
+
+State 3
+
+   19 declaracao_char: CHAR_TYPE • ID ';'
+   20                | CHAR_TYPE • ID '=' CHAR_LITERAL ';'
+   21                | CHAR_TYPE • ID '=' expressao ';'
+   33 prototipo_funcao: CHAR_TYPE • ID '(' ')' ';'
+   34                 | CHAR_TYPE • ID '(' lista_parametros ')' ';'
+   45 implementacao_funcao: CHAR_TYPE • ID '(' ')' bloco
+   46                     | CHAR_TYPE • ID '(' lista_parametros ')' bloco
+
+    ID  shift, and go to state 19
+
+
+State 4
+
+   22 declaracao_bool: BOOL_TYPE • ID ';'
+   23                | BOOL_TYPE • ID '=' TRUE_VAL ';'
+   24                | BOOL_TYPE • ID '=' FALSE_VAL ';'
+   25                | BOOL_TYPE • ID '=' expressao ';'
+   35 prototipo_funcao: BOOL_TYPE • ID '(' ')' ';'
+   36                 | BOOL_TYPE • ID '(' lista_parametros ')' ';'
+   47 implementacao_funcao: BOOL_TYPE • ID '(' ')' bloco
+   48                     | BOOL_TYPE • ID '(' lista_parametros ')' bloco
+
+    ID  shift, and go to state 20
+
+
+State 5
+
+   26 declaracao_string: STRING_TYPE • ID ';'
+   27                  | STRING_TYPE • ID '=' LITERAL_STR ';'
+   28                  | STRING_TYPE • ID '=' expressao ';'
+   37 prototipo_funcao: STRING_TYPE • ID '(' ')' ';'
+   38                 | STRING_TYPE • ID '(' lista_parametros ')' ';'
+   49 implementacao_funcao: STRING_TYPE • ID '(' ')' bloco
+   50                     | STRING_TYPE • ID '(' lista_parametros ')' bloco
+
+    ID  shift, and go to state 21
+
+
+State 6
+
+    0 $accept: programa • $end
+
+    $end  shift, and go to state 22
+
+
+State 7
+
+    1 programa: declaracoes_e_funcoes •
+
+    $default  reduce using rule 1 (programa)
+
+
+State 8
+
+    2 declaracoes_e_funcoes: item_declaracao • declaracoes_e_funcoes
+
+    INT_TYPE     shift, and go to state 1
+    FLOAT_TYPE   shift, and go to state 2
+    CHAR_TYPE    shift, and go to state 3
+    BOOL_TYPE    shift, and go to state 4
+    STRING_TYPE  shift, and go to state 5
+
+    $default  reduce using rule 3 (declaracoes_e_funcoes)
+
+    declaracoes_e_funcoes  go to state 23
+    item_declaracao        go to state 8
+    declaracao             go to state 9
+    declaracao_inteiro     go to state 10
+    declaracao_float       go to state 11
+    declaracao_char        go to state 12
+    declaracao_bool        go to state 13
+    declaracao_string      go to state 14
+    prototipo_funcao       go to state 15
+    implementacao_funcao   go to state 16
+
+
+State 9
+
+    4 item_declaracao: declaracao •
+
+    $default  reduce using rule 4 (item_declaracao)
+
+
+State 10
+
+    7 declaracao: declaracao_inteiro •
+
+    $default  reduce using rule 7 (declaracao)
+
+
+State 11
+
+    8 declaracao: declaracao_float •
+
+    $default  reduce using rule 8 (declaracao)
+
+
+State 12
+
+    9 declaracao: declaracao_char •
+
+    $default  reduce using rule 9 (declaracao)
+
+
+State 13
+
+   10 declaracao: declaracao_bool •
+
+    $default  reduce using rule 10 (declaracao)
+
+
+State 14
+
+   11 declaracao: declaracao_string •
+
+    $default  reduce using rule 11 (declaracao)
+
+
+State 15
+
+    5 item_declaracao: prototipo_funcao •
+
+    $default  reduce using rule 5 (item_declaracao)
+
+
+State 16
+
+    6 item_declaracao: implementacao_funcao •
+
+    $default  reduce using rule 6 (item_declaracao)
+
+
+State 17
+
+   12 declaracao_inteiro: INT_TYPE ID • ';'
+   13                   | INT_TYPE ID • '=' NUM ';'
+   14                   | INT_TYPE ID • '=' expressao ';'
+   29 prototipo_funcao: INT_TYPE ID • '(' ')' ';'
+   30                 | INT_TYPE ID • '(' lista_parametros ')' ';'
+   40 implementacao_funcao: INT_TYPE ID • '(' ')' $@1 bloco
+   42                     | INT_TYPE ID • '(' lista_parametros ')' $@2 bloco
+
+    '='  shift, and go to state 24
+    ';'  shift, and go to state 25
+    '('  shift, and go to state 26
+
+
+State 18
+
+   15 declaracao_float: FLOAT_TYPE ID • ';'
+   16                 | FLOAT_TYPE ID • '=' FLOAT_NUM ';'
+   17                 | FLOAT_TYPE ID • '=' NUM ';'
+   18                 | FLOAT_TYPE ID • '=' expressao ';'
+   31 prototipo_funcao: FLOAT_TYPE ID • '(' ')' ';'
+   32                 | FLOAT_TYPE ID • '(' lista_parametros ')' ';'
+   43 implementacao_funcao: FLOAT_TYPE ID • '(' ')' bloco
+   44                     | FLOAT_TYPE ID • '(' lista_parametros ')' bloco
+
+    '='  shift, and go to state 27
+    ';'  shift, and go to state 28
+    '('  shift, and go to state 29
+
+
+State 19
+
+   19 declaracao_char: CHAR_TYPE ID • ';'
+   20                | CHAR_TYPE ID • '=' CHAR_LITERAL ';'
+   21                | CHAR_TYPE ID • '=' expressao ';'
+   33 prototipo_funcao: CHAR_TYPE ID • '(' ')' ';'
+   34                 | CHAR_TYPE ID • '(' lista_parametros ')' ';'
+   45 implementacao_funcao: CHAR_TYPE ID • '(' ')' bloco
+   46                     | CHAR_TYPE ID • '(' lista_parametros ')' bloco
+
+    '='  shift, and go to state 30
+    ';'  shift, and go to state 31
+    '('  shift, and go to state 32
+
+
+State 20
+
+   22 declaracao_bool: BOOL_TYPE ID • ';'
+   23                | BOOL_TYPE ID • '=' TRUE_VAL ';'
+   24                | BOOL_TYPE ID • '=' FALSE_VAL ';'
+   25                | BOOL_TYPE ID • '=' expressao ';'
+   35 prototipo_funcao: BOOL_TYPE ID • '(' ')' ';'
+   36                 | BOOL_TYPE ID • '(' lista_parametros ')' ';'
+   47 implementacao_funcao: BOOL_TYPE ID • '(' ')' bloco
+   48                     | BOOL_TYPE ID • '(' lista_parametros ')' bloco
+
+    '='  shift, and go to state 33
+    ';'  shift, and go to state 34
+    '('  shift, and go to state 35
+
+
+State 21
+
+   26 declaracao_string: STRING_TYPE ID • ';'
+   27                  | STRING_TYPE ID • '=' LITERAL_STR ';'
+   28                  | STRING_TYPE ID • '=' expressao ';'
+   37 prototipo_funcao: STRING_TYPE ID • '(' ')' ';'
+   38                 | STRING_TYPE ID • '(' lista_parametros ')' ';'
+   49 implementacao_funcao: STRING_TYPE ID • '(' ')' bloco
+   50                     | STRING_TYPE ID • '(' lista_parametros ')' bloco
+
+    '='  shift, and go to state 36
+    ';'  shift, and go to state 37
+    '('  shift, and go to state 38
+
+
+State 22
+
+    0 $accept: programa $end •
+
+    $default  accept
+
+
+State 23
+
+    2 declaracoes_e_funcoes: item_declaracao declaracoes_e_funcoes •
+
+    $default  reduce using rule 2 (declaracoes_e_funcoes)
+
+
+State 24
+
+   13 declaracao_inteiro: INT_TYPE ID '=' • NUM ';'
+   14                   | INT_TYPE ID '=' • expressao ';'
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 40
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 48
+    termo      go to state 49
+
+
+State 25
+
+   12 declaracao_inteiro: INT_TYPE ID ';' •
+
+    $default  reduce using rule 12 (declaracao_inteiro)
+
+
+State 26
+
+   29 prototipo_funcao: INT_TYPE ID '(' • ')' ';'
+   30                 | INT_TYPE ID '(' • lista_parametros ')' ';'
+   40 implementacao_funcao: INT_TYPE ID '(' • ')' $@1 bloco
+   42                     | INT_TYPE ID '(' • lista_parametros ')' $@2 bloco
+
+    INT_TYPE     shift, and go to state 50
+    FLOAT_TYPE   shift, and go to state 51
+    CHAR_TYPE    shift, and go to state 52
+    BOOL_TYPE    shift, and go to state 53
+    STRING_TYPE  shift, and go to state 54
+    ')'          shift, and go to state 55
+
+    lista_parametros  go to state 56
+    parametro         go to state 57
+
+
+State 27
+
+   16 declaracao_float: FLOAT_TYPE ID '=' • FLOAT_NUM ';'
+   17                 | FLOAT_TYPE ID '=' • NUM ';'
+   18                 | FLOAT_TYPE ID '=' • expressao ';'
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 58
+    FLOAT_NUM     shift, and go to state 59
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 60
+    termo      go to state 49
+
+
+State 28
+
+   15 declaracao_float: FLOAT_TYPE ID ';' •
+
+    $default  reduce using rule 15 (declaracao_float)
+
+
+State 29
+
+   31 prototipo_funcao: FLOAT_TYPE ID '(' • ')' ';'
+   32                 | FLOAT_TYPE ID '(' • lista_parametros ')' ';'
+   43 implementacao_funcao: FLOAT_TYPE ID '(' • ')' bloco
+   44                     | FLOAT_TYPE ID '(' • lista_parametros ')' bloco
+
+    INT_TYPE     shift, and go to state 50
+    FLOAT_TYPE   shift, and go to state 51
+    CHAR_TYPE    shift, and go to state 52
+    BOOL_TYPE    shift, and go to state 53
+    STRING_TYPE  shift, and go to state 54
+    ')'          shift, and go to state 61
+
+    lista_parametros  go to state 62
+    parametro         go to state 57
+
+
+State 30
+
+   20 declaracao_char: CHAR_TYPE ID '=' • CHAR_LITERAL ';'
+   21                | CHAR_TYPE ID '=' • expressao ';'
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 64
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 65
+    termo      go to state 49
+
+
+State 31
+
+   19 declaracao_char: CHAR_TYPE ID ';' •
+
+    $default  reduce using rule 19 (declaracao_char)
+
+
+State 32
+
+   33 prototipo_funcao: CHAR_TYPE ID '(' • ')' ';'
+   34                 | CHAR_TYPE ID '(' • lista_parametros ')' ';'
+   45 implementacao_funcao: CHAR_TYPE ID '(' • ')' bloco
+   46                     | CHAR_TYPE ID '(' • lista_parametros ')' bloco
+
+    INT_TYPE     shift, and go to state 50
+    FLOAT_TYPE   shift, and go to state 51
+    CHAR_TYPE    shift, and go to state 52
+    BOOL_TYPE    shift, and go to state 53
+    STRING_TYPE  shift, and go to state 54
+    ')'          shift, and go to state 66
+
+    lista_parametros  go to state 67
+    parametro         go to state 57
+
+
+State 33
+
+   23 declaracao_bool: BOOL_TYPE ID '=' • TRUE_VAL ';'
+   24                | BOOL_TYPE ID '=' • FALSE_VAL ';'
+   25                | BOOL_TYPE ID '=' • expressao ';'
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 68
+    FALSE_VAL     shift, and go to state 69
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 70
+    termo      go to state 49
+
+
+State 34
+
+   22 declaracao_bool: BOOL_TYPE ID ';' •
+
+    $default  reduce using rule 22 (declaracao_bool)
+
+
+State 35
+
+   35 prototipo_funcao: BOOL_TYPE ID '(' • ')' ';'
+   36                 | BOOL_TYPE ID '(' • lista_parametros ')' ';'
+   47 implementacao_funcao: BOOL_TYPE ID '(' • ')' bloco
+   48                     | BOOL_TYPE ID '(' • lista_parametros ')' bloco
+
+    INT_TYPE     shift, and go to state 50
+    FLOAT_TYPE   shift, and go to state 51
+    CHAR_TYPE    shift, and go to state 52
+    BOOL_TYPE    shift, and go to state 53
+    STRING_TYPE  shift, and go to state 54
+    ')'          shift, and go to state 71
+
+    lista_parametros  go to state 72
+    parametro         go to state 57
+
+
+State 36
+
+   27 declaracao_string: STRING_TYPE ID '=' • LITERAL_STR ';'
+   28                  | STRING_TYPE ID '=' • expressao ';'
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 73
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 74
+    termo      go to state 49
+
+
+State 37
+
+   26 declaracao_string: STRING_TYPE ID ';' •
+
+    $default  reduce using rule 26 (declaracao_string)
+
+
+State 38
+
+   37 prototipo_funcao: STRING_TYPE ID '(' • ')' ';'
+   38                 | STRING_TYPE ID '(' • lista_parametros ')' ';'
+   49 implementacao_funcao: STRING_TYPE ID '(' • ')' bloco
+   50                     | STRING_TYPE ID '(' • lista_parametros ')' bloco
+
+    INT_TYPE     shift, and go to state 50
+    FLOAT_TYPE   shift, and go to state 51
+    CHAR_TYPE    shift, and go to state 52
+    BOOL_TYPE    shift, and go to state 53
+    STRING_TYPE  shift, and go to state 54
+    ')'          shift, and go to state 75
+
+    lista_parametros  go to state 76
+    parametro         go to state 57
+
+
+State 39
+
+   90 termo: ID •
+   91      | ID • '(' ')'
+
+    '('  shift, and go to state 77
+
+    $default  reduce using rule 90 (termo)
+
+
+State 40
+
+   13 declaracao_inteiro: INT_TYPE ID '=' NUM • ';'
+   84 termo: NUM •
+
+    ';'  shift, and go to state 78
+
+    ';'       [reduce using rule 84 (termo)]
+    $default  reduce using rule 84 (termo)
+
+
+State 41
+
+   85 termo: FLOAT_NUM •
+
+    $default  reduce using rule 85 (termo)
+
+
+State 42
+
+   89 termo: LITERAL_STR •
+
+    $default  reduce using rule 89 (termo)
+
+
+State 43
+
+   86 termo: CHAR_LITERAL •
+
+    $default  reduce using rule 86 (termo)
+
+
+State 44
+
+   87 termo: TRUE_VAL •
+
+    $default  reduce using rule 87 (termo)
+
+
+State 45
+
+   88 termo: FALSE_VAL •
+
+    $default  reduce using rule 88 (termo)
+
+
+State 46
+
+   82 expressao: '-' • expressao
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 79
+    termo      go to state 49
+
+
+State 47
+
+   83 expressao: '(' • expressao ')'
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 80
+    termo      go to state 49
+
+
+State 48
+
+   14 declaracao_inteiro: INT_TYPE ID '=' expressao • ';'
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+    ';'  shift, and go to state 86
+
+
+State 49
+
+   76 expressao: termo •
+
+    $default  reduce using rule 76 (expressao)
+
+
+State 50
+
+  107 parametro: INT_TYPE • ID
+
+    ID  shift, and go to state 87
+
+
+State 51
+
+  108 parametro: FLOAT_TYPE • ID
+
+    ID  shift, and go to state 88
+
+
+State 52
+
+  109 parametro: CHAR_TYPE • ID
+
+    ID  shift, and go to state 89
+
+
+State 53
+
+  110 parametro: BOOL_TYPE • ID
+
+    ID  shift, and go to state 90
+
+
+State 54
+
+  111 parametro: STRING_TYPE • ID
+
+    ID  shift, and go to state 91
+
+
+State 55
+
+   29 prototipo_funcao: INT_TYPE ID '(' ')' • ';'
+   40 implementacao_funcao: INT_TYPE ID '(' ')' • $@1 bloco
+
+    ';'  shift, and go to state 92
+
+    $default  reduce using rule 39 ($@1)
+
+    $@1  go to state 93
+
+
+State 56
+
+   30 prototipo_funcao: INT_TYPE ID '(' lista_parametros • ')' ';'
+   42 implementacao_funcao: INT_TYPE ID '(' lista_parametros • ')' $@2 bloco
+  106 lista_parametros: lista_parametros • ',' parametro
+
+    ')'  shift, and go to state 94
+    ','  shift, and go to state 95
+
+
+State 57
+
+  105 lista_parametros: parametro •
+
+    $default  reduce using rule 105 (lista_parametros)
+
+
+State 58
+
+   17 declaracao_float: FLOAT_TYPE ID '=' NUM • ';'
+   84 termo: NUM •
+
+    ';'  shift, and go to state 96
+
+    ';'       [reduce using rule 84 (termo)]
+    $default  reduce using rule 84 (termo)
+
+
+State 59
+
+   16 declaracao_float: FLOAT_TYPE ID '=' FLOAT_NUM • ';'
+   85 termo: FLOAT_NUM •
+
+    ';'  shift, and go to state 97
+
+    ';'       [reduce using rule 85 (termo)]
+    $default  reduce using rule 85 (termo)
+
+
+State 60
+
+   18 declaracao_float: FLOAT_TYPE ID '=' expressao • ';'
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+    ';'  shift, and go to state 98
+
+
+State 61
+
+   31 prototipo_funcao: FLOAT_TYPE ID '(' ')' • ';'
+   43 implementacao_funcao: FLOAT_TYPE ID '(' ')' • bloco
+
+    ';'  shift, and go to state 99
+    '{'  shift, and go to state 100
+
+    bloco  go to state 101
+
+
+State 62
+
+   32 prototipo_funcao: FLOAT_TYPE ID '(' lista_parametros • ')' ';'
+   44 implementacao_funcao: FLOAT_TYPE ID '(' lista_parametros • ')' bloco
+  106 lista_parametros: lista_parametros • ',' parametro
+
+    ')'  shift, and go to state 102
+    ','  shift, and go to state 95
+
+
+State 63
+
+   84 termo: NUM •
+
+    $default  reduce using rule 84 (termo)
+
+
+State 64
+
+   20 declaracao_char: CHAR_TYPE ID '=' CHAR_LITERAL • ';'
+   86 termo: CHAR_LITERAL •
+
+    ';'  shift, and go to state 103
+
+    ';'       [reduce using rule 86 (termo)]
+    $default  reduce using rule 86 (termo)
+
+
+State 65
+
+   21 declaracao_char: CHAR_TYPE ID '=' expressao • ';'
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+    ';'  shift, and go to state 104
+
+
+State 66
+
+   33 prototipo_funcao: CHAR_TYPE ID '(' ')' • ';'
+   45 implementacao_funcao: CHAR_TYPE ID '(' ')' • bloco
+
+    ';'  shift, and go to state 105
+    '{'  shift, and go to state 100
+
+    bloco  go to state 106
+
+
+State 67
+
+   34 prototipo_funcao: CHAR_TYPE ID '(' lista_parametros • ')' ';'
+   46 implementacao_funcao: CHAR_TYPE ID '(' lista_parametros • ')' bloco
+  106 lista_parametros: lista_parametros • ',' parametro
+
+    ')'  shift, and go to state 107
+    ','  shift, and go to state 95
+
+
+State 68
+
+   23 declaracao_bool: BOOL_TYPE ID '=' TRUE_VAL • ';'
+   87 termo: TRUE_VAL •
+
+    ';'  shift, and go to state 108
+
+    ';'       [reduce using rule 87 (termo)]
+    $default  reduce using rule 87 (termo)
+
+
+State 69
+
+   24 declaracao_bool: BOOL_TYPE ID '=' FALSE_VAL • ';'
+   88 termo: FALSE_VAL •
+
+    ';'  shift, and go to state 109
+
+    ';'       [reduce using rule 88 (termo)]
+    $default  reduce using rule 88 (termo)
+
+
+State 70
+
+   25 declaracao_bool: BOOL_TYPE ID '=' expressao • ';'
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+    ';'  shift, and go to state 110
+
+
+State 71
+
+   35 prototipo_funcao: BOOL_TYPE ID '(' ')' • ';'
+   47 implementacao_funcao: BOOL_TYPE ID '(' ')' • bloco
+
+    ';'  shift, and go to state 111
+    '{'  shift, and go to state 100
+
+    bloco  go to state 112
+
+
+State 72
+
+   36 prototipo_funcao: BOOL_TYPE ID '(' lista_parametros • ')' ';'
+   48 implementacao_funcao: BOOL_TYPE ID '(' lista_parametros • ')' bloco
+  106 lista_parametros: lista_parametros • ',' parametro
+
+    ')'  shift, and go to state 113
+    ','  shift, and go to state 95
+
+
+State 73
+
+   27 declaracao_string: STRING_TYPE ID '=' LITERAL_STR • ';'
+   89 termo: LITERAL_STR •
+
+    ';'  shift, and go to state 114
+
+    ';'       [reduce using rule 89 (termo)]
+    $default  reduce using rule 89 (termo)
+
+
+State 74
+
+   28 declaracao_string: STRING_TYPE ID '=' expressao • ';'
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+    ';'  shift, and go to state 115
+
+
+State 75
+
+   37 prototipo_funcao: STRING_TYPE ID '(' ')' • ';'
+   49 implementacao_funcao: STRING_TYPE ID '(' ')' • bloco
+
+    ';'  shift, and go to state 116
+    '{'  shift, and go to state 100
+
+    bloco  go to state 117
+
+
+State 76
+
+   38 prototipo_funcao: STRING_TYPE ID '(' lista_parametros • ')' ';'
+   50 implementacao_funcao: STRING_TYPE ID '(' lista_parametros • ')' bloco
+  106 lista_parametros: lista_parametros • ',' parametro
+
+    ')'  shift, and go to state 118
+    ','  shift, and go to state 95
+
+
+State 77
+
+   91 termo: ID '(' • ')'
+
+    ')'  shift, and go to state 119
+
+
+State 78
+
+   13 declaracao_inteiro: INT_TYPE ID '=' NUM ';' •
+
+    $default  reduce using rule 13 (declaracao_inteiro)
+
+
+State 79
+
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+   82          | '-' expressao •
+
+    $default  reduce using rule 82 (expressao)
+
+
+State 80
+
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+   83          | '(' expressao • ')'
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+    ')'  shift, and go to state 120
+
+
+State 81
+
+   77 expressao: expressao '+' • expressao
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 121
+    termo      go to state 49
+
+
+State 82
+
+   78 expressao: expressao '-' • expressao
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 122
+    termo      go to state 49
+
+
+State 83
+
+   79 expressao: expressao '*' • expressao
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 123
+    termo      go to state 49
+
+
+State 84
+
+   80 expressao: expressao '/' • expressao
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 124
+    termo      go to state 49
+
+
+State 85
+
+   81 expressao: expressao '%' • expressao
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 125
+    termo      go to state 49
+
+
+State 86
+
+   14 declaracao_inteiro: INT_TYPE ID '=' expressao ';' •
+
+    $default  reduce using rule 14 (declaracao_inteiro)
+
+
+State 87
+
+  107 parametro: INT_TYPE ID •
+
+    $default  reduce using rule 107 (parametro)
+
+
+State 88
+
+  108 parametro: FLOAT_TYPE ID •
+
+    $default  reduce using rule 108 (parametro)
+
+
+State 89
+
+  109 parametro: CHAR_TYPE ID •
+
+    $default  reduce using rule 109 (parametro)
+
+
+State 90
+
+  110 parametro: BOOL_TYPE ID •
+
+    $default  reduce using rule 110 (parametro)
+
+
+State 91
+
+  111 parametro: STRING_TYPE ID •
+
+    $default  reduce using rule 111 (parametro)
+
+
+State 92
+
+   29 prototipo_funcao: INT_TYPE ID '(' ')' ';' •
+
+    $default  reduce using rule 29 (prototipo_funcao)
+
+
+State 93
+
+   40 implementacao_funcao: INT_TYPE ID '(' ')' $@1 • bloco
+
+    '{'  shift, and go to state 100
+
+    bloco  go to state 126
+
+
+State 94
+
+   30 prototipo_funcao: INT_TYPE ID '(' lista_parametros ')' • ';'
+   42 implementacao_funcao: INT_TYPE ID '(' lista_parametros ')' • $@2 bloco
+
+    ';'  shift, and go to state 127
+
+    $default  reduce using rule 41 ($@2)
+
+    $@2  go to state 128
+
+
+State 95
+
+  106 lista_parametros: lista_parametros ',' • parametro
+
+    INT_TYPE     shift, and go to state 50
+    FLOAT_TYPE   shift, and go to state 51
+    CHAR_TYPE    shift, and go to state 52
+    BOOL_TYPE    shift, and go to state 53
+    STRING_TYPE  shift, and go to state 54
+
+    parametro  go to state 129
+
+
+State 96
+
+   17 declaracao_float: FLOAT_TYPE ID '=' NUM ';' •
+
+    $default  reduce using rule 17 (declaracao_float)
+
+
+State 97
+
+   16 declaracao_float: FLOAT_TYPE ID '=' FLOAT_NUM ';' •
+
+    $default  reduce using rule 16 (declaracao_float)
+
+
+State 98
+
+   18 declaracao_float: FLOAT_TYPE ID '=' expressao ';' •
+
+    $default  reduce using rule 18 (declaracao_float)
+
+
+State 99
+
+   31 prototipo_funcao: FLOAT_TYPE ID '(' ')' ';' •
+
+    $default  reduce using rule 31 (prototipo_funcao)
+
+
+State 100
+
+   51 bloco: '{' • declaracoes_locais comandos '}'
+   52      | '{' • comandos '}'
+
+    ID           shift, and go to state 130
+    INT_TYPE     shift, and go to state 131
+    FLOAT_TYPE   shift, and go to state 132
+    CHAR_TYPE    shift, and go to state 133
+    BOOL_TYPE    shift, and go to state 134
+    STRING_TYPE  shift, and go to state 135
+    WRITE        shift, and go to state 136
+    READ         shift, and go to state 137
+    IF           shift, and go to state 138
+    WHILE        shift, and go to state 139
+    RETURN       shift, and go to state 140
+
+    ID        [reduce using rule 54 (declaracoes_locais)]
+    WRITE     [reduce using rule 54 (declaracoes_locais)]
+    READ      [reduce using rule 54 (declaracoes_locais)]
+    IF        [reduce using rule 54 (declaracoes_locais)]
+    WHILE     [reduce using rule 54 (declaracoes_locais)]
+    RETURN    [reduce using rule 54 (declaracoes_locais)]
+    '}'       reduce using rule 54 (declaracoes_locais)
+    '}'       [reduce using rule 56 (comandos)]
+    $default  reduce using rule 54 (declaracoes_locais)
+
+    declaracao           go to state 141
+    declaracao_inteiro   go to state 10
+    declaracao_float     go to state 11
+    declaracao_char      go to state 12
+    declaracao_bool      go to state 13
+    declaracao_string    go to state 14
+    declaracoes_locais   go to state 142
+    comandos             go to state 143
+    comando              go to state 144
+    comando_atribuicao   go to state 145
+    comando_io           go to state 146
+    comando_condicional  go to state 147
+    comando_repeticao    go to state 148
+    comando_retorno      go to state 149
+    chamada_funcao       go to state 150
+
+
+State 101
+
+   43 implementacao_funcao: FLOAT_TYPE ID '(' ')' bloco •
+
+    $default  reduce using rule 43 (implementacao_funcao)
+
+
+State 102
+
+   32 prototipo_funcao: FLOAT_TYPE ID '(' lista_parametros ')' • ';'
+   44 implementacao_funcao: FLOAT_TYPE ID '(' lista_parametros ')' • bloco
+
+    ';'  shift, and go to state 151
+    '{'  shift, and go to state 100
+
+    bloco  go to state 152
+
+
+State 103
+
+   20 declaracao_char: CHAR_TYPE ID '=' CHAR_LITERAL ';' •
+
+    $default  reduce using rule 20 (declaracao_char)
+
+
+State 104
+
+   21 declaracao_char: CHAR_TYPE ID '=' expressao ';' •
+
+    $default  reduce using rule 21 (declaracao_char)
+
+
+State 105
+
+   33 prototipo_funcao: CHAR_TYPE ID '(' ')' ';' •
+
+    $default  reduce using rule 33 (prototipo_funcao)
+
+
+State 106
+
+   45 implementacao_funcao: CHAR_TYPE ID '(' ')' bloco •
+
+    $default  reduce using rule 45 (implementacao_funcao)
+
+
+State 107
+
+   34 prototipo_funcao: CHAR_TYPE ID '(' lista_parametros ')' • ';'
+   46 implementacao_funcao: CHAR_TYPE ID '(' lista_parametros ')' • bloco
+
+    ';'  shift, and go to state 153
+    '{'  shift, and go to state 100
+
+    bloco  go to state 154
+
+
+State 108
+
+   23 declaracao_bool: BOOL_TYPE ID '=' TRUE_VAL ';' •
+
+    $default  reduce using rule 23 (declaracao_bool)
+
+
+State 109
+
+   24 declaracao_bool: BOOL_TYPE ID '=' FALSE_VAL ';' •
+
+    $default  reduce using rule 24 (declaracao_bool)
+
+
+State 110
+
+   25 declaracao_bool: BOOL_TYPE ID '=' expressao ';' •
+
+    $default  reduce using rule 25 (declaracao_bool)
+
+
+State 111
+
+   35 prototipo_funcao: BOOL_TYPE ID '(' ')' ';' •
+
+    $default  reduce using rule 35 (prototipo_funcao)
+
+
+State 112
+
+   47 implementacao_funcao: BOOL_TYPE ID '(' ')' bloco •
+
+    $default  reduce using rule 47 (implementacao_funcao)
+
+
+State 113
+
+   36 prototipo_funcao: BOOL_TYPE ID '(' lista_parametros ')' • ';'
+   48 implementacao_funcao: BOOL_TYPE ID '(' lista_parametros ')' • bloco
+
+    ';'  shift, and go to state 155
+    '{'  shift, and go to state 100
+
+    bloco  go to state 156
+
+
+State 114
+
+   27 declaracao_string: STRING_TYPE ID '=' LITERAL_STR ';' •
+
+    $default  reduce using rule 27 (declaracao_string)
+
+
+State 115
+
+   28 declaracao_string: STRING_TYPE ID '=' expressao ';' •
+
+    $default  reduce using rule 28 (declaracao_string)
+
+
+State 116
+
+   37 prototipo_funcao: STRING_TYPE ID '(' ')' ';' •
+
+    $default  reduce using rule 37 (prototipo_funcao)
+
+
+State 117
+
+   49 implementacao_funcao: STRING_TYPE ID '(' ')' bloco •
+
+    $default  reduce using rule 49 (implementacao_funcao)
+
+
+State 118
+
+   38 prototipo_funcao: STRING_TYPE ID '(' lista_parametros ')' • ';'
+   50 implementacao_funcao: STRING_TYPE ID '(' lista_parametros ')' • bloco
+
+    ';'  shift, and go to state 157
+    '{'  shift, and go to state 100
+
+    bloco  go to state 158
+
+
+State 119
+
+   91 termo: ID '(' ')' •
+
+    $default  reduce using rule 91 (termo)
+
+
+State 120
+
+   83 expressao: '(' expressao ')' •
+
+    $default  reduce using rule 83 (expressao)
+
+
+State 121
+
+   77 expressao: expressao • '+' expressao
+   77          | expressao '+' expressao •
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+
+    $default  reduce using rule 77 (expressao)
+
+
+State 122
+
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   78          | expressao '-' expressao •
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+
+    $default  reduce using rule 78 (expressao)
+
+
+State 123
+
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   79          | expressao '*' expressao •
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+
+    $default  reduce using rule 79 (expressao)
+
+
+State 124
+
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   80          | expressao '/' expressao •
+   81          | expressao • '%' expressao
+
+    $default  reduce using rule 80 (expressao)
+
+
+State 125
+
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+   81          | expressao '%' expressao •
+
+    $default  reduce using rule 81 (expressao)
+
+
+State 126
+
+   40 implementacao_funcao: INT_TYPE ID '(' ')' $@1 bloco •
+
+    $default  reduce using rule 40 (implementacao_funcao)
+
+
+State 127
+
+   30 prototipo_funcao: INT_TYPE ID '(' lista_parametros ')' ';' •
+
+    $default  reduce using rule 30 (prototipo_funcao)
+
+
+State 128
+
+   42 implementacao_funcao: INT_TYPE ID '(' lista_parametros ')' $@2 • bloco
+
+    '{'  shift, and go to state 100
+
+    bloco  go to state 159
+
+
+State 129
+
+  106 lista_parametros: lista_parametros ',' parametro •
+
+    $default  reduce using rule 106 (lista_parametros)
+
+
+State 130
+
+   63 comando_atribuicao: ID • '=' expressao ';'
+   75 chamada_funcao: ID • '(' ')' ';'
+
+    '='  shift, and go to state 160
+    '('  shift, and go to state 161
+
+
+State 131
+
+   12 declaracao_inteiro: INT_TYPE • ID ';'
+   13                   | INT_TYPE • ID '=' NUM ';'
+   14                   | INT_TYPE • ID '=' expressao ';'
+
+    ID  shift, and go to state 162
+
+
+State 132
+
+   15 declaracao_float: FLOAT_TYPE • ID ';'
+   16                 | FLOAT_TYPE • ID '=' FLOAT_NUM ';'
+   17                 | FLOAT_TYPE • ID '=' NUM ';'
+   18                 | FLOAT_TYPE • ID '=' expressao ';'
+
+    ID  shift, and go to state 163
+
+
+State 133
+
+   19 declaracao_char: CHAR_TYPE • ID ';'
+   20                | CHAR_TYPE • ID '=' CHAR_LITERAL ';'
+   21                | CHAR_TYPE • ID '=' expressao ';'
+
+    ID  shift, and go to state 164
+
+
+State 134
+
+   22 declaracao_bool: BOOL_TYPE • ID ';'
+   23                | BOOL_TYPE • ID '=' TRUE_VAL ';'
+   24                | BOOL_TYPE • ID '=' FALSE_VAL ';'
+   25                | BOOL_TYPE • ID '=' expressao ';'
+
+    ID  shift, and go to state 165
+
+
+State 135
+
+   26 declaracao_string: STRING_TYPE • ID ';'
+   27                  | STRING_TYPE • ID '=' LITERAL_STR ';'
+   28                  | STRING_TYPE • ID '=' expressao ';'
+
+    ID  shift, and go to state 166
+
+
+State 136
+
+   65 comando_io: WRITE • '(' expressao ')' ';'
+   66           | WRITE • '(' LITERAL_STR ')' ';'
+
+    '('  shift, and go to state 167
+
+
+State 137
+
+   64 comando_io: READ • '(' ID ')' ';'
+
+    '('  shift, and go to state 168
+
+
+State 138
+
+   68 comando_condicional: IF • '(' expressao_logica ')' $@3 bloco
+   71                    | IF • '(' expressao_logica ')' $@4 bloco ELSE $@5 bloco
+
+    '('  shift, and go to state 169
+
+
+State 139
+
+   73 comando_repeticao: WHILE • '(' expressao_logica ')' $@6 bloco
+
+    '('  shift, and go to state 170
+
+
+State 140
+
+   74 comando_retorno: RETURN • expressao ';'
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 171
+    termo      go to state 49
+
+
+State 141
+
+   53 declaracoes_locais: declaracao • declaracoes_locais
+
+    INT_TYPE     shift, and go to state 131
+    FLOAT_TYPE   shift, and go to state 132
+    CHAR_TYPE    shift, and go to state 133
+    BOOL_TYPE    shift, and go to state 134
+    STRING_TYPE  shift, and go to state 135
+
+    $default  reduce using rule 54 (declaracoes_locais)
+
+    declaracao          go to state 141
+    declaracao_inteiro  go to state 10
+    declaracao_float    go to state 11
+    declaracao_char     go to state 12
+    declaracao_bool     go to state 13
+    declaracao_string   go to state 14
+    declaracoes_locais  go to state 172
+
+
+State 142
+
+   51 bloco: '{' declaracoes_locais • comandos '}'
+
+    ID      shift, and go to state 130
+    WRITE   shift, and go to state 136
+    READ    shift, and go to state 137
+    IF      shift, and go to state 138
+    WHILE   shift, and go to state 139
+    RETURN  shift, and go to state 140
+
+    $default  reduce using rule 56 (comandos)
+
+    comandos             go to state 173
+    comando              go to state 144
+    comando_atribuicao   go to state 145
+    comando_io           go to state 146
+    comando_condicional  go to state 147
+    comando_repeticao    go to state 148
+    comando_retorno      go to state 149
+    chamada_funcao       go to state 150
+
+
+State 143
+
+   52 bloco: '{' comandos • '}'
+
+    '}'  shift, and go to state 174
+
+
+State 144
+
+   55 comandos: comando • comandos
+
+    ID      shift, and go to state 130
+    WRITE   shift, and go to state 136
+    READ    shift, and go to state 137
+    IF      shift, and go to state 138
+    WHILE   shift, and go to state 139
+    RETURN  shift, and go to state 140
+
+    $default  reduce using rule 56 (comandos)
+
+    comandos             go to state 175
+    comando              go to state 144
+    comando_atribuicao   go to state 145
+    comando_io           go to state 146
+    comando_condicional  go to state 147
+    comando_repeticao    go to state 148
+    comando_retorno      go to state 149
+    chamada_funcao       go to state 150
+
+
+State 145
+
+   57 comando: comando_atribuicao •
+
+    $default  reduce using rule 57 (comando)
+
+
+State 146
+
+   58 comando: comando_io •
+
+    $default  reduce using rule 58 (comando)
+
+
+State 147
+
+   59 comando: comando_condicional •
+
+    $default  reduce using rule 59 (comando)
+
+
+State 148
+
+   60 comando: comando_repeticao •
+
+    $default  reduce using rule 60 (comando)
+
+
+State 149
+
+   61 comando: comando_retorno •
+
+    $default  reduce using rule 61 (comando)
+
+
+State 150
+
+   62 comando: chamada_funcao •
+
+    $default  reduce using rule 62 (comando)
+
+
+State 151
+
+   32 prototipo_funcao: FLOAT_TYPE ID '(' lista_parametros ')' ';' •
+
+    $default  reduce using rule 32 (prototipo_funcao)
+
+
+State 152
+
+   44 implementacao_funcao: FLOAT_TYPE ID '(' lista_parametros ')' bloco •
+
+    $default  reduce using rule 44 (implementacao_funcao)
+
+
+State 153
+
+   34 prototipo_funcao: CHAR_TYPE ID '(' lista_parametros ')' ';' •
+
+    $default  reduce using rule 34 (prototipo_funcao)
+
+
+State 154
+
+   46 implementacao_funcao: CHAR_TYPE ID '(' lista_parametros ')' bloco •
+
+    $default  reduce using rule 46 (implementacao_funcao)
+
+
+State 155
+
+   36 prototipo_funcao: BOOL_TYPE ID '(' lista_parametros ')' ';' •
+
+    $default  reduce using rule 36 (prototipo_funcao)
+
+
+State 156
+
+   48 implementacao_funcao: BOOL_TYPE ID '(' lista_parametros ')' bloco •
+
+    $default  reduce using rule 48 (implementacao_funcao)
+
+
+State 157
+
+   38 prototipo_funcao: STRING_TYPE ID '(' lista_parametros ')' ';' •
+
+    $default  reduce using rule 38 (prototipo_funcao)
+
+
+State 158
+
+   50 implementacao_funcao: STRING_TYPE ID '(' lista_parametros ')' bloco •
+
+    $default  reduce using rule 50 (implementacao_funcao)
+
+
+State 159
+
+   42 implementacao_funcao: INT_TYPE ID '(' lista_parametros ')' $@2 bloco •
+
+    $default  reduce using rule 42 (implementacao_funcao)
+
+
+State 160
+
+   63 comando_atribuicao: ID '=' • expressao ';'
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 176
+    termo      go to state 49
+
+
+State 161
+
+   75 chamada_funcao: ID '(' • ')' ';'
+
+    ')'  shift, and go to state 177
+
+
+State 162
+
+   12 declaracao_inteiro: INT_TYPE ID • ';'
+   13                   | INT_TYPE ID • '=' NUM ';'
+   14                   | INT_TYPE ID • '=' expressao ';'
+
+    '='  shift, and go to state 24
+    ';'  shift, and go to state 25
+
+
+State 163
+
+   15 declaracao_float: FLOAT_TYPE ID • ';'
+   16                 | FLOAT_TYPE ID • '=' FLOAT_NUM ';'
+   17                 | FLOAT_TYPE ID • '=' NUM ';'
+   18                 | FLOAT_TYPE ID • '=' expressao ';'
+
+    '='  shift, and go to state 27
+    ';'  shift, and go to state 28
+
+
+State 164
+
+   19 declaracao_char: CHAR_TYPE ID • ';'
+   20                | CHAR_TYPE ID • '=' CHAR_LITERAL ';'
+   21                | CHAR_TYPE ID • '=' expressao ';'
+
+    '='  shift, and go to state 30
+    ';'  shift, and go to state 31
+
+
+State 165
+
+   22 declaracao_bool: BOOL_TYPE ID • ';'
+   23                | BOOL_TYPE ID • '=' TRUE_VAL ';'
+   24                | BOOL_TYPE ID • '=' FALSE_VAL ';'
+   25                | BOOL_TYPE ID • '=' expressao ';'
+
+    '='  shift, and go to state 33
+    ';'  shift, and go to state 34
+
+
+State 166
+
+   26 declaracao_string: STRING_TYPE ID • ';'
+   27                  | STRING_TYPE ID • '=' LITERAL_STR ';'
+   28                  | STRING_TYPE ID • '=' expressao ';'
+
+    '='  shift, and go to state 36
+    ';'  shift, and go to state 37
+
+
+State 167
+
+   65 comando_io: WRITE '(' • expressao ')' ';'
+   66           | WRITE '(' • LITERAL_STR ')' ';'
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 178
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 179
+    termo      go to state 49
+
+
+State 168
+
+   64 comando_io: READ '(' • ID ')' ';'
+
+    ID  shift, and go to state 180
+
+
+State 169
+
+   68 comando_condicional: IF '(' • expressao_logica ')' $@3 bloco
+   71                    | IF '(' • expressao_logica ')' $@4 bloco ELSE $@5 bloco
+
+    ID            shift, and go to state 181
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 182
+    FALSE_VAL     shift, and go to state 183
+    '!'           shift, and go to state 184
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 185
+
+    expressao         go to state 186
+    termo             go to state 49
+    expressao_logica  go to state 187
+
+
+State 170
+
+   73 comando_repeticao: WHILE '(' • expressao_logica ')' $@6 bloco
+
+    ID            shift, and go to state 181
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 182
+    FALSE_VAL     shift, and go to state 183
+    '!'           shift, and go to state 184
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 185
+
+    expressao         go to state 186
+    termo             go to state 49
+    expressao_logica  go to state 188
+
+
+State 171
+
+   74 comando_retorno: RETURN expressao • ';'
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+    ';'  shift, and go to state 189
+
+
+State 172
+
+   53 declaracoes_locais: declaracao declaracoes_locais •
+
+    $default  reduce using rule 53 (declaracoes_locais)
+
+
+State 173
+
+   51 bloco: '{' declaracoes_locais comandos • '}'
+
+    '}'  shift, and go to state 190
+
+
+State 174
+
+   52 bloco: '{' comandos '}' •
+
+    $default  reduce using rule 52 (bloco)
+
+
+State 175
+
+   55 comandos: comando comandos •
+
+    $default  reduce using rule 55 (comandos)
+
+
+State 176
+
+   63 comando_atribuicao: ID '=' expressao • ';'
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+    ';'  shift, and go to state 191
+
+
+State 177
+
+   75 chamada_funcao: ID '(' ')' • ';'
+
+    ';'  shift, and go to state 192
+
+
+State 178
+
+   66 comando_io: WRITE '(' LITERAL_STR • ')' ';'
+   89 termo: LITERAL_STR •
+
+    ')'  shift, and go to state 193
+
+    ')'       [reduce using rule 89 (termo)]
+    $default  reduce using rule 89 (termo)
+
+
+State 179
+
+   65 comando_io: WRITE '(' expressao • ')' ';'
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+    ')'  shift, and go to state 194
+
+
+State 180
+
+   64 comando_io: READ '(' ID • ')' ';'
+
+    ')'  shift, and go to state 195
+
+
+State 181
+
+   90 termo: ID •
+   91      | ID • '(' ')'
+  104 expressao_logica: ID •
+
+    '('  shift, and go to state 77
+
+    AND       reduce using rule 104 (expressao_logica)
+    OR        reduce using rule 104 (expressao_logica)
+    ')'       reduce using rule 90 (termo)
+    ')'       [reduce using rule 104 (expressao_logica)]
+    $default  reduce using rule 90 (termo)
+
+
+State 182
+
+   87 termo: TRUE_VAL •
+  102 expressao_logica: TRUE_VAL •
+
+    AND       reduce using rule 102 (expressao_logica)
+    OR        reduce using rule 102 (expressao_logica)
+    ')'       reduce using rule 87 (termo)
+    ')'       [reduce using rule 102 (expressao_logica)]
+    $default  reduce using rule 87 (termo)
+
+
+State 183
+
+   88 termo: FALSE_VAL •
+  103 expressao_logica: FALSE_VAL •
+
+    AND       reduce using rule 103 (expressao_logica)
+    OR        reduce using rule 103 (expressao_logica)
+    ')'       reduce using rule 88 (termo)
+    ')'       [reduce using rule 103 (expressao_logica)]
+    $default  reduce using rule 88 (termo)
+
+
+State 184
+
+  100 expressao_logica: '!' • expressao_logica
+
+    ID            shift, and go to state 181
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 182
+    FALSE_VAL     shift, and go to state 183
+    '!'           shift, and go to state 184
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 185
+
+    expressao         go to state 186
+    termo             go to state 49
+    expressao_logica  go to state 196
+
+
+State 185
+
+   83 expressao: '(' • expressao ')'
+  101 expressao_logica: '(' • expressao_logica ')'
+
+    ID            shift, and go to state 181
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 182
+    FALSE_VAL     shift, and go to state 183
+    '!'           shift, and go to state 184
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 185
+
+    expressao         go to state 197
+    termo             go to state 49
+    expressao_logica  go to state 198
+
+
+State 186
+
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+   92 expressao_logica: expressao • '<' expressao
+   93                 | expressao • '>' expressao
+   94                 | expressao • LE expressao
+   95                 | expressao • GE expressao
+   96                 | expressao • EQ expressao
+   97                 | expressao • NE expressao
+
+    EQ   shift, and go to state 199
+    NE   shift, and go to state 200
+    LE   shift, and go to state 201
+    GE   shift, and go to state 202
+    '<'  shift, and go to state 203
+    '>'  shift, and go to state 204
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+
+
+State 187
+
+   68 comando_condicional: IF '(' expressao_logica • ')' $@3 bloco
+   71                    | IF '(' expressao_logica • ')' $@4 bloco ELSE $@5 bloco
+   98 expressao_logica: expressao_logica • AND expressao_logica
+   99                 | expressao_logica • OR expressao_logica
+
+    AND  shift, and go to state 205
+    OR   shift, and go to state 206
+    ')'  shift, and go to state 207
+
+
+State 188
+
+   73 comando_repeticao: WHILE '(' expressao_logica • ')' $@6 bloco
+   98 expressao_logica: expressao_logica • AND expressao_logica
+   99                 | expressao_logica • OR expressao_logica
+
+    AND  shift, and go to state 205
+    OR   shift, and go to state 206
+    ')'  shift, and go to state 208
+
+
+State 189
+
+   74 comando_retorno: RETURN expressao ';' •
+
+    $default  reduce using rule 74 (comando_retorno)
+
+
+State 190
+
+   51 bloco: '{' declaracoes_locais comandos '}' •
+
+    $default  reduce using rule 51 (bloco)
+
+
+State 191
+
+   63 comando_atribuicao: ID '=' expressao ';' •
+
+    $default  reduce using rule 63 (comando_atribuicao)
+
+
+State 192
+
+   75 chamada_funcao: ID '(' ')' ';' •
+
+    $default  reduce using rule 75 (chamada_funcao)
+
+
+State 193
+
+   66 comando_io: WRITE '(' LITERAL_STR ')' • ';'
+
+    ';'  shift, and go to state 209
+
+
+State 194
+
+   65 comando_io: WRITE '(' expressao ')' • ';'
+
+    ';'  shift, and go to state 210
+
+
+State 195
+
+   64 comando_io: READ '(' ID ')' • ';'
+
+    ';'  shift, and go to state 211
+
+
+State 196
+
+   98 expressao_logica: expressao_logica • AND expressao_logica
+   99                 | expressao_logica • OR expressao_logica
+  100                 | '!' expressao_logica •
+
+    $default  reduce using rule 100 (expressao_logica)
+
+
+State 197
+
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+   83          | '(' expressao • ')'
+   92 expressao_logica: expressao • '<' expressao
+   93                 | expressao • '>' expressao
+   94                 | expressao • LE expressao
+   95                 | expressao • GE expressao
+   96                 | expressao • EQ expressao
+   97                 | expressao • NE expressao
+
+    EQ   shift, and go to state 199
+    NE   shift, and go to state 200
+    LE   shift, and go to state 201
+    GE   shift, and go to state 202
+    '<'  shift, and go to state 203
+    '>'  shift, and go to state 204
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+    ')'  shift, and go to state 120
+
+
+State 198
+
+   98 expressao_logica: expressao_logica • AND expressao_logica
+   99                 | expressao_logica • OR expressao_logica
+  101                 | '(' expressao_logica • ')'
+
+    AND  shift, and go to state 205
+    OR   shift, and go to state 206
+    ')'  shift, and go to state 212
+
+
+State 199
+
+   96 expressao_logica: expressao EQ • expressao
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 213
+    termo      go to state 49
+
+
+State 200
+
+   97 expressao_logica: expressao NE • expressao
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 214
+    termo      go to state 49
+
+
+State 201
+
+   94 expressao_logica: expressao LE • expressao
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 215
+    termo      go to state 49
+
+
+State 202
+
+   95 expressao_logica: expressao GE • expressao
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 216
+    termo      go to state 49
+
+
+State 203
+
+   92 expressao_logica: expressao '<' • expressao
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 217
+    termo      go to state 49
+
+
+State 204
+
+   93 expressao_logica: expressao '>' • expressao
+
+    ID            shift, and go to state 39
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 44
+    FALSE_VAL     shift, and go to state 45
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 47
+
+    expressao  go to state 218
+    termo      go to state 49
+
+
+State 205
+
+   98 expressao_logica: expressao_logica AND • expressao_logica
+
+    ID            shift, and go to state 181
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 182
+    FALSE_VAL     shift, and go to state 183
+    '!'           shift, and go to state 184
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 185
+
+    expressao         go to state 186
+    termo             go to state 49
+    expressao_logica  go to state 219
+
+
+State 206
+
+   99 expressao_logica: expressao_logica OR • expressao_logica
+
+    ID            shift, and go to state 181
+    NUM           shift, and go to state 63
+    FLOAT_NUM     shift, and go to state 41
+    LITERAL_STR   shift, and go to state 42
+    CHAR_LITERAL  shift, and go to state 43
+    TRUE_VAL      shift, and go to state 182
+    FALSE_VAL     shift, and go to state 183
+    '!'           shift, and go to state 184
+    '-'           shift, and go to state 46
+    '('           shift, and go to state 185
+
+    expressao         go to state 186
+    termo             go to state 49
+    expressao_logica  go to state 220
+
+
+State 207
+
+   68 comando_condicional: IF '(' expressao_logica ')' • $@3 bloco
+   71                    | IF '(' expressao_logica ')' • $@4 bloco ELSE $@5 bloco
+
+    '{'       reduce using rule 67 ($@3)
+    '{'       [reduce using rule 69 ($@4)]
+    $default  reduce using rule 67 ($@3)
+
+    $@3  go to state 221
+    $@4  go to state 222
+
+
+State 208
+
+   73 comando_repeticao: WHILE '(' expressao_logica ')' • $@6 bloco
+
+    $default  reduce using rule 72 ($@6)
+
+    $@6  go to state 223
+
+
+State 209
+
+   66 comando_io: WRITE '(' LITERAL_STR ')' ';' •
+
+    $default  reduce using rule 66 (comando_io)
+
+
+State 210
+
+   65 comando_io: WRITE '(' expressao ')' ';' •
+
+    $default  reduce using rule 65 (comando_io)
+
+
+State 211
+
+   64 comando_io: READ '(' ID ')' ';' •
+
+    $default  reduce using rule 64 (comando_io)
+
+
+State 212
+
+  101 expressao_logica: '(' expressao_logica ')' •
+
+    $default  reduce using rule 101 (expressao_logica)
+
+
+State 213
+
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+   96 expressao_logica: expressao EQ expressao •
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+
+    $default  reduce using rule 96 (expressao_logica)
+
+
+State 214
+
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+   97 expressao_logica: expressao NE expressao •
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+
+    $default  reduce using rule 97 (expressao_logica)
+
+
+State 215
+
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+   94 expressao_logica: expressao LE expressao •
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+
+    $default  reduce using rule 94 (expressao_logica)
+
+
+State 216
+
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+   95 expressao_logica: expressao GE expressao •
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+
+    $default  reduce using rule 95 (expressao_logica)
+
+
+State 217
+
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+   92 expressao_logica: expressao '<' expressao •
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+
+    $default  reduce using rule 92 (expressao_logica)
+
+
+State 218
+
+   77 expressao: expressao • '+' expressao
+   78          | expressao • '-' expressao
+   79          | expressao • '*' expressao
+   80          | expressao • '/' expressao
+   81          | expressao • '%' expressao
+   93 expressao_logica: expressao '>' expressao •
+
+    '+'  shift, and go to state 81
+    '-'  shift, and go to state 82
+    '*'  shift, and go to state 83
+    '/'  shift, and go to state 84
+    '%'  shift, and go to state 85
+
+    $default  reduce using rule 93 (expressao_logica)
+
+
+State 219
+
+   98 expressao_logica: expressao_logica • AND expressao_logica
+   98                 | expressao_logica AND expressao_logica •
+   99                 | expressao_logica • OR expressao_logica
+
+    $default  reduce using rule 98 (expressao_logica)
+
+
+State 220
+
+   98 expressao_logica: expressao_logica • AND expressao_logica
+   99                 | expressao_logica • OR expressao_logica
+   99                 | expressao_logica OR expressao_logica •
+
+    AND  shift, and go to state 205
+
+    $default  reduce using rule 99 (expressao_logica)
+
+
+State 221
+
+   68 comando_condicional: IF '(' expressao_logica ')' $@3 • bloco
+
+    '{'  shift, and go to state 100
+
+    bloco  go to state 224
+
+
+State 222
+
+   71 comando_condicional: IF '(' expressao_logica ')' $@4 • bloco ELSE $@5 bloco
+
+    '{'  shift, and go to state 100
+
+    bloco  go to state 225
+
+
+State 223
+
+   73 comando_repeticao: WHILE '(' expressao_logica ')' $@6 • bloco
+
+    '{'  shift, and go to state 100
+
+    bloco  go to state 226
+
+
+State 224
+
+   68 comando_condicional: IF '(' expressao_logica ')' $@3 bloco •
+
+    $default  reduce using rule 68 (comando_condicional)
+
+
+State 225
+
+   71 comando_condicional: IF '(' expressao_logica ')' $@4 bloco • ELSE $@5 bloco
+
+    ELSE  shift, and go to state 227
+
+
+State 226
+
+   73 comando_repeticao: WHILE '(' expressao_logica ')' $@6 bloco •
+
+    $default  reduce using rule 73 (comando_repeticao)
+
+
+State 227
+
+   71 comando_condicional: IF '(' expressao_logica ')' $@4 bloco ELSE • $@5 bloco
+
+    $default  reduce using rule 70 ($@5)
+
+    $@5  go to state 228
+
+
+State 228
+
+   71 comando_condicional: IF '(' expressao_logica ')' $@4 bloco ELSE $@5 • bloco
+
+    '{'  shift, and go to state 100
+
+    bloco  go to state 229
+
+
+State 229
+
+   71 comando_condicional: IF '(' expressao_logica ')' $@4 bloco ELSE $@5 bloco •
+
+    $default  reduce using rule 71 (comando_condicional)
