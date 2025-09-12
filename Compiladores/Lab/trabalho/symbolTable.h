@@ -339,4 +339,18 @@ void freeScopedSymTable(ScopedSymTable *table);
  */
 int findSymbolHybrid(ScopedSymTable *scopedTable, SymTable *globalTable, char *identifier, Type *foundType, int *isFromGlobal);
 
+/**
+ * @brief Parse parameter string and create parameter list
+ * @param paramString String containing parameters in format "type name,type name,..."
+ * @param paramCount Pointer to store the number of parameters (output parameter)
+ * @return Pointer to parameter list, NULL on error
+ */
+Parameter *parseParameterString(char *paramString, int *paramCount);
+
+/**
+ * @brief Free parameter list
+ * @param parameters Pointer to parameter list to free
+ */
+void freeParameters(Parameter *parameters);
+
 #endif

@@ -33,7 +33,7 @@ $(YACC_C) $(YACC_H): $(YACC_SRC)
 $(LEX_C): $(LEX_SRC) $(YACC_H)
 	flex -o $(LEX_C) $(LEX_SRC)
 
-asm:
+asm: $(EXEC)
 	./$(EXEC) teste.txt
 	nasm -f elf64 teste.asm -o teste.o
 	gcc -no-pie teste.o -o program

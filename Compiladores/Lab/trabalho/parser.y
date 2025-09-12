@@ -34,7 +34,7 @@
 %type <c> lista_parametros parametro
 %type <c> chamada_funcao
 %type <c> comandos comando comando_atribuicao comando_io comando_condicional comando_repeticao comando_retorno
-%type <c> expressao termo expressao_logica
+%type <c> expressao termo expressao_logica lista_expressoes
 
 %token <c> ID NUM FLOAT_NUM LITERAL_STR CHAR_LITERAL TRUE_VAL FALSE_VAL
 %token <c> INT_TYPE FLOAT_TYPE CHAR_TYPE BOOL_TYPE STRING_TYPE WRITE READ IF ELSE WHILE EQ NE LE GE RETURN AND OR
@@ -695,7 +695,7 @@ implementacao_funcao: INT_TYPE ID '(' ')' {
 			}
 			markFunctionDefined(&functionTable, $2.str);
 		}
-		makeCodeFunction($$.str, $2.str, INTEGER, $7.str);
+		makeCodeFunctionWithParams($$.str, $2.str, INTEGER, $7.str, $4.str);
 	}
 	| FLOAT_TYPE ID '(' ')' bloco {
 		// Float function without parameters
@@ -714,7 +714,29 @@ implementacao_funcao: INT_TYPE ID '(' ')' {
 		}
 		makeCodeFunction($$.str, $2.str, FLOAT, $5.str);
 	}
-	| FLOAT_TYPE ID '(' lista_parametros ')' bloco {
+	| FLOAT_TYPE ID '(' lista_parametros ')' {
+		// Enter function scope before parsing body for float functions
+		if (!enterScope(&scopedTable, SCOPE_FUNCTION, $2.str)) {
+			fprintf(stderr, "Error: Failed to enter function scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+
+		// Add parameters to function scope
+		int paramCount = 0;
+		Parameter *params = parseParameterString($4.str, &paramCount);
+		if (!addFunctionParameters(&scopedTable, params)) {
+			fprintf(stderr, "Error: Failed to add function parameters at line %d\n", cont_lines);
+			freeParameters(params);
+			YYABORT;
+		}
+		freeParameters(params);
+	} bloco {
+		// Exit function scope after processing body
+		if (!exitScope(&scopedTable)) {
+			fprintf(stderr, "Error: Failed to exit function scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+		
 		// Float function with parameters
 		FunctionEntry *func = findFunction(&functionTable, $2.str);
 		if (func != NULL) {
@@ -732,7 +754,7 @@ implementacao_funcao: INT_TYPE ID '(' ')' {
 			}
 			markFunctionDefined(&functionTable, $2.str);
 		}
-		makeCodeFunction($$.str, $2.str, FLOAT, $6.str);
+		makeCodeFunctionWithParams($$.str, $2.str, FLOAT, $7.str, $4.str);
 	}
 	| CHAR_TYPE ID '(' ')' bloco {
 		// Char function without parameters
@@ -751,7 +773,29 @@ implementacao_funcao: INT_TYPE ID '(' ')' {
 		}
 		makeCodeFunction($$.str, $2.str, CHAR, $5.str);
 	}
-	| CHAR_TYPE ID '(' lista_parametros ')' bloco {
+	| CHAR_TYPE ID '(' lista_parametros ')' {
+		// Enter function scope before parsing body for char functions
+		if (!enterScope(&scopedTable, SCOPE_FUNCTION, $2.str)) {
+			fprintf(stderr, "Error: Failed to enter function scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+
+		// Add parameters to function scope
+		int paramCount = 0;
+		Parameter *params = parseParameterString($4.str, &paramCount);
+		if (!addFunctionParameters(&scopedTable, params)) {
+			fprintf(stderr, "Error: Failed to add function parameters at line %d\n", cont_lines);
+			freeParameters(params);
+			YYABORT;
+		}
+		freeParameters(params);
+	} bloco {
+		// Exit function scope after processing body
+		if (!exitScope(&scopedTable)) {
+			fprintf(stderr, "Error: Failed to exit function scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+		
 		// Char function with parameters
 		FunctionEntry *func = findFunction(&functionTable, $2.str);
 		if (func != NULL) {
@@ -769,7 +813,7 @@ implementacao_funcao: INT_TYPE ID '(' ')' {
 			}
 			markFunctionDefined(&functionTable, $2.str);
 		}
-		makeCodeFunction($$.str, $2.str, CHAR, $6.str);
+		makeCodeFunctionWithParams($$.str, $2.str, CHAR, $7.str, $4.str);
 	}
 	| BOOL_TYPE ID '(' ')' bloco {
 		// Bool function without parameters
@@ -788,7 +832,29 @@ implementacao_funcao: INT_TYPE ID '(' ')' {
 		}
 		makeCodeFunction($$.str, $2.str, BOOL, $5.str);
 	}
-	| BOOL_TYPE ID '(' lista_parametros ')' bloco {
+	| BOOL_TYPE ID '(' lista_parametros ')' {
+		// Enter function scope before parsing body for bool functions
+		if (!enterScope(&scopedTable, SCOPE_FUNCTION, $2.str)) {
+			fprintf(stderr, "Error: Failed to enter function scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+
+		// Add parameters to function scope
+		int paramCount = 0;
+		Parameter *params = parseParameterString($4.str, &paramCount);
+		if (!addFunctionParameters(&scopedTable, params)) {
+			fprintf(stderr, "Error: Failed to add function parameters at line %d\n", cont_lines);
+			freeParameters(params);
+			YYABORT;
+		}
+		freeParameters(params);
+	} bloco {
+		// Exit function scope after processing body
+		if (!exitScope(&scopedTable)) {
+			fprintf(stderr, "Error: Failed to exit function scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+		
 		// Bool function with parameters
 		FunctionEntry *func = findFunction(&functionTable, $2.str);
 		if (func != NULL) {
@@ -806,7 +872,7 @@ implementacao_funcao: INT_TYPE ID '(' ')' {
 			}
 			markFunctionDefined(&functionTable, $2.str);
 		}
-		makeCodeFunction($$.str, $2.str, BOOL, $6.str);
+		makeCodeFunctionWithParams($$.str, $2.str, BOOL, $7.str, $4.str);
 	}
 	| STRING_TYPE ID '(' ')' bloco {
 		// String function without parameters
@@ -825,7 +891,29 @@ implementacao_funcao: INT_TYPE ID '(' ')' {
 		}
 		makeCodeFunction($$.str, $2.str, STRING, $5.str);
 	}
-	| STRING_TYPE ID '(' lista_parametros ')' bloco {
+	| STRING_TYPE ID '(' lista_parametros ')' {
+		// Enter function scope before parsing body for string functions
+		if (!enterScope(&scopedTable, SCOPE_FUNCTION, $2.str)) {
+			fprintf(stderr, "Error: Failed to enter function scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+
+		// Add parameters to function scope
+		int paramCount = 0;
+		Parameter *params = parseParameterString($4.str, &paramCount);
+		if (!addFunctionParameters(&scopedTable, params)) {
+			fprintf(stderr, "Error: Failed to add function parameters at line %d\n", cont_lines);
+			freeParameters(params);
+			YYABORT;
+		}
+		freeParameters(params);
+	} bloco {
+		// Exit function scope after processing body
+		if (!exitScope(&scopedTable)) {
+			fprintf(stderr, "Error: Failed to exit function scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+		
 		// String function with parameters
 		FunctionEntry *func = findFunction(&functionTable, $2.str);
 		if (func != NULL) {
@@ -843,7 +931,7 @@ implementacao_funcao: INT_TYPE ID '(' ')' {
 			}
 			markFunctionDefined(&functionTable, $2.str);
 		}
-		makeCodeFunction($$.str, $2.str, STRING, $6.str);
+		makeCodeFunctionWithParams($$.str, $2.str, STRING, $7.str, $4.str);
 	}
 ;
 
@@ -1167,6 +1255,17 @@ termo: NUM  {
 		makeCodeFunctionCallExpression($$.str, $1.str, "", func->returnType);
 		$$.type = func->returnType;
 	}
+	| ID '(' lista_expressoes ')'  {
+		// Function call in expression with arguments
+		FunctionEntry* func = findFunction(&functionTable, $1.str);
+		if (func == NULL) {
+			fprintf(stderr, "Error: Function '%s' not declared at line %d\n", $1.str, cont_lines);
+			YYABORT;
+		}
+		
+		makeCodeFunctionCallExpression($$.str, $1.str, $3.str, func->returnType);
+		$$.type = func->returnType;
+	}
 ;
 
 
@@ -1296,6 +1395,14 @@ expressao_logica: expressao '<' expressao  {
 		if (!makeCodeLoad($$.str, $1.str, 1))
 			YYABORT;
 		$$.type = varType;
+	}
+;
+
+lista_expressoes: expressao  {
+		strcpy($$.str, $1.str);
+	}
+	| lista_expressoes ',' expressao  {
+		sprintf($$.str, "%s%s", $1.str, $3.str);
 	}
 ;
 

@@ -474,6 +474,103 @@ void dumpCodeDeclarationEnd()
         }
     }
 
+    // Add scoped variables to the data section
+    if (scopedTable.array != NULL)
+    {
+        for (int i = 0; i < scopedTable.max_size; i++)
+        {
+            ScopedSymTableNode *node = &scopedTable.array[i];
+            if (node->data.identifier[0] != '\0')
+            {
+                ScopedSymTableEntry *entry = &node->data;
+                while (entry != NULL)
+                {
+                    if (entry->type == STRING)
+                    {
+                        if (entry->value != NULL)
+                        {
+                            char *label = addStringLiteral(entry->value);
+                            if (label != NULL)
+                            {
+                                fprintf(out_file, "    %s:          dq %s              ; Scoped string variable = %s\n",
+                                        entry->identifier, label, entry->value);
+                            }
+                            else
+                            {
+                                fprintf(out_file, "    %s:          dq 0              ; Scoped string variable (error)\n", entry->identifier);
+                            }
+                        }
+                        else
+                        {
+                            fprintf(out_file, "    %s:          dq 0              ; Scoped string variable\n", entry->identifier);
+                        }
+                    }
+                    else if (entry->type == CHAR)
+                    {
+                        if (entry->value != NULL)
+                        {
+                            char c = entry->value[1];
+                            fprintf(out_file, "    %s:          db %d              ; Scoped char variable = %s\n",
+                                    entry->identifier, (int)c, entry->value);
+                        }
+                        else
+                        {
+                            fprintf(out_file, "    %s:          db 0              ; Scoped char variable\n", entry->identifier);
+                        }
+                    }
+                    else if (entry->type == BOOL)
+                    {
+                        if (entry->value != NULL)
+                        {
+                            int val = (strcmp(entry->value, "true") == 0) ? 1 : 0;
+                            fprintf(out_file, "    %s:          db %d              ; Scoped bool variable = %s\n",
+                                    entry->identifier, val, entry->value);
+                        }
+                        else
+                        {
+                            fprintf(out_file, "    %s:          db 0              ; Scoped bool variable\n", entry->identifier);
+                        }
+                    }
+                    else if (entry->type == FLOAT)
+                    {
+                        if (entry->value != NULL)
+                        {
+                            fprintf(out_file, "    %s:          dq %s              ; Scoped float variable = %s\n",
+                                    entry->identifier, entry->value, entry->value);
+                        }
+                        else
+                        {
+                            fprintf(out_file, "    %s:          dq 0.0              ; Scoped float variable\n", entry->identifier);
+                        }
+                    }
+                    else
+                    { // INTEGER
+                        if (entry->value != NULL)
+                        {
+                            fprintf(out_file, "    %s:          dq %s              ; Scoped integer variable = %s\n",
+                                    entry->identifier, entry->value, entry->value);
+                        }
+                        else
+                        {
+                            fprintf(out_file, "    %s:          dq 0              ; Scoped integer variable\n", entry->identifier);
+                        }
+                    }
+
+                    // Move to next entry in the chain (if any)
+                    if (node->next != NULL)
+                    {
+                        node = node->next;
+                        entry = &node->data;
+                    }
+                    else
+                    {
+                        entry = NULL;
+                    }
+                }
+            }
+        }
+    }
+
     // Add string literals to the data section
     if (string_count > 0)
     {
@@ -1456,6 +1553,51 @@ void makeCodeFunction(char *dest, char *funcName, Type returnType, char *body)
     sprintf(dest + strlen(dest), "    ret                         ; Return to caller\n\n");
 }
 
+void makeCodeFunctionWithParams(char *dest, char *funcName, Type returnType, char *body, char *paramString)
+{
+    (void)returnType;
+    sprintf(dest, "; ===============================================\n");
+    sprintf(dest + strlen(dest), "; Function: %s\n", funcName);
+    sprintf(dest + strlen(dest), "; ===============================================\n");
+    sprintf(dest + strlen(dest), "%s:\n", funcName);
+    sprintf(dest + strlen(dest), "    ; Function prologue\n");
+    sprintf(dest + strlen(dest), "    push rbp                    ; Save old base pointer\n");
+    sprintf(dest + strlen(dest), "    mov rbp, rsp                ; Set new base pointer\n");
+    sprintf(dest + strlen(dest), "\n");
+
+    // Generate code to copy parameters from stack to variables
+    sprintf(dest + strlen(dest), "    ; Copy parameters from stack to variables\n");
+    int paramCount = 0;
+    Parameter *params = parseParameterString(paramString, &paramCount);
+
+    if (params != NULL)
+    {
+        Parameter *param = params;
+        int offset = 16; // Skip saved rbp (8 bytes) + return address (8 bytes)
+
+        while (param != NULL)
+        {
+            sprintf(dest + strlen(dest), "    mov rbx, [rbp + %d]         ; Get parameter %s from stack\n",
+                    offset, param->name);
+            sprintf(dest + strlen(dest), "    mov [%s], rbx               ; Store in variable %s\n",
+                    param->name, param->name);
+            offset += 8; // Each parameter is 8 bytes
+            param = param->next;
+        }
+        freeParameters(params);
+    }
+
+    sprintf(dest + strlen(dest), "\n");
+    sprintf(dest + strlen(dest), "    ; Function body\n");
+    sprintf(dest + strlen(dest), "%s", body);
+    sprintf(dest + strlen(dest), "\n");
+    sprintf(dest + strlen(dest), "    ; Function epilogue (if no explicit return)\n");
+    sprintf(dest + strlen(dest), "    mov eax, 0                  ; Default return value\n");
+    sprintf(dest + strlen(dest), "    mov rsp, rbp                ; Restore stack pointer\n");
+    sprintf(dest + strlen(dest), "    pop rbp                     ; Restore base pointer\n");
+    sprintf(dest + strlen(dest), "    ret                         ; Return to caller\n\n");
+}
+
 void makeCodeMain(char *dest, char *body)
 {
     sprintf(dest, "; ===============================================\n");
@@ -1503,6 +1645,24 @@ void makeCodeFunctionCallExpression(char *dest, char *funcName, char *args, Type
     sprintf(dest, "    ; Function call in expression: %s\n", funcName);
     sprintf(dest + strlen(dest), "%s", args); // Push arguments (in reverse order)
     sprintf(dest + strlen(dest), "    call %s                     ; Call function\n", funcName);
-    sprintf(dest + strlen(dest), "    ; Clean up stack (simplified - should calculate actual size)\n");
+
+    // Count arguments to clean up stack properly
+    int argCount = 0;
+    if (args != NULL && strlen(args) > 0)
+    {
+        // Simple count by looking for "push" instructions
+        char *ptr = args;
+        while ((ptr = strstr(ptr, "push")) != NULL)
+        {
+            argCount++;
+            ptr += 4;
+        }
+    }
+
+    if (argCount > 0)
+    {
+        sprintf(dest + strlen(dest), "    add rsp, %d                 ; Clean up %d arguments from stack\n",
+                argCount * 8, argCount);
+    }
     sprintf(dest + strlen(dest), "    push rax                    ; Push return value on stack\n");
 }

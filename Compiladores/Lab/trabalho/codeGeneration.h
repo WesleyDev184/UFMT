@@ -58,6 +58,7 @@ void makeCodeOr(char *dest);
 
 // Function operations
 void makeCodeFunction(char *dest, char *funcName, Type returnType, char *body);
+void makeCodeFunctionWithParams(char *dest, char *funcName, Type returnType, char *body, char *paramString);
 void makeCodeMain(char *dest, char *body);
 void makeCodeReturn(char *dest, char *expr, Type type);
 void makeCodeFunctionCall(char *dest, char *funcName, char *args, Type returnType);

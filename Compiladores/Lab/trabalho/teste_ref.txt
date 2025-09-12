@@ -1,8 +1,0 @@
-int x = 10;
-
-int main() {
-    int z = 30;
-    x;  // só uma referência simples
-    write("teste");
-    return 0;
-}
