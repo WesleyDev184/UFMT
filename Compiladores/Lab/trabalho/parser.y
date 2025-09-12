@@ -12,6 +12,7 @@
 
     extern SymTable table;
     extern FunctionTable functionTable;
+    extern ScopedSymTable scopedTable;
     extern int cont_lines;
 
     char s_decs[256];
@@ -86,120 +87,419 @@ declaracao: declaracao_inteiro { strcpy($$.str, $1.str); }
 ;
 
 declaracao_inteiro: INT_TYPE ID ';'  {
-		// Check if variable has already been declared
-		if (findSymTable(&table, $2.str) != NULL) {
-			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
-			YYABORT;
+		// Check current scope level to determine which table to use
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, INTEGER, NULL);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, INTEGER, NULL, 0);
 		}
-		addSymTable(&table, $2.str, INTEGER, NULL);
 		makeCodeDeclaration($$.str, $2.str, INTEGER, NULL);
 	}
 	| INT_TYPE ID '=' NUM ';'  {
-		// Check if variable has already been declared
-		if (findSymTable(&table, $2.str) != NULL) {
-			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+		// Check current scope level to determine which table to use
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, INTEGER, $4.str);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, INTEGER, $4.str, 0);
+		}
+		makeCodeDeclaration($$.str, $2.str, INTEGER, $4.str);
+	}
+	| INT_TYPE ID '=' expressao ';'  {
+		// Declaration with expression initialization
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, INTEGER, NULL);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, INTEGER, NULL, 0);
+		}
+		
+		// Generate code: declaration + assignment
+		char tempDecl[32768];
+		makeCodeDeclaration(tempDecl, $2.str, INTEGER, NULL);
+		
+		char tempAssign[32768];
+		if (!makeCodeAssignment(tempAssign, $2.str, $4.str)) {
 			YYABORT;
 		}
-		addSymTable(&table, $2.str, INTEGER, $4.str);
-		makeCodeDeclaration($$.str, $2.str, INTEGER, $4.str);
+		
+		sprintf($$.str, "%s%s", tempDecl, tempAssign);
 	}
 ;
 
 declaracao_float: FLOAT_TYPE ID ';'  {
-		// Check if variable has already been declared
-		if (findSymTable(&table, $2.str) != NULL) {
-			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
-			YYABORT;
+		// Check current scope level to determine which table to use
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, FLOAT, NULL);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, FLOAT, NULL, 0);
 		}
-		addSymTable(&table, $2.str, FLOAT, NULL);
 		makeCodeDeclaration($$.str, $2.str, FLOAT, NULL);
 	}
 	| FLOAT_TYPE ID '=' FLOAT_NUM ';'  {
-		// Check if variable has already been declared
-		if (findSymTable(&table, $2.str) != NULL) {
-			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
-			YYABORT;
+		// Check current scope level to determine which table to use
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, FLOAT, $4.str);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, FLOAT, $4.str, 0);
 		}
-		addSymTable(&table, $2.str, FLOAT, $4.str);
 		makeCodeDeclaration($$.str, $2.str, FLOAT, $4.str);
 	}
 	| FLOAT_TYPE ID '=' NUM ';'  {
 		// Allow float initialization with integer
-		if (findSymTable(&table, $2.str) != NULL) {
-			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, FLOAT, $4.str);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, FLOAT, $4.str, 0);
+		}
+		makeCodeDeclaration($$.str, $2.str, FLOAT, $4.str);
+	}
+	| FLOAT_TYPE ID '=' expressao ';'  {
+		// Float declaration with expression initialization
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, FLOAT, NULL);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, FLOAT, NULL, 0);
+		}
+		
+		// Generate code: declaration + assignment
+		char tempDecl[32768];
+		makeCodeDeclaration(tempDecl, $2.str, FLOAT, NULL);
+		
+		char tempAssign[32768];
+		if (!makeCodeAssignment(tempAssign, $2.str, $4.str)) {
 			YYABORT;
 		}
-		addSymTable(&table, $2.str, FLOAT, $4.str);
-		makeCodeDeclaration($$.str, $2.str, FLOAT, $4.str);
+		
+		sprintf($$.str, "%s%s", tempDecl, tempAssign);
 	}
 ;
 
 declaracao_char: CHAR_TYPE ID ';'  {
-		// Check if variable has already been declared
-		if (findSymTable(&table, $2.str) != NULL) {
-			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
-			YYABORT;
+		// Check current scope level to determine which table to use
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, CHAR, NULL);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, CHAR, NULL, 0);
 		}
-		addSymTable(&table, $2.str, CHAR, NULL);
 		makeCodeDeclaration($$.str, $2.str, CHAR, NULL);
 	}
 	| CHAR_TYPE ID '=' CHAR_LITERAL ';'  {
-		// Check if variable has already been declared
-		if (findSymTable(&table, $2.str) != NULL) {
-			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+		// Check current scope level to determine which table to use
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, CHAR, $4.str);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, CHAR, $4.str, 0);
+		}
+		makeCodeDeclaration($$.str, $2.str, CHAR, $4.str);
+	}
+	| CHAR_TYPE ID '=' expressao ';'  {
+		// Char declaration with expression initialization
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, CHAR, NULL);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, CHAR, NULL, 0);
+		}
+		
+		// Generate code: declaration + assignment
+		char tempDecl[32768];
+		makeCodeDeclaration(tempDecl, $2.str, CHAR, NULL);
+		
+		char tempAssign[32768];
+		if (!makeCodeAssignment(tempAssign, $2.str, $4.str)) {
 			YYABORT;
 		}
-		addSymTable(&table, $2.str, CHAR, $4.str);
-		makeCodeDeclaration($$.str, $2.str, CHAR, $4.str);
+		
+		sprintf($$.str, "%s%s", tempDecl, tempAssign);
 	}
 ;
 
 declaracao_bool: BOOL_TYPE ID ';'  {
-		// Check if variable has already been declared
-		if (findSymTable(&table, $2.str) != NULL) {
-			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
-			YYABORT;
+		// Check current scope level to determine which table to use
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, BOOL, NULL);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, BOOL, NULL, 0);
 		}
-		addSymTable(&table, $2.str, BOOL, NULL);
 		makeCodeDeclaration($$.str, $2.str, BOOL, NULL);
 	}
 	| BOOL_TYPE ID '=' TRUE_VAL ';'  {
-		// Check if variable has already been declared
-		if (findSymTable(&table, $2.str) != NULL) {
-			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
-			YYABORT;
+		// Check current scope level to determine which table to use
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, BOOL, $4.str);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, BOOL, $4.str, 0);
 		}
-		addSymTable(&table, $2.str, BOOL, $4.str);
 		makeCodeDeclaration($$.str, $2.str, BOOL, $4.str);
 	}
 	| BOOL_TYPE ID '=' FALSE_VAL ';'  {
-		// Check if variable has already been declared
-		if (findSymTable(&table, $2.str) != NULL) {
-			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+		// Check current scope level to determine which table to use
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, BOOL, $4.str);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, BOOL, $4.str, 0);
+		}
+		makeCodeDeclaration($$.str, $2.str, BOOL, $4.str);
+	}
+	| BOOL_TYPE ID '=' expressao ';'  {
+		// Bool declaration with expression initialization
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, BOOL, NULL);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, BOOL, NULL, 0);
+		}
+		
+		// Generate code: declaration + assignment
+		char tempDecl[32768];
+		makeCodeDeclaration(tempDecl, $2.str, BOOL, NULL);
+		
+		char tempAssign[32768];
+		if (!makeCodeAssignment(tempAssign, $2.str, $4.str)) {
 			YYABORT;
 		}
-		addSymTable(&table, $2.str, BOOL, $4.str);
-		makeCodeDeclaration($$.str, $2.str, BOOL, $4.str);
+		
+		sprintf($$.str, "%s%s", tempDecl, tempAssign);
 	}
 ;
 
 declaracao_string: STRING_TYPE ID ';'  {
-		// Check if variable has already been declared
-		if (findSymTable(&table, $2.str) != NULL) {
-			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
-			YYABORT;
+		// Check current scope level to determine which table to use
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, STRING, NULL);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, STRING, NULL, 0);
 		}
-		addSymTable(&table, $2.str, STRING, NULL);
 		makeCodeDeclaration($$.str, $2.str, STRING, NULL);
 	}
 	| STRING_TYPE ID '=' LITERAL_STR ';'  {
-		// Check if variable has already been declared
-		if (findSymTable(&table, $2.str) != NULL) {
-			fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+		// Check current scope level to determine which table to use
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, STRING, $4.str);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, STRING, $4.str, 0);
+		}
+		makeCodeDeclaration($$.str, $2.str, STRING, $4.str);
+	}
+	| STRING_TYPE ID '=' expressao ';'  {
+		// String declaration with expression initialization
+		int currentLevel = getCurrentScopeLevel(&scopedTable);
+		
+		if (currentLevel == 0) {
+			// Global scope - add to global table only
+			if (findSymTable(&table, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addSymTable(&table, $2.str, STRING, NULL);
+		} else {
+			// Local scope - add to scoped table only
+			if (findSymbolInCurrentScope(&scopedTable, $2.str) != NULL) {
+				fprintf(stderr, "Error: Variable '%s' already declared in current scope at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			addScopedSymbol(&scopedTable, $2.str, STRING, NULL, 0);
+		}
+		
+		// Generate code: declaration + assignment
+		char tempDecl[32768];
+		makeCodeDeclaration(tempDecl, $2.str, STRING, NULL);
+		
+		char tempAssign[32768];
+		if (!makeCodeAssignment(tempAssign, $2.str, $4.str)) {
 			YYABORT;
 		}
-		addSymTable(&table, $2.str, STRING, $4.str);
-		makeCodeDeclaration($$.str, $2.str, STRING, $4.str);
+		
+		sprintf($$.str, "%s%s", tempDecl, tempAssign);
 	}
 ;
 
@@ -306,7 +606,19 @@ prototipo_funcao: INT_TYPE ID '(' ')' ';' {
 	}
 ;
 
-implementacao_funcao: INT_TYPE ID '(' ')' bloco {
+implementacao_funcao: INT_TYPE ID '(' ')' {
+		// Enter function scope before processing body
+		if (!enterScope(&scopedTable, SCOPE_FUNCTION, $2.str)) {
+			fprintf(stderr, "Error: Failed to enter function scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+	} bloco {
+		// Exit function scope after processing body
+		if (!exitScope(&scopedTable)) {
+			fprintf(stderr, "Error: Failed to exit function scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+		
 		// Special case for main function
 		if (strcmp($2.str, "main") == 0) {
 			// This is a main function - treat it specially
@@ -315,7 +627,7 @@ implementacao_funcao: INT_TYPE ID '(' ')' bloco {
 				YYABORT;
 			}
 			markFunctionDefined(&functionTable, "main");
-			makeCodeMain($$.str, $5.str);
+			makeCodeMain($$.str, $6.str);
 		} else {
 			// Regular function logic
 			FunctionEntry *func = findFunction(&functionTable, $2.str);
@@ -333,10 +645,32 @@ implementacao_funcao: INT_TYPE ID '(' ')' bloco {
 				}
 				markFunctionDefined(&functionTable, $2.str);
 			}
-			makeCodeFunction($$.str, $2.str, INTEGER, $5.str);
+			makeCodeFunction($$.str, $2.str, INTEGER, $6.str);
 		}
 	}
-	| INT_TYPE ID '(' lista_parametros ')' bloco {
+	| INT_TYPE ID '(' lista_parametros ')' {
+		// Enter function scope and add parameters
+		if (!enterScope(&scopedTable, SCOPE_FUNCTION, $2.str)) {
+			fprintf(stderr, "Error: Failed to enter function scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+		
+		// Add parameters to function scope
+		int paramCount = 0;
+		Parameter *params = parseParameterString($4.str, &paramCount);
+		if (!addFunctionParameters(&scopedTable, params)) {
+			fprintf(stderr, "Error: Failed to add function parameters at line %d\n", cont_lines);
+			freeParameters(params);
+			YYABORT;
+		}
+		freeParameters(params);
+	} bloco {
+		// Exit function scope after processing body
+		if (!exitScope(&scopedTable)) {
+			fprintf(stderr, "Error: Failed to exit function scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+		
 		// Integer function with parameters
 		if (strcmp($2.str, "main") == 0) {
 			fprintf(stderr, "Error: Main function cannot have parameters at line %d\n", cont_lines);
@@ -359,7 +693,7 @@ implementacao_funcao: INT_TYPE ID '(' ')' bloco {
 			}
 			markFunctionDefined(&functionTable, $2.str);
 		}
-		makeCodeFunction($$.str, $2.str, INTEGER, $6.str);
+		makeCodeFunction($$.str, $2.str, INTEGER, $7.str);
 	}
 	| FLOAT_TYPE ID '(' ')' bloco {
 		// Float function without parameters
@@ -545,9 +879,25 @@ comando: comando_atribuicao { strcpy($$.str, $1.str); }
 ;
 
 comando_atribuicao: ID '=' expressao ';'  {
-		// Check if variable was declared
-		SymTableEntry* var = findSymTable(&table, $1.str);
-		if (var == NULL) {
+		// Hybrid search - scoped first, then global
+		int found = 0;
+		
+		// Try scoped table first if we're in a function scope
+		if (getCurrentScopeLevel(&scopedTable) > 0) {
+			ScopedSymTableEntry *localVar = findSymbolInCurrentScope(&scopedTable, $1.str);
+			if (localVar != NULL) {
+				found = 1;
+			}
+		}
+		
+		// If not found in scoped, try global table
+		if (!found) {
+			if (findSymTable(&table, $1.str) != NULL) {
+				found = 1;
+			}
+		}
+		
+		if (!found) {
 			fprintf(stderr, "Error: Variable '%s' not declared at line %d\n", $1.str, cont_lines);
 			YYABORT;
 		}
@@ -558,13 +908,34 @@ comando_atribuicao: ID '=' expressao ';'  {
 ;
 
 comando_io: READ '(' ID ')' ';'  {
-		// Check if variable was declared
-		SymTableEntry* var = findSymTable(&table, $3.str);
-		if (var == NULL) {
+		// Hybrid search - scoped first, then global
+		int found = 0;
+		Type varType;
+		
+		// Try scoped table first if we're in a function scope
+		if (getCurrentScopeLevel(&scopedTable) > 0) {
+			ScopedSymTableEntry *localVar = findSymbolInCurrentScope(&scopedTable, $3.str);
+			if (localVar != NULL) {
+				found = 1;
+				varType = localVar->type;
+			}
+		}
+		
+		// If not found in scoped, try global table
+		if (!found) {
+			SymTableEntry *globalVar = findSymTable(&table, $3.str);
+			if (globalVar != NULL) {
+				found = 1;
+				varType = globalVar->type;
+			}
+		}
+		
+		if (!found) {
 			fprintf(stderr, "Error: Variable '%s' not declared at line %d\n", $3.str, cont_lines);
 			YYABORT;
 		}
-		makeCodeRead($$.str, $3.str, var->type);
+		
+		makeCodeRead($$.str, $3.str, varType);
 	}
 	| WRITE '(' expressao ')' ';'  {
 		strcpy($$.str, $3.str);
@@ -575,16 +946,59 @@ comando_io: READ '(' ID ')' ';'  {
 	}
 ;
 
-comando_condicional: IF '(' expressao_logica ')' bloco  {
-		makeCodeIf($$.str, $3.str, $5.str);
+comando_condicional: IF '(' expressao_logica ')' {
+		// Enter new block scope for if statement
+		if (!enterScope(&scopedTable, SCOPE_BLOCK, NULL)) {
+			fprintf(stderr, "Error: Failed to enter block scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+	} bloco {
+		// Exit block scope
+		if (!exitScope(&scopedTable)) {
+			fprintf(stderr, "Error: Failed to exit block scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+		makeCodeIf($$.str, $3.str, $6.str);
 	}
-	| IF '(' expressao_logica ')' bloco ELSE bloco  {
-		makeCodeIfElse($$.str, $3.str, $5.str, $7.str);
+	| IF '(' expressao_logica ')' {
+		// Enter new block scope for if statement
+		if (!enterScope(&scopedTable, SCOPE_BLOCK, NULL)) {
+			fprintf(stderr, "Error: Failed to enter block scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+	} bloco ELSE {
+		// Exit if scope, enter else scope
+		if (!exitScope(&scopedTable)) {
+			fprintf(stderr, "Error: Failed to exit if block scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+		if (!enterScope(&scopedTable, SCOPE_BLOCK, NULL)) {
+			fprintf(stderr, "Error: Failed to enter else block scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+	} bloco {
+		// Exit else scope
+		if (!exitScope(&scopedTable)) {
+			fprintf(stderr, "Error: Failed to exit else block scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+		makeCodeIfElse($$.str, $3.str, $6.str, $9.str);
 	}
 ;
 
-comando_repeticao: WHILE '(' expressao_logica ')' bloco  {
-		makeCodeWhile($$.str, $3.str, $5.str);
+comando_repeticao: WHILE '(' expressao_logica ')' {
+		// Enter new block scope for while statement
+		if (!enterScope(&scopedTable, SCOPE_BLOCK, NULL)) {
+			fprintf(stderr, "Error: Failed to enter while block scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+	} bloco {
+		// Exit block scope
+		if (!exitScope(&scopedTable)) {
+			fprintf(stderr, "Error: Failed to exit while block scope at line %d\n", cont_lines);
+			YYABORT;
+		}
+		makeCodeWhile($$.str, $3.str, $6.str);
 	}
 ;
 
@@ -706,15 +1120,36 @@ termo: NUM  {
 		$$.type = STRING;
 	}
 	| ID  {
-		// Check if variable was declared before using
-		SymTableEntry* var = findSymTable(&table, $1.str);
-		if (var == NULL) {
+		// Hybrid search - scoped first, then global
+		int found = 0;
+		Type varType;
+		
+		// Try scoped table first if we're in a function scope
+		if (getCurrentScopeLevel(&scopedTable) > 0) {
+			ScopedSymTableEntry *localVar = findSymbolInCurrentScope(&scopedTable, $1.str);
+			if (localVar != NULL) {
+				found = 1;
+				varType = localVar->type;
+			}
+		}
+		
+		// If not found in scoped, try global table
+		if (!found) {
+			SymTableEntry *globalVar = findSymTable(&table, $1.str);
+			if (globalVar != NULL) {
+				found = 1;
+				varType = globalVar->type;
+			}
+		}
+		
+		if (!found) {
 			fprintf(stderr, "Error: Variable '%s' not declared at line %d\n", $1.str, cont_lines);
 			YYABORT;
 		}
+		
 		if (!makeCodeLoad($$.str, $1.str, 1))
 			YYABORT;
-		$$.type = var->type;
+		$$.type = varType;
 	}
 	| ID '(' ')'  {
 		// Function call in expression without arguments
@@ -826,15 +1261,36 @@ expressao_logica: expressao '<' expressao  {
 		$$.type = BOOL;
 	}
 	| ID  {
-		// Check if variable was declared before using
-		SymTableEntry* var = findSymTable(&table, $1.str);
-		if (var == NULL) {
+		// Hybrid search - scoped first, then global
+		int found = 0;
+		Type varType;
+		
+		// Try scoped table first if we're in a function scope
+		if (getCurrentScopeLevel(&scopedTable) > 0) {
+			ScopedSymTableEntry *localVar = findSymbolInCurrentScope(&scopedTable, $1.str);
+			if (localVar != NULL) {
+				found = 1;
+				varType = localVar->type;
+			}
+		}
+		
+		// If not found in scoped, try global table
+		if (!found) {
+			SymTableEntry *globalVar = findSymTable(&table, $1.str);
+			if (globalVar != NULL) {
+				found = 1;
+				varType = globalVar->type;
+			}
+		}
+		
+		if (!found) {
 			fprintf(stderr, "Error: Variable '%s' not declared at line %d\n", $1.str, cont_lines);
 			YYABORT;
 		}
+		
 		if (!makeCodeLoad($$.str, $1.str, 1))
 			YYABORT;
-		$$.type = var->type;
+		$$.type = varType;
 	}
 ;
 

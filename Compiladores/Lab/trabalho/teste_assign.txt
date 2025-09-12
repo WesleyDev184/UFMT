@@ -1,0 +1,8 @@
+int x = 10;
+
+int main() {
+    int z = 30;
+    z = 40;  // atribuição simples
+    write("teste");
+    return 0;
+}

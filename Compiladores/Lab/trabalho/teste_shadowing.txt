@@ -1,0 +1,13 @@
+int x = 10;  // variavel global
+
+int main() {
+    int x = 20;     // shadowing da variavel global
+    
+    if (x > 10) {
+        int x = 30; // shadowing da variavel do main
+        write("inner x");
+    }
+    
+    write("main x");
+    return 0;
+}

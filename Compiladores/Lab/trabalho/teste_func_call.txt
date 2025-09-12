@@ -1,0 +1,11 @@
+int test_function() {
+    return 42;
+}
+
+int main() {
+    // Test function call declaration  
+    int value = test_function();
+    
+    write("Test completed");
+    return 0;
+}

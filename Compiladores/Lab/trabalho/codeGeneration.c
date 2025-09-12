@@ -514,27 +514,60 @@ void makeCodeDeclaration(char *dest, char *identifier, Type type, char *value)
 
 int makeCodeAssignment(char *dest, char *id, char *expr)
 {
-    SymTableEntry *ret = findSymTable(&table, id);
+    SymTableEntry *globalVar = NULL;
+    ScopedSymTableEntry *localVar = NULL;
+    Type varType;
+    char *varIdentifier;
+
     dest[0] = '\0';
 
-    // Validation already done in the syntactic analyzer
-    if (ret->type == INTEGER || ret->type == FLOAT)
+    // Try scoped table first if we're in a function scope
+    if (getCurrentScopeLevel(&scopedTable) > 0)
     {
-        sprintf(dest + strlen(dest), "%s", expr);
-        sprintf(dest + strlen(dest), "    pop rbx\n");
-        sprintf(dest + strlen(dest), "    mov [%s], rbx\n", ret->identifier);
+        localVar = findSymbolInCurrentScope(&scopedTable, id);
     }
-    else if (ret->type == CHAR || ret->type == BOOL)
+
+    // If not found in scoped, try global table
+    if (localVar == NULL)
     {
-        sprintf(dest + strlen(dest), "%s", expr);
-        sprintf(dest + strlen(dest), "    pop rbx\n");
-        sprintf(dest + strlen(dest), "    mov [%s], bl\n", ret->identifier);
+        globalVar = findSymTable(&table, id);
     }
-    else if (ret->type == STRING)
+
+    // Get type and identifier from the found variable
+    if (localVar != NULL)
+    {
+        varType = localVar->type;
+        varIdentifier = localVar->identifier;
+    }
+    else if (globalVar != NULL)
+    {
+        varType = globalVar->type;
+        varIdentifier = globalVar->identifier;
+    }
+    else
+    {
+        fprintf(stderr, "Variable '%s' not found for assignment at line %d\n", id, cont_lines);
+        return 0;
+    }
+
+    // Generate code based on variable type
+    if (varType == INTEGER || varType == FLOAT)
     {
         sprintf(dest + strlen(dest), "%s", expr);
         sprintf(dest + strlen(dest), "    pop rbx\n");
-        sprintf(dest + strlen(dest), "    mov [%s], rbx\n", ret->identifier);
+        sprintf(dest + strlen(dest), "    mov [%s], rbx\n", varIdentifier);
+    }
+    else if (varType == CHAR || varType == BOOL)
+    {
+        sprintf(dest + strlen(dest), "%s", expr);
+        sprintf(dest + strlen(dest), "    pop rbx\n");
+        sprintf(dest + strlen(dest), "    mov [%s], bl\n", varIdentifier);
+    }
+    else if (varType == STRING)
+    {
+        sprintf(dest + strlen(dest), "%s", expr);
+        sprintf(dest + strlen(dest), "    pop rbx\n");
+        sprintf(dest + strlen(dest), "    mov [%s], rbx\n", varIdentifier);
     }
     else
     {
@@ -680,16 +713,48 @@ int makeCodeLoad(char *dest, char *id, int ref)
         return 1;
     }
 
-    SymTableEntry *ret = findSymTable(&table, id);
-    // Validation already done in the syntactic analyzer
+    // Variable reference - use hybrid search
+    SymTableEntry *globalVar = NULL;
+    ScopedSymTableEntry *localVar = NULL;
+    Type varType;
+    char *varIdentifier;
 
-    if (ret->type == CHAR || ret->type == BOOL)
+    // Try scoped table first if we're in a function scope
+    if (getCurrentScopeLevel(&scopedTable) > 0)
     {
-        sprintf(dest + strlen(dest), "    movzx rbx, byte [%s]\n", ret->identifier);
+        localVar = findSymbolInCurrentScope(&scopedTable, id);
+    }
+
+    // If not found in scoped, try global table
+    if (localVar == NULL)
+    {
+        globalVar = findSymTable(&table, id);
+    }
+
+    // Get type and identifier from the found variable
+    if (localVar != NULL)
+    {
+        varType = localVar->type;
+        varIdentifier = localVar->identifier;
+    }
+    else if (globalVar != NULL)
+    {
+        varType = globalVar->type;
+        varIdentifier = globalVar->identifier;
     }
     else
     {
-        sprintf(dest + strlen(dest), "    mov rbx, [%s]\n", ret->identifier);
+        fprintf(stderr, "Variable '%s' not found for load at line %d\n", id, cont_lines);
+        return 0;
+    }
+
+    if (varType == CHAR || varType == BOOL)
+    {
+        sprintf(dest + strlen(dest), "    movzx rbx, byte [%s]\n", varIdentifier);
+    }
+    else
+    {
+        sprintf(dest + strlen(dest), "    mov rbx, [%s]\n", varIdentifier);
     }
     sprintf(dest + strlen(dest), "    push rbx\n");
 

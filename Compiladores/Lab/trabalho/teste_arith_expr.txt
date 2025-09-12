@@ -1,0 +1,11 @@
+int global_var = 100;
+
+int main() {
+    int local_var = 50;
+    
+    // Test arithmetic expression declaration  
+    int result = local_var + 10;
+    
+    write("Test completed");
+    return 0;
+}

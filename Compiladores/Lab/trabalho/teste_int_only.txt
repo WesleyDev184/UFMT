@@ -1,0 +1,8 @@
+int x = 10;  // variavel global
+
+int main() {
+    int z = 30;     // variavel local do main
+    x = x + z;      // usa o x global e z local do main
+    write("teste");
+    return 0;
+}

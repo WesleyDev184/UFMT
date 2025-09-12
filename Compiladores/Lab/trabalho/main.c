@@ -95,6 +95,15 @@ int main(int argc, char const *argv[])
         return 1;
     }
 
+    // Initialize scoped symbol table
+    if (!initScopedSymTable(&scopedTable))
+    {
+        fprintf(stderr, "[ERROR]: Failed to initialize scoped symbol table\n");
+        fclose(out_file);
+        remove(s);
+        return 1;
+    }
+
     FILE *input_file = fopen(argv[1], "r");
     if (input_file == NULL)
     {
@@ -123,19 +132,21 @@ int main(int argc, char const *argv[])
 
     // Print success message and symbol table
     printf("\n=== COMPILATION SUCCESSFUL ===\n");
-    printf("Assembly code generated in: %s\n\n", s);
+    printf("Assembly code generated in: %s\n", s);
 
     // Show compilation statistics
     printErrorSummary();
 
-    printf("=== SYMBOL TABLE ===\n");
     printSymTable(&table);
+
+    printScopedSymTable(&scopedTable);
 
     printFunctionTable(&functionTable);
 
     // Free allocated memory
     freeSymTable(&table);
     freeFunctionTable(&functionTable);
+    freeScopedSymTable(&scopedTable);
     freeErrorHandler();
 
     return 0;

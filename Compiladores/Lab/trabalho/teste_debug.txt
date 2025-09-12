@@ -1,0 +1,11 @@
+int global_var = 100;
+
+int test_function() {
+    int local_var = 50;
+    int result = local_var + global_var;
+    return result;
+}
+
+int main() {
+    return 0;
+}

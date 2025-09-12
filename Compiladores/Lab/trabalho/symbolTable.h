@@ -11,6 +11,7 @@
 
 #define MAX_SIZE_HASH_ARRAY 20
 #define MAX_SIZE_SYMBOL 32
+#define MAX_SCOPE_DEPTH 50
 
 typedef enum
 {
@@ -20,6 +21,13 @@ typedef enum
 	CHAR,
 	BOOL
 } Type;
+
+typedef enum
+{
+	SCOPE_GLOBAL,		// Escopo global (nivel 0)
+	SCOPE_FUNCTION, // Escopo de função (nivel 1)
+	SCOPE_BLOCK			// Escopo de bloco (if, while, etc - nivel 2+)
+} ScopeType;
 
 // Parameter structure for function parameters
 typedef struct parameter
@@ -57,7 +65,7 @@ typedef struct functionTable
 
 extern int cont_lines;
 
-// Data type declaration
+// Data type declaration (mantido para compatibilidade)
 struct symTableEntry
 {
 	char identifier[MAX_SIZE_SYMBOL];
@@ -66,6 +74,49 @@ struct symTableEntry
 	int len_value;
 };
 typedef struct symTableEntry SymTableEntry;
+
+// Data type declaration for scoped symbol table
+struct scopedSymTableEntry
+{
+	char identifier[MAX_SIZE_SYMBOL];
+	Type type;
+	char *value;
+	int len_value;
+	int scopeLevel;			 // Nivel do escopo (0=global, 1=função, 2+=bloco)
+	ScopeType scopeType; // Tipo do escopo
+	int isParameter;		 // 1 se for parâmetro de função, 0 caso contrário
+};
+typedef struct scopedSymTableEntry ScopedSymTableEntry;
+
+// Node for scoped symbol table
+struct scopedSymTableNode
+{
+	ScopedSymTableEntry data;
+	struct scopedSymTableNode *next;
+};
+typedef struct scopedSymTableNode ScopedSymTableNode;
+
+// Scope information
+struct scopeInfo
+{
+	int level;													// Nivel do escopo
+	ScopeType type;											// Tipo do escopo
+	char functionName[MAX_SIZE_SYMBOL]; // Nome da função (se aplicável)
+	struct scopeInfo *parent;						// Escopo pai
+};
+typedef struct scopeInfo ScopeInfo;
+
+// Scoped symbol table with scope management
+struct scopedSymTable
+{
+	ScopedSymTableNode *array;
+	int max_size;
+	int size;
+	ScopeInfo *currentScope;				 // Escopo atual
+	int scopeStack[MAX_SCOPE_DEPTH]; // Pilha de níveis de escopo
+	int stackTop;										 // Topo da pilha
+};
+typedef struct scopedSymTable ScopedSymTable;
 
 // Data type for node definition
 struct symTableNode
@@ -85,6 +136,7 @@ typedef struct symTable SymTable;
 
 extern SymTable table;
 extern FunctionTable functionTable;
+extern ScopedSymTable scopedTable; // Nova tabela com escopo
 
 // Function prototypes
 
@@ -194,5 +246,97 @@ void freeSymTable(SymTable *table);
  * @param table Pointer to the function table structure
  */
 void freeFunctionTable(FunctionTable *table);
+
+// ===============================================
+// SCOPED SYMBOL TABLE FUNCTIONS
+// ===============================================
+
+/**
+ * @brief Initialize the scoped symbol table
+ * @param table Pointer to the scoped symbol table structure
+ * @return 1 on success, 0 on failure
+ */
+int initScopedSymTable(ScopedSymTable *table);
+
+/**
+ * @brief Enter a new scope
+ * @param table Pointer to the scoped symbol table structure
+ * @param scopeType Type of scope being entered
+ * @param functionName Name of function (if entering function scope)
+ * @return 1 on success, 0 on failure
+ */
+int enterScope(ScopedSymTable *table, ScopeType scopeType, const char *functionName);
+
+/**
+ * @brief Exit current scope
+ * @param table Pointer to the scoped symbol table structure
+ * @return 1 on success, 0 on failure
+ */
+int exitScope(ScopedSymTable *table);
+
+/**
+ * @brief Add a symbol to the current scope
+ * @param table Pointer to the scoped symbol table structure
+ * @param identifier Variable name
+ * @param type Variable type
+ * @param value Initial value (can be NULL)
+ * @param isParameter 1 if it's a function parameter, 0 otherwise
+ * @return 1 on success, 0 on failure
+ */
+int addScopedSymbol(ScopedSymTable *table, char *identifier, Type type, char *value, int isParameter);
+
+/**
+ * @brief Find a symbol in current scope and parent scopes (scope resolution)
+ * @param table Pointer to the scoped symbol table structure
+ * @param identifier Variable name to search for
+ * @return Pointer to symbol entry if found, NULL otherwise
+ */
+ScopedSymTableEntry *findScopedSymbol(ScopedSymTable *table, char *identifier);
+
+/**
+ * @brief Check if symbol exists in current scope only
+ * @param table Pointer to the scoped symbol table structure
+ * @param identifier Variable name to search for
+ * @return Pointer to symbol entry if found in current scope, NULL otherwise
+ */
+ScopedSymTableEntry *findSymbolInCurrentScope(ScopedSymTable *table, char *identifier);
+
+/**
+ * @brief Add function parameters as symbols in function scope
+ * @param table Pointer to the scoped symbol table structure
+ * @param parameters List of function parameters
+ * @return 1 on success, 0 on failure
+ */
+int addFunctionParameters(ScopedSymTable *table, Parameter *parameters);
+
+/**
+ * @brief Print the contents of the scoped symbol table
+ * @param table Pointer to the scoped symbol table structure
+ */
+void printScopedSymTable(ScopedSymTable *table);
+
+/**
+ * @brief Get current scope level
+ * @param table Pointer to the scoped symbol table structure
+ * @return Current scope level
+ */
+int getCurrentScopeLevel(ScopedSymTable *table);
+
+/**
+ * @brief Free all memory allocated by the scoped symbol table
+ * @param table Pointer to the scoped symbol table structure
+ */
+void freeScopedSymTable(ScopedSymTable *table);
+
+/**
+ * @brief Search for symbol using scope resolution and fallback to global table
+ * @param scopedTable Pointer to the scoped symbol table structure
+ * @param globalTable Pointer to the global symbol table structure
+ * @param identifier Variable name to search for
+ * @param foundType Pointer to store the type if found (output parameter)
+ * @param isFromGlobal Pointer to flag indicating if found in global table (output parameter)
+ * @return 1 if found, 0 if not found
+ */
+int findSymbolHybrid(ScopedSymTable *scopedTable, SymTable *globalTable, char *identifier, Type *foundType, int *isFromGlobal);
 
 #endif

@@ -1,0 +1,6 @@
+int x = 10;
+
+int main() {
+    write("teste");
+    return 0;
+}

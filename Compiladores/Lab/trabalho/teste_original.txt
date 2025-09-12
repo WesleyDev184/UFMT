@@ -1,0 +1,28 @@
+int global_var = 100;
+float global_float = 3.14;
+
+int test_function() {
+    int local_var = 50;
+    
+    // Test assignment to local variable
+    local_var = 60;
+    
+    // Test assignment to global variable  
+    global_var = 200;
+    
+    // Test expressions with both local and global variables
+    int result = local_var + global_var;
+    
+    write("Test completed");
+    return result;
+}
+
+int main() {
+    // Test calling function that uses both scopes
+    int value = test_function();
+    
+    // Test access to global variable from main
+    global_float = 2.71;
+    
+    return 0;
+}
