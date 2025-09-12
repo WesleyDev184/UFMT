@@ -33,7 +33,7 @@
 %type <c> prototipo_funcao implementacao_funcao
 %type <c> lista_parametros parametro
 %type <c> chamada_funcao
-%type <c> comandos comando comando_atribuicao comando_io comando_condicional comando_repeticao comando_retorno
+%type <c> comando comando_atribuicao comando_io comando_condicional comando_repeticao comando_retorno
 %type <c> expressao termo expressao_logica lista_expressoes
 
 %token <c> ID NUM FLOAT_NUM LITERAL_STR CHAR_LITERAL TRUE_VAL FALSE_VAL
@@ -936,10 +936,25 @@ implementacao_funcao: INT_TYPE ID '(' ')' {
 ;
 
 
-bloco : '{' lista_instrucoes '}'  {
-		strcpy($$.str, $2.str);
+bloco : '{' {
+		// Enter block scope only if not already in a function scope
+		if (getCurrentScopeLevel(&scopedTable) > 0) {
+			if (!enterScope(&scopedTable, SCOPE_BLOCK, "block")) {
+				fprintf(stderr, "Error: Failed to enter block scope at line %d\n", cont_lines);
+				YYABORT;
+			}
+		}
+	} lista_instrucoes '}' {
+		// Exit block scope if we entered one
+		if (getCurrentScopeLevel(&scopedTable) > 1) {
+			if (!exitScope(&scopedTable)) {
+				fprintf(stderr, "Error: Failed to exit block scope at line %d\n", cont_lines);
+				YYABORT;
+			}
+		}
+		strcpy($$.str, $3.str);
 	}
-	| '{' '}'  {
+	| '{' '}' {
 		$$.str[0] = '\0';
 	}
 ;
@@ -956,13 +971,6 @@ instrucao: declaracao { strcpy($$.str, $1.str); }
 ;
 
 
-comandos : comando comandos  {
-		strcpy($$.str, $1.str);
-		sprintf($$.str + strlen($$.str), "%s", $2.str);
-	}
-	| %empty { $$.str[0] = '\0'; }
-;
-
 comando: comando_atribuicao { strcpy($$.str, $1.str); }
 	| comando_io { strcpy($$.str, $1.str); }
 	| comando_condicional { strcpy($$.str, $1.str); }
@@ -972,25 +980,11 @@ comando: comando_atribuicao { strcpy($$.str, $1.str); }
 ;
 
 comando_atribuicao: ID '=' expressao ';'  {
-		// Hybrid search - scoped first, then global
-		int found = 0;
+		// Use hybrid search to find in all scopes
+		Type foundType;
+		int isFromGlobal;
 		
-		// Try scoped table first if we're in a function scope
-		if (getCurrentScopeLevel(&scopedTable) > 0) {
-			ScopedSymTableEntry *localVar = findSymbolInCurrentScope(&scopedTable, $1.str);
-			if (localVar != NULL) {
-				found = 1;
-			}
-		}
-		
-		// If not found in scoped, try global table
-		if (!found) {
-			if (findSymTable(&table, $1.str) != NULL) {
-				found = 1;
-			}
-		}
-		
-		if (!found) {
+		if (!findSymbolHybrid(&scopedTable, &table, $1.str, &foundType, &isFromGlobal)) {
 			fprintf(stderr, "Error: Variable '%s' not declared at line %d\n", $1.str, cont_lines);
 			YYABORT;
 		}
@@ -1001,34 +995,16 @@ comando_atribuicao: ID '=' expressao ';'  {
 ;
 
 comando_io: READ '(' ID ')' ';'  {
-		// Hybrid search - scoped first, then global
-		int found = 0;
-		Type varType;
+		// Use hybrid search to find in all scopes
+		Type foundType;
+		int isFromGlobal;
 		
-		// Try scoped table first if we're in a function scope
-		if (getCurrentScopeLevel(&scopedTable) > 0) {
-			ScopedSymTableEntry *localVar = findSymbolInCurrentScope(&scopedTable, $3.str);
-			if (localVar != NULL) {
-				found = 1;
-				varType = localVar->type;
-			}
-		}
-		
-		// If not found in scoped, try global table
-		if (!found) {
-			SymTableEntry *globalVar = findSymTable(&table, $3.str);
-			if (globalVar != NULL) {
-				found = 1;
-				varType = globalVar->type;
-			}
-		}
-		
-		if (!found) {
+		if (!findSymbolHybrid(&scopedTable, &table, $3.str, &foundType, &isFromGlobal)) {
 			fprintf(stderr, "Error: Variable '%s' not declared at line %d\n", $3.str, cont_lines);
 			YYABORT;
 		}
 		
-		makeCodeRead($$.str, $3.str, varType);
+		makeCodeRead($$.str, $3.str, foundType);
 	}
 	| WRITE '(' expressao ')' ';'  {
 		strcpy($$.str, $3.str);
@@ -1213,36 +1189,18 @@ termo: NUM  {
 		$$.type = STRING;
 	}
 	| ID  {
-		// Hybrid search - scoped first, then global
-		int found = 0;
-		Type varType;
+		// Use hybrid search to find in all scopes  
+		Type foundType;
+		int isFromGlobal;
 		
-		// Try scoped table first if we're in a function scope
-		if (getCurrentScopeLevel(&scopedTable) > 0) {
-			ScopedSymTableEntry *localVar = findSymbolInCurrentScope(&scopedTable, $1.str);
-			if (localVar != NULL) {
-				found = 1;
-				varType = localVar->type;
-			}
-		}
-		
-		// If not found in scoped, try global table
-		if (!found) {
-			SymTableEntry *globalVar = findSymTable(&table, $1.str);
-			if (globalVar != NULL) {
-				found = 1;
-				varType = globalVar->type;
-			}
-		}
-		
-		if (!found) {
+		if (!findSymbolHybrid(&scopedTable, &table, $1.str, &foundType, &isFromGlobal)) {
 			fprintf(stderr, "Error: Variable '%s' not declared at line %d\n", $1.str, cont_lines);
 			YYABORT;
 		}
 		
 		if (!makeCodeLoad($$.str, $1.str, 1))
 			YYABORT;
-		$$.type = varType;
+		$$.type = foundType;
 	}
 	| ID '(' ')'  {
 		// Function call in expression without arguments
@@ -1365,36 +1323,18 @@ expressao_logica: expressao '<' expressao  {
 		$$.type = BOOL;
 	}
 	| ID  {
-		// Hybrid search - scoped first, then global
-		int found = 0;
-		Type varType;
+		// Use hybrid search to find in all scopes  
+		Type foundType;
+		int isFromGlobal;
 		
-		// Try scoped table first if we're in a function scope
-		if (getCurrentScopeLevel(&scopedTable) > 0) {
-			ScopedSymTableEntry *localVar = findSymbolInCurrentScope(&scopedTable, $1.str);
-			if (localVar != NULL) {
-				found = 1;
-				varType = localVar->type;
-			}
-		}
-		
-		// If not found in scoped, try global table
-		if (!found) {
-			SymTableEntry *globalVar = findSymTable(&table, $1.str);
-			if (globalVar != NULL) {
-				found = 1;
-				varType = globalVar->type;
-			}
-		}
-		
-		if (!found) {
+		if (!findSymbolHybrid(&scopedTable, &table, $1.str, &foundType, &isFromGlobal)) {
 			fprintf(stderr, "Error: Variable '%s' not declared at line %d\n", $1.str, cont_lines);
 			YYABORT;
 		}
 		
 		if (!makeCodeLoad($$.str, $1.str, 1))
 			YYABORT;
-		$$.type = varType;
+		$$.type = foundType;
 	}
 ;
 
@@ -1402,7 +1342,7 @@ lista_expressoes: expressao  {
 		strcpy($$.str, $1.str);
 	}
 	| lista_expressoes ',' expressao  {
-		sprintf($$.str, "%s%s", $1.str, $3.str);
+		snprintf($$.str, sizeof($$.str), "%s%s", $1.str, $3.str);
 	}
 ;
 

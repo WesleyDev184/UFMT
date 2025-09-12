@@ -915,3 +915,17 @@ int findSymbolHybrid(ScopedSymTable *scopedTable, SymTable *globalTable, char *i
 	fprintf(stderr, "DEBUG: Symbol '%s' not found in either table\n", identifier);
 	return 0;
 }
+
+// Optimized hash function using djb2 algorithm
+int optimizedHashFunction(int table_size, char *identifier)
+{
+	unsigned long hash = 5381;
+	int c;
+
+	while ((c = *identifier++))
+	{
+		hash = ((hash << 5) + hash) + c; // hash * 33 + c
+	}
+
+	return hash % table_size;
+}

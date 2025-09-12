@@ -611,41 +611,20 @@ void makeCodeDeclaration(char *dest, char *identifier, Type type, char *value)
 
 int makeCodeAssignment(char *dest, char *id, char *expr)
 {
-    SymTableEntry *globalVar = NULL;
-    ScopedSymTableEntry *localVar = NULL;
-    Type varType;
-    char *varIdentifier;
+    Type foundType;
+    int isFromGlobal;
 
     dest[0] = '\0';
 
-    // Try scoped table first if we're in a function scope
-    if (getCurrentScopeLevel(&scopedTable) > 0)
-    {
-        localVar = findSymbolInCurrentScope(&scopedTable, id);
-    }
-
-    // If not found in scoped, try global table
-    if (localVar == NULL)
-    {
-        globalVar = findSymTable(&table, id);
-    }
-
-    // Get type and identifier from the found variable
-    if (localVar != NULL)
-    {
-        varType = localVar->type;
-        varIdentifier = localVar->identifier;
-    }
-    else if (globalVar != NULL)
-    {
-        varType = globalVar->type;
-        varIdentifier = globalVar->identifier;
-    }
-    else
+    // Use hybrid search to find in all scopes
+    if (!findSymbolHybrid(&scopedTable, &table, id, &foundType, &isFromGlobal))
     {
         fprintf(stderr, "Variable '%s' not found for assignment at line %d\n", id, cont_lines);
         return 0;
     }
+
+    Type varType = foundType;
+    char *varIdentifier = id;
 
     // Generate code based on variable type
     if (varType == INTEGER || varType == FLOAT)
@@ -811,39 +790,18 @@ int makeCodeLoad(char *dest, char *id, int ref)
     }
 
     // Variable reference - use hybrid search
-    SymTableEntry *globalVar = NULL;
-    ScopedSymTableEntry *localVar = NULL;
-    Type varType;
-    char *varIdentifier;
+    Type foundType;
+    int isFromGlobal;
 
-    // Try scoped table first if we're in a function scope
-    if (getCurrentScopeLevel(&scopedTable) > 0)
-    {
-        localVar = findSymbolInCurrentScope(&scopedTable, id);
-    }
-
-    // If not found in scoped, try global table
-    if (localVar == NULL)
-    {
-        globalVar = findSymTable(&table, id);
-    }
-
-    // Get type and identifier from the found variable
-    if (localVar != NULL)
-    {
-        varType = localVar->type;
-        varIdentifier = localVar->identifier;
-    }
-    else if (globalVar != NULL)
-    {
-        varType = globalVar->type;
-        varIdentifier = globalVar->identifier;
-    }
-    else
+    // Use hybrid search to find in all scopes
+    if (!findSymbolHybrid(&scopedTable, &table, id, &foundType, &isFromGlobal))
     {
         fprintf(stderr, "Variable '%s' not found for load at line %d\n", id, cont_lines);
         return 0;
     }
+
+    Type varType = foundType;
+    char *varIdentifier = id;
 
     if (varType == CHAR || varType == BOOL)
     {

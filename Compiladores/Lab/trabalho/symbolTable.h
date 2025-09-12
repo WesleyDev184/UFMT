@@ -294,6 +294,14 @@ int addScopedSymbol(ScopedSymTable *table, char *identifier, Type type, char *va
 ScopedSymTableEntry *findScopedSymbol(ScopedSymTable *table, char *identifier);
 
 /**
+ * @brief Optimized hash function for better distribution
+ * @param table_size Size of the hash table
+ * @param identifier String to hash
+ * @return Hash value
+ */
+int optimizedHashFunction(int table_size, char *identifier);
+
+/**
  * @brief Check if symbol exists in current scope only
  * @param table Pointer to the scoped symbol table structure
  * @param identifier Variable name to search for

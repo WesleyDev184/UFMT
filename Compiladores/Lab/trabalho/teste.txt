@@ -1,33 +1,44 @@
 int global_var = 100;
 
-int soma(int a, int b) {
-    int resultado = a + b;
-    return resultado;
-}
-
-float multiplicar(float x, float y) {
-    float produto = x * y;
-    return produto;
-}
-
-int main() {
-    int num1 = 10;
-    int num2 = 20;
+int main() 
+{
+    int x;
+    x = 10;
     
-    // Test function call with parameters
-    int total = soma(num1, num2);
+    write("=== TESTE DE ESCOPOS ===");
+    write("Variavel global:");
+    write(global_var);
+    write("Variavel local x:");
+    write(x);
     
-    // Test with literals
-    int total2 = soma(5, 15);
+    if (x > 5) {
+        int y;
+        int z;
+        y = x * 2;
+        z = y + global_var;
+        
+        write("Dentro do IF:");
+        write("Y (x * 2):");
+        write(y);
+        write("Z (y + global):");
+        write(z);
+        
+        if (y > 15) {
+            int w;
+            w = z - x;
+            write("Bloco interno - W (z - x):");
+            write(w);
+        }
+    }
     
-    // Test float function
-    float resultado_float = multiplicar(3.14, 2.0);
-
-    write("Resultado Float");
-    write(resultado_float);
-
-
+    while (x < 12) {
+        int temp;
+        temp = x + 1;
+        x = temp;
+        write("X incrementado:");
+        write(x);
+    }
     
-    write("Teste de parametros concluido");
+    write("=== TESTE CONCLUIDO ===");
     return 0;
 }
