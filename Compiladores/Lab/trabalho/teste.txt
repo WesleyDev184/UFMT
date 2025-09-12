@@ -1,6 +1,14 @@
-int soma(int a,int b);
+float res;
+
+float soma();
+
+float soma(){
+    return 1.0 + 2.0;
+}
 
 int main(){
     write("teste");
+    res = soma();
+    write(res);
     return 0;
 }

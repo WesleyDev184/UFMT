@@ -224,6 +224,86 @@ prototipo_funcao: INT_TYPE ID '(' ')' ';' {
 		}
 		$$.str[0] = '\0'; // No code generation for prototypes
 	}
+	| FLOAT_TYPE ID '(' ')' ';' {
+		// Process float function prototype without parameters
+		if (!addFunctionPrototype(&functionTable, $2.str, FLOAT, NULL, 0, 0)) {
+			fprintf(stderr, "Error: Function '%s' already declared at line %d\n", $2.str, cont_lines);
+			YYABORT;
+		}
+		$$.str[0] = '\0'; // No code generation for prototypes
+	}
+	| FLOAT_TYPE ID '(' lista_parametros ')' ';' {
+		// Process float function prototype with parameters
+		int paramCount = 0;
+		Parameter *params = parseParameterString($4.str, &paramCount);
+		
+		if (!addFunctionPrototype(&functionTable, $2.str, FLOAT, params, paramCount, 0)) {
+			fprintf(stderr, "Error: Function '%s' already declared at line %d\n", $2.str, cont_lines);
+			freeParameters(params);
+			YYABORT;
+		}
+		$$.str[0] = '\0'; // No code generation for prototypes
+	}
+	| CHAR_TYPE ID '(' ')' ';' {
+		// Process char function prototype without parameters
+		if (!addFunctionPrototype(&functionTable, $2.str, CHAR, NULL, 0, 0)) {
+			fprintf(stderr, "Error: Function '%s' already declared at line %d\n", $2.str, cont_lines);
+			YYABORT;
+		}
+		$$.str[0] = '\0'; // No code generation for prototypes
+	}
+	| CHAR_TYPE ID '(' lista_parametros ')' ';' {
+		// Process char function prototype with parameters
+		int paramCount = 0;
+		Parameter *params = parseParameterString($4.str, &paramCount);
+		
+		if (!addFunctionPrototype(&functionTable, $2.str, CHAR, params, paramCount, 0)) {
+			fprintf(stderr, "Error: Function '%s' already declared at line %d\n", $2.str, cont_lines);
+			freeParameters(params);
+			YYABORT;
+		}
+		$$.str[0] = '\0'; // No code generation for prototypes
+	}
+	| BOOL_TYPE ID '(' ')' ';' {
+		// Process bool function prototype without parameters
+		if (!addFunctionPrototype(&functionTable, $2.str, BOOL, NULL, 0, 0)) {
+			fprintf(stderr, "Error: Function '%s' already declared at line %d\n", $2.str, cont_lines);
+			YYABORT;
+		}
+		$$.str[0] = '\0'; // No code generation for prototypes
+	}
+	| BOOL_TYPE ID '(' lista_parametros ')' ';' {
+		// Process bool function prototype with parameters
+		int paramCount = 0;
+		Parameter *params = parseParameterString($4.str, &paramCount);
+		
+		if (!addFunctionPrototype(&functionTable, $2.str, BOOL, params, paramCount, 0)) {
+			fprintf(stderr, "Error: Function '%s' already declared at line %d\n", $2.str, cont_lines);
+			freeParameters(params);
+			YYABORT;
+		}
+		$$.str[0] = '\0'; // No code generation for prototypes
+	}
+	| STRING_TYPE ID '(' ')' ';' {
+		// Process string function prototype without parameters
+		if (!addFunctionPrototype(&functionTable, $2.str, STRING, NULL, 0, 0)) {
+			fprintf(stderr, "Error: Function '%s' already declared at line %d\n", $2.str, cont_lines);
+			YYABORT;
+		}
+		$$.str[0] = '\0'; // No code generation for prototypes
+	}
+	| STRING_TYPE ID '(' lista_parametros ')' ';' {
+		// Process string function prototype with parameters
+		int paramCount = 0;
+		Parameter *params = parseParameterString($4.str, &paramCount);
+		
+		if (!addFunctionPrototype(&functionTable, $2.str, STRING, params, paramCount, 0)) {
+			fprintf(stderr, "Error: Function '%s' already declared at line %d\n", $2.str, cont_lines);
+			freeParameters(params);
+			YYABORT;
+		}
+		$$.str[0] = '\0'; // No code generation for prototypes
+	}
 ;
 
 implementacao_funcao: INT_TYPE ID '(' ')' bloco {
@@ -255,6 +335,179 @@ implementacao_funcao: INT_TYPE ID '(' ')' bloco {
 			}
 			makeCodeFunction($$.str, $2.str, INTEGER, $5.str);
 		}
+	}
+	| INT_TYPE ID '(' lista_parametros ')' bloco {
+		// Integer function with parameters
+		if (strcmp($2.str, "main") == 0) {
+			fprintf(stderr, "Error: Main function cannot have parameters at line %d\n", cont_lines);
+			YYABORT;
+		}
+		
+		FunctionEntry *func = findFunction(&functionTable, $2.str);
+		if (func != NULL) {
+			if (func->isDefined) {
+				fprintf(stderr, "Error: Function '%s' already defined at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		} else {
+			int paramCount = 0;
+			Parameter *params = parseParameterString($4.str, &paramCount);
+			if (!addFunctionPrototype(&functionTable, $2.str, INTEGER, params, paramCount, 0)) {
+				freeParameters(params);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		}
+		makeCodeFunction($$.str, $2.str, INTEGER, $6.str);
+	}
+	| FLOAT_TYPE ID '(' ')' bloco {
+		// Float function without parameters
+		FunctionEntry *func = findFunction(&functionTable, $2.str);
+		if (func != NULL) {
+			if (func->isDefined) {
+				fprintf(stderr, "Error: Function '%s' already defined at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		} else {
+			if (!addFunctionPrototype(&functionTable, $2.str, FLOAT, NULL, 0, 0)) {
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		}
+		makeCodeFunction($$.str, $2.str, FLOAT, $5.str);
+	}
+	| FLOAT_TYPE ID '(' lista_parametros ')' bloco {
+		// Float function with parameters
+		FunctionEntry *func = findFunction(&functionTable, $2.str);
+		if (func != NULL) {
+			if (func->isDefined) {
+				fprintf(stderr, "Error: Function '%s' already defined at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		} else {
+			int paramCount = 0;
+			Parameter *params = parseParameterString($4.str, &paramCount);
+			if (!addFunctionPrototype(&functionTable, $2.str, FLOAT, params, paramCount, 0)) {
+				freeParameters(params);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		}
+		makeCodeFunction($$.str, $2.str, FLOAT, $6.str);
+	}
+	| CHAR_TYPE ID '(' ')' bloco {
+		// Char function without parameters
+		FunctionEntry *func = findFunction(&functionTable, $2.str);
+		if (func != NULL) {
+			if (func->isDefined) {
+				fprintf(stderr, "Error: Function '%s' already defined at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		} else {
+			if (!addFunctionPrototype(&functionTable, $2.str, CHAR, NULL, 0, 0)) {
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		}
+		makeCodeFunction($$.str, $2.str, CHAR, $5.str);
+	}
+	| CHAR_TYPE ID '(' lista_parametros ')' bloco {
+		// Char function with parameters
+		FunctionEntry *func = findFunction(&functionTable, $2.str);
+		if (func != NULL) {
+			if (func->isDefined) {
+				fprintf(stderr, "Error: Function '%s' already defined at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		} else {
+			int paramCount = 0;
+			Parameter *params = parseParameterString($4.str, &paramCount);
+			if (!addFunctionPrototype(&functionTable, $2.str, CHAR, params, paramCount, 0)) {
+				freeParameters(params);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		}
+		makeCodeFunction($$.str, $2.str, CHAR, $6.str);
+	}
+	| BOOL_TYPE ID '(' ')' bloco {
+		// Bool function without parameters
+		FunctionEntry *func = findFunction(&functionTable, $2.str);
+		if (func != NULL) {
+			if (func->isDefined) {
+				fprintf(stderr, "Error: Function '%s' already defined at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		} else {
+			if (!addFunctionPrototype(&functionTable, $2.str, BOOL, NULL, 0, 0)) {
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		}
+		makeCodeFunction($$.str, $2.str, BOOL, $5.str);
+	}
+	| BOOL_TYPE ID '(' lista_parametros ')' bloco {
+		// Bool function with parameters
+		FunctionEntry *func = findFunction(&functionTable, $2.str);
+		if (func != NULL) {
+			if (func->isDefined) {
+				fprintf(stderr, "Error: Function '%s' already defined at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		} else {
+			int paramCount = 0;
+			Parameter *params = parseParameterString($4.str, &paramCount);
+			if (!addFunctionPrototype(&functionTable, $2.str, BOOL, params, paramCount, 0)) {
+				freeParameters(params);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		}
+		makeCodeFunction($$.str, $2.str, BOOL, $6.str);
+	}
+	| STRING_TYPE ID '(' ')' bloco {
+		// String function without parameters
+		FunctionEntry *func = findFunction(&functionTable, $2.str);
+		if (func != NULL) {
+			if (func->isDefined) {
+				fprintf(stderr, "Error: Function '%s' already defined at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		} else {
+			if (!addFunctionPrototype(&functionTable, $2.str, STRING, NULL, 0, 0)) {
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		}
+		makeCodeFunction($$.str, $2.str, STRING, $5.str);
+	}
+	| STRING_TYPE ID '(' lista_parametros ')' bloco {
+		// String function with parameters
+		FunctionEntry *func = findFunction(&functionTable, $2.str);
+		if (func != NULL) {
+			if (func->isDefined) {
+				fprintf(stderr, "Error: Function '%s' already defined at line %d\n", $2.str, cont_lines);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		} else {
+			int paramCount = 0;
+			Parameter *params = parseParameterString($4.str, &paramCount);
+			if (!addFunctionPrototype(&functionTable, $2.str, STRING, params, paramCount, 0)) {
+				freeParameters(params);
+				YYABORT;
+			}
+			markFunctionDefined(&functionTable, $2.str);
+		}
+		makeCodeFunction($$.str, $2.str, STRING, $6.str);
 	}
 ;
 
