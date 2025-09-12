@@ -413,7 +413,7 @@ void dumpCodeDeclarationEnd()
                     }
                     else
                     {
-                        fprintf(out_file, "    %s:          dq 0              ; String variable\n", node->data.identifier);
+                        fprintf(out_file, "    %s:          times 256 db 0    ; String variable (256 bytes buffer)\n", node->data.identifier);
                     }
                 }
                 else if (node->data.type == CHAR)
@@ -497,12 +497,12 @@ void dumpCodeDeclarationEnd()
                             }
                             else
                             {
-                                fprintf(out_file, "    %s:          dq 0              ; Scoped string variable (error)\n", entry->identifier);
+                                fprintf(out_file, "    %s:          times 256 db 0    ; Scoped string variable (256 bytes buffer)\n", entry->identifier);
                             }
                         }
                         else
                         {
-                            fprintf(out_file, "    %s:          dq 0              ; Scoped string variable\n", entry->identifier);
+                            fprintf(out_file, "    %s:          times 256 db 0    ; Scoped string variable (256 bytes buffer)\n", entry->identifier);
                         }
                     }
                     else if (entry->type == CHAR)
@@ -643,7 +643,19 @@ int makeCodeAssignment(char *dest, char *id, char *expr)
     {
         sprintf(dest + strlen(dest), "%s", expr);
         sprintf(dest + strlen(dest), "    pop rbx\n");
-        sprintf(dest + strlen(dest), "    mov [%s], rbx\n", varIdentifier);
+        sprintf(dest + strlen(dest), "    ; String assignment - copy string content\n");
+        sprintf(dest + strlen(dest), "    mov rsi, rbx                ; Source string address\n");
+        sprintf(dest + strlen(dest), "    lea rdi, [%s]               ; Destination string buffer\n", varIdentifier);
+        sprintf(dest + strlen(dest), "    ; Simple string copy loop\n");
+        sprintf(dest + strlen(dest), ".copy_loop_%s:\n", varIdentifier);
+        sprintf(dest + strlen(dest), "    mov al, [rsi]               ; Load byte from source\n");
+        sprintf(dest + strlen(dest), "    mov [rdi], al               ; Store byte to destination\n");
+        sprintf(dest + strlen(dest), "    test al, al                 ; Check if null terminator\n");
+        sprintf(dest + strlen(dest), "    jz .copy_done_%s            ; If zero, end copy\n", varIdentifier);
+        sprintf(dest + strlen(dest), "    inc rsi                     ; Move to next source byte\n");
+        sprintf(dest + strlen(dest), "    inc rdi                     ; Move to next dest byte\n");
+        sprintf(dest + strlen(dest), "    jmp .copy_loop_%s           ; Continue loop\n", varIdentifier);
+        sprintf(dest + strlen(dest), ".copy_done_%s:\n", varIdentifier);
     }
     else
     {
@@ -806,6 +818,10 @@ int makeCodeLoad(char *dest, char *id, int ref)
     if (varType == CHAR || varType == BOOL)
     {
         sprintf(dest + strlen(dest), "    movzx rbx, byte [%s]\n", varIdentifier);
+    }
+    else if (varType == STRING)
+    {
+        sprintf(dest + strlen(dest), "    lea rbx, [%s]               ; Load string buffer address\n", varIdentifier);
     }
     else
     {

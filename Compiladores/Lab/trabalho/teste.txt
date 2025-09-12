@@ -1,44 +1,52 @@
-int global_var = 100;
+float total;
+float media;
+bool impar;
+string empresa;
 
-int main() 
-{
-    int x;
-    x = 10;
+float soma(float a, float b);
+
+int main() {
+    string nome;
+    float x;
+    float y;
     
-    write("=== TESTE DE ESCOPOS ===");
-    write("Variavel global:");
-    write(global_var);
-    write("Variavel local x:");
-    write(x);
-    
-    if (x > 5) {
-        int y;
-        int z;
-        y = x * 2;
-        z = y + global_var;
-        
-        write("Dentro do IF:");
-        write("Y (x * 2):");
-        write(y);
-        write("Z (y + global):");
-        write(z);
-        
-        if (y > 15) {
-            int w;
-            w = z - x;
-            write("Bloco interno - W (z - x):");
-            write(w);
+    empresa = "UFMT";
+
+    write("Escreva seu nome:");
+    read(nome);
+    write("Escreva X:");
+    read(x);
+    write("Escreva Y:");
+    read(y);
+
+    total = soma(x, y);
+    media = total / 2.0;
+    impar = false;
+
+    while (total > 0.0) {
+        if (impar == false) {
+            impar = true;
+        } else {
+            impar = false;
         }
+        total = total - 1.0;
     }
-    
-    while (x < 12) {
-        int temp;
-        temp = x + 1;
-        x = temp;
-        write("X incrementado:");
-        write(x);
+
+    write(empresa);
+    write(nome);
+    write("Sua media eh:");
+    write(media);
+    write("Seu numero eh ");
+
+    if (impar == true) {
+        write("impar");
+    } else {
+        write("par");
     }
-    
-    write("=== TESTE CONCLUIDO ===");
+
     return 0;
+}
+
+float soma(float a, float b) {
+    return (a + b);
 }

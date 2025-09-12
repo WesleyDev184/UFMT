@@ -10,6 +10,8 @@
 	void yyerror(char *); 
 %}
 
+%option nounput noinput
+
 ws [ \t]
 letter [A-Za-z]
 digit [0-9]

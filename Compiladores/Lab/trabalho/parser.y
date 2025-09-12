@@ -9,6 +9,14 @@
     void yyerror(char*);
     int yylex();
     Parameter* parseParameterString(char* paramStr, int* paramCount);
+    
+    // Helper function for safe string concatenation
+    static void safe_concat(char *dest, size_t dest_size, const char *src1, const char *src2) {
+        int ret = snprintf(dest, dest_size, "%s%s", src1, src2);
+        if (ret >= (int)dest_size) {
+            fprintf(stderr, "Warning: String concatenation truncated\n");
+        }
+    }
 
     extern SymTable table;
     extern FunctionTable functionTable;
@@ -47,6 +55,8 @@
 %right UMINUS
 %right '=' 
 %left ';'
+%nonassoc THEN
+%nonassoc ELSE
 
 
 %%
@@ -159,7 +169,7 @@ declaracao_inteiro: INT_TYPE ID ';'  {
 			YYABORT;
 		}
 		
-		sprintf($$.str, "%s%s", tempDecl, tempAssign);
+		safe_concat($$.str, sizeof($$.str), tempDecl, tempAssign);
 	}
 ;
 
@@ -255,7 +265,7 @@ declaracao_float: FLOAT_TYPE ID ';'  {
 			YYABORT;
 		}
 		
-		sprintf($$.str, "%s%s", tempDecl, tempAssign);
+		safe_concat($$.str, sizeof($$.str), tempDecl, tempAssign);
 	}
 ;
 
@@ -330,7 +340,7 @@ declaracao_char: CHAR_TYPE ID ';'  {
 			YYABORT;
 		}
 		
-		sprintf($$.str, "%s%s", tempDecl, tempAssign);
+		safe_concat($$.str, sizeof($$.str), tempDecl, tempAssign);
 	}
 ;
 
@@ -426,7 +436,7 @@ declaracao_bool: BOOL_TYPE ID ';'  {
 			YYABORT;
 		}
 		
-		sprintf($$.str, "%s%s", tempDecl, tempAssign);
+		safe_concat($$.str, sizeof($$.str), tempDecl, tempAssign);
 	}
 ;
 
@@ -501,7 +511,7 @@ declaracao_string: STRING_TYPE ID ';'  {
 			YYABORT;
 		}
 		
-		sprintf($$.str, "%s%s", tempDecl, tempAssign);
+		safe_concat($$.str, sizeof($$.str), tempDecl, tempAssign);
 	}
 ;
 
@@ -1015,43 +1025,11 @@ comando_io: READ '(' ID ')' ';'  {
 	}
 ;
 
-comando_condicional: IF '(' expressao_logica ')' {
-		// Enter new block scope for if statement
-		if (!enterScope(&scopedTable, SCOPE_BLOCK, NULL)) {
-			fprintf(stderr, "Error: Failed to enter block scope at line %d\n", cont_lines);
-			YYABORT;
-		}
-	} bloco {
-		// Exit block scope
-		if (!exitScope(&scopedTable)) {
-			fprintf(stderr, "Error: Failed to exit block scope at line %d\n", cont_lines);
-			YYABORT;
-		}
-		makeCodeIf($$.str, $3.str, $6.str);
+comando_condicional: IF '(' expressao_logica ')' bloco %prec THEN {
+		makeCodeIf($$.str, $3.str, $5.str);
 	}
-	| IF '(' expressao_logica ')' {
-		// Enter new block scope for if statement
-		if (!enterScope(&scopedTable, SCOPE_BLOCK, NULL)) {
-			fprintf(stderr, "Error: Failed to enter block scope at line %d\n", cont_lines);
-			YYABORT;
-		}
-	} bloco ELSE {
-		// Exit if scope, enter else scope
-		if (!exitScope(&scopedTable)) {
-			fprintf(stderr, "Error: Failed to exit if block scope at line %d\n", cont_lines);
-			YYABORT;
-		}
-		if (!enterScope(&scopedTable, SCOPE_BLOCK, NULL)) {
-			fprintf(stderr, "Error: Failed to enter else block scope at line %d\n", cont_lines);
-			YYABORT;
-		}
-	} bloco {
-		// Exit else scope
-		if (!exitScope(&scopedTable)) {
-			fprintf(stderr, "Error: Failed to exit else block scope at line %d\n", cont_lines);
-			YYABORT;
-		}
-		makeCodeIfElse($$.str, $3.str, $6.str, $9.str);
+	| IF '(' expressao_logica ')' bloco ELSE bloco {
+		makeCodeIfElse($$.str, $3.str, $5.str, $7.str);
 	}
 ;
 
@@ -1342,7 +1320,7 @@ lista_expressoes: expressao  {
 		strcpy($$.str, $1.str);
 	}
 	| lista_expressoes ',' expressao  {
-		snprintf($$.str, sizeof($$.str), "%s%s", $1.str, $3.str);
+		safe_concat($$.str, sizeof($$.str), $1.str, $3.str);
 	}
 ;
 
