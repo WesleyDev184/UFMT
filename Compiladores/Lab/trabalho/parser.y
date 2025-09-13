@@ -25,12 +25,12 @@
 
     char s_decs[256];
 
-%}
+%}	
 
 %union {
 	struct code_t
 	{
-		char str[32768]; // string para o codigo asm (increased to 32KB)
+		char str[40960]; // Enhanced static buffer (40KB)
 		int op; // opcoes (por exemplo nos jumps)
 		int type; // type information for expressions (using int instead of Type enum)
 	} c;
