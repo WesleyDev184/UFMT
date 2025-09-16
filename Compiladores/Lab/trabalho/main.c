@@ -2,8 +2,8 @@
  *
  * UFMT - Universidade Federal de Mato Grosso
  * Laboratório de Compiladores
- * Author: Wesley Antonio Junior dos Santos
- * RGA:202011722024
+ * Authors: Wesley Antonio Junior dos Santos, Lucas Barbosa Amaral
+ * RGA: 202011722024, 202111722037
  */
 
 #include <stdio.h>
@@ -18,6 +18,7 @@ FILE *out_file = NULL;
 
 SymTable table;
 FunctionTable functionTable;
+ScopedSymTable scopedTable;
 
 int cont_lines = 1;
 

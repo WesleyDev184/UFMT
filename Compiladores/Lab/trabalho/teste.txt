@@ -5,6 +5,7 @@ string empresa;
 
 float soma(float a, float b);
 string getName();
+string teste();
 
 string getName(){
     string nome;
