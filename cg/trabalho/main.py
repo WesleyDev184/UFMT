@@ -5,6 +5,7 @@ import pywavefront
 from pywavefront import visualization
 import random
 import math
+import sys
 
 # Variáveis da nave (nave)
 nave_x = 0.0
@@ -30,31 +31,103 @@ class Asteroide:
         self.x += self.vel_x
         self.z += self.vel_z
         self.rotation += self.rot_speed
-        
-        # Wrap around screen
-        if self.x > 50: self.x = -50
-        if self.x < -50: self.x = 50
-        if self.z > 50: self.z = -50
-        if self.z < -50: self.z = 50
+    # Note: movement constrained by map bounds handled elsewhere
 
 # Lista de asteroides
 asteroides = []
 
+# Quantidade base de asteroides
+BASE_ASTEROIDES = 12
+SAFE_SPAWN_DIST = 8.0  # distância mínima do jogador para spawn
+
+# Projetil (tiros da nave)
+class Projetil:
+    def __init__(self, x, z, dir_x, dir_z):
+        self.x = x
+        self.z = z
+        self.dir_x = dir_x
+        self.dir_z = dir_z
+        self.speed = 1.5
+        self.life = 120  # frames
+
+    def update(self):
+        self.x += self.dir_x * self.speed
+        self.z += self.dir_z * self.speed
+        self.life -= 1
+
+    def offscreen(self):
+        return abs(self.x) > 50 or abs(self.z) > 50 or self.life <= 0
+
+
+# Lista de projeteis
+projeteis = []
+
+# Pontuação
+score = 0
+
+# Conjuntos para teclas pressionadas (suportar múltiplas simultâneas)
+pressed_special = set()   # guarda códigos de teclas especiais (GLUT_KEY_*)
+pressed_keys = set()      # guarda teclas ASCII (strings)
+
 # Inicializar asteroides
 def init_asteroides():
     global asteroides
-    for i in range(8):
+    for i in range(BASE_ASTEROIDES):
+        # tentar encontrar uma posição segura para spawn
+        attempts = 0
         x = random.uniform(-40, 40)
         z = random.uniform(-40, 40)
-        # Evitar spawnar muito perto da nave
-        while abs(x) < 5 and abs(z) < 5:
+        while math.hypot(nave_x - x, nave_z - z) < SAFE_SPAWN_DIST and attempts < 20:
             x = random.uniform(-40, 40)
             z = random.uniform(-40, 40)
-        
-        vel_x = random.uniform(-0.2, 0.2)
-        vel_z = random.uniform(-0.2, 0.2)
+            attempts += 1
+
+        # Velocidade apontando para a nave
+        dx = nave_x - x
+        dz = nave_z - z
+        d = math.hypot(dx, dz)
+        if d == 0:
+            d = 1.0
+        speed = random.uniform(0.02, 0.12)
+        vel_x = (dx / d) * speed
+        vel_z = (dz / d) * speed
         rot_speed = random.uniform(-3, 3)
         asteroides.append(Asteroide(x, z, vel_x, vel_z, rot_speed))
+
+
+def spawn_asteroide_from_opposite(dir_x, dir_z):
+    """Cria um asteroide vindo da direção oposta dada a direção (dir_x, dir_z)."""
+    # Spawn numa borda oposta (multiplica por -1 e posiciona perto da borda)
+    if abs(dir_x) > abs(dir_z):
+        # Movimento mais horizontal
+        x = -50 if dir_x > 0 else 50
+        z = random.uniform(-40, 40)
+    else:
+        # Movimento mais vertical (profundidade)
+        z = -50 if dir_z > 0 else 50
+        x = random.uniform(-40, 40)
+    # garantir distancia segura
+    attempts = 0
+    while math.hypot(nave_x - x, nave_z - z) < SAFE_SPAWN_DIST and attempts < 20:
+        # deslocar ao longo da borda
+        if abs(x) == 50:
+            z = random.uniform(-40, 40)
+        else:
+            x = random.uniform(-40, 40)
+        attempts += 1
+
+    # definir velocidade apontando para o centro (ou aproximado)
+    # calcular velocidade apontando para a nave
+    dx = nave_x - x
+    dz = nave_z - z
+    mag = math.hypot(dx, dz)
+    if mag == 0:
+        mag = 1.0
+    speed = random.uniform(0.02, 0.12)
+    vel_x = (dx / mag) * speed
+    vel_z = (dz / mag) * speed
+    rot_speed = random.uniform(-3, 3)
+    asteroides.append(Asteroide(x, z, vel_x, vel_z, rot_speed))
 
 
 def display():
@@ -81,9 +154,20 @@ def display():
     visualization.draw(nave)
     glPopMatrix()
     
-    # Atualizar e desenhar asteroides
-    for asteroide in asteroides:
+    # Atualizar e desenhar asteroides (usar cópia para permitir remoção)
+    for asteroide in list(asteroides):
         asteroide.update()
+
+        # Se saiu da visão (fora do grid desenhado ±50), remova e gere um novo vindo no sentido contrário
+        if abs(asteroide.x) > 50 or abs(asteroide.z) > 50:
+            # respawn vindo do sentido oposto ao seu vetor de velocidade
+            spawn_asteroide_from_opposite(asteroide.vel_x, asteroide.vel_z)
+            try:
+                asteroides.remove(asteroide)
+            except ValueError:
+                pass
+            continue
+
         glPushMatrix()
         glTranslatef(asteroide.x, 0.0, asteroide.z)
         glRotatef(asteroide.rotation, 1.0, 1.0, 1.0)
@@ -91,6 +175,78 @@ def display():
         glColor3f(0.2, 0.4, 0.8)  # Tons de azul para asteroides
         visualization.draw(meteor)
         glPopMatrix()
+
+    # Atualizar e desenhar projeteis
+    for proj in list(projeteis):
+        proj.update()
+        # remover se fora
+        if proj.offscreen():
+            try:
+                projeteis.remove(proj)
+            except ValueError:
+                pass
+            continue
+
+        glPushMatrix()
+        glColor3f(1.0, 0.2, 0.2)
+        glPointSize(6.0)
+        glBegin(GL_POINTS)
+        glVertex3f(proj.x, 0.5, proj.z)
+        glEnd()
+        glPopMatrix()
+
+    # Colisões: projétil x asteroide
+    global score
+    for proj in list(projeteis):
+        for asteroide in list(asteroides):
+            dist = math.hypot(proj.x - asteroide.x, proj.z - asteroide.z)
+            if dist < (asteroide.size * 1.2 + 0.5):
+                # colisão: remover ambos, incrementar score e spawn de reposição
+                try:
+                    projeteis.remove(proj)
+                except ValueError:
+                    pass
+                try:
+                    asteroides.remove(asteroide)
+                except ValueError:
+                    pass
+                score += 1
+                print(f"Score: {score}")
+                # spawn um novo vindo de direção aleatória
+                angle = random.uniform(0, math.pi * 2)
+                dir_x = math.cos(angle)
+                dir_z = math.sin(angle)
+                spawn_asteroide_from_opposite(-dir_x, -dir_z)
+                break
+
+    # Manter quantidade de meteoros escalando com a pontuação
+    target = BASE_ASTEROIDES + score
+    while len(asteroides) < target:
+        # spawna aleatório na borda do grid ±50
+        x = random.choice([-50, 50])
+        z = random.uniform(-40, 40)
+        # garantir distancia segura
+        attempts = 0
+        while math.hypot(nave_x - x, nave_z - z) < SAFE_SPAWN_DIST and attempts < 20:
+            x = random.choice([-50, 50])
+            z = random.uniform(-40, 40)
+            attempts += 1
+
+        # velocidade apontando para a nave
+        dx = nave_x - x
+        dz = nave_z - z
+        d = math.hypot(dx, dz)
+        if d == 0:
+            d = 1.0
+        speed = random.uniform(0.02, 0.12)
+        vel_x = (dx / d) * speed
+        vel_z = (dz / d) * speed
+        rot_speed = random.uniform(-3, 3)
+        asteroides.append(Asteroide(x, z, vel_x, vel_z, rot_speed))
+
+    # Desenhar HUD (pontuação)
+    # posição em pixels (canto superior esquerdo)
+    draw_text(10, glGetIntegerv(GL_VIEWPORT)[3] - 24, f"Score: {score}")
     
     # Desenhar grid de referência
     draw_grid()
@@ -99,12 +255,26 @@ def display():
 
 def update_nave():
     global nave_x, nave_z, nave_vel_x, nave_vel_z, nave_accel, nave_angle
-    
+
+    # Controle por teclas simultâneas
+    # teclado especial: LEFT/RIGHT para rotacionar
+    if GLUT_KEY_LEFT in pressed_special:
+        nave_angle += 3.0
+    if GLUT_KEY_RIGHT in pressed_special:
+        nave_angle -= 3.0
+
+    # teclas ASCII: setas para frente/trás mapeadas por pressed_special também
+    accel_input = 0.0
+    if GLUT_KEY_DOWN in pressed_special or 's' in pressed_keys or 'S' in pressed_keys:
+        accel_input = 1.0
+    if GLUT_KEY_UP in pressed_special or 'w' in pressed_keys or 'W' in pressed_keys:
+        accel_input = -0.5
+
     # Aplicar aceleração na direção que a nave está apontando
-    if nave_accel != 0:
+    if accel_input != 0:
         angle_rad = math.radians(nave_angle)
-        nave_vel_x += nave_accel * math.sin(angle_rad) * 0.1
-        nave_vel_z += nave_accel * math.cos(angle_rad) * 0.1
+        nave_vel_x += accel_input * math.sin(angle_rad) * 0.1
+        nave_vel_z += accel_input * math.cos(angle_rad) * 0.1
     
     # Aplicar atrito
     nave_vel_x *= 0.98
@@ -121,11 +291,11 @@ def update_nave():
     nave_x += nave_vel_x
     nave_z += nave_vel_z
     
-    # Wrap around screen
-    if nave_x > 50: nave_x = -50
-    if nave_x < -50: nave_x = 50
-    if nave_z > 50: nave_z = -50
-    if nave_z < -50: nave_z = 50
+    # Constrain nave dentro do grid desenhado (±50)
+    if nave_x > 50: nave_x = 50
+    if nave_x < -50: nave_x = -50
+    if nave_z > 50: nave_z = 50
+    if nave_z < -50: nave_z = -50
 
 def draw_grid():
     glColor3f(0.2, 0.3, 0.7)  # Grid azul
@@ -138,6 +308,52 @@ def draw_grid():
         glVertex3f(-50.0, 0.0, i)
         glVertex3f(50.0, 0.0, i)
     glEnd()
+
+
+def draw_text(x, y, text):
+    # Tenta desenhar texto usando uma fonte bitmap do GLUT; se não disponível, printa no console
+    try:
+        # tenta recuperar uma fonte do módulo GLUT sem referenciar nomes que não existem
+        glut_mod = sys.modules.get('OpenGL.GLUT')
+        font = None
+        if glut_mod is not None:
+            font = getattr(glut_mod, 'GLUT_BITMAP_HELVETICA_18', None) or getattr(glut_mod, 'GLUT_BITMAP_8_BY_13', None)
+
+        if font is None:
+            # sem fonte disponível, cair para console
+            raise RuntimeError('GLUT bitmap font not available')
+
+        # salvar matrizes
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
+        glLoadIdentity()
+        viewport = glGetIntegerv(GL_VIEWPORT)
+        gluOrtho2D(0, viewport[2], 0, viewport[3])
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLoadIdentity()
+        glColor3f(1.0, 1.0, 1.0)
+        glRasterPos2f(x, y)
+        for ch in text:
+            glutBitmapCharacter(font, ord(ch))
+        glPopMatrix()
+        glMatrixMode(GL_PROJECTION)
+        glPopMatrix()
+        glMatrixMode(GL_MODELVIEW)
+    except Exception:
+        # fallback: imprimir no console
+        print(text)
+
+def special_down(key, x, y):
+    # adiciona tecla especial ao conjunto
+    pressed_special.add(key)
+
+def special_up(key, x, y):
+    # remove tecla especial do conjunto
+    try:
+        pressed_special.remove(key)
+    except KeyError:
+        pass
     
 def Keys(key, x, y):
     global nave_angle, nave_accel
@@ -150,11 +366,38 @@ def Keys(key, x, y):
         nave_accel = 1.0   # Acelerar para frente
     elif key == GLUT_KEY_UP:
         nave_accel = -0.5  # Acelerar para trás
+    # Nota: teclas especiais tratadas aqui; teclas ASCII (como espaço) são tratadas por glutKeyboardFunc
+
+def keyboard(key, x, y):
+    global projeteis
+    # key vem como bytes em Python3 quando usando glutKeyboardFunc
+    try:
+        k = key.decode('utf-8')
+    except Exception:
+        k = key
+    # registrar tecla ASCII pressionada
+    pressed_keys.add(k)
+    # tratar ação de disparo na pressão da barra (ou de outra tecla)
+    if k == ' ':
+        angle_rad = math.radians(nave_angle)
+        dir_x = math.sin(angle_rad)
+        dir_z = math.cos(angle_rad)
+        proj = Projetil(nave_x, nave_z, dir_x, dir_z)
+        projeteis.append(proj)
+
+def keyboard_up(key, x, y):
+    try:
+        k = key.decode('utf-8')
+    except Exception:
+        k = key
+    try:
+        pressed_keys.remove(k)
+    except KeyError:
+        pass
 
 def keyUp(key, x, y):
-    global nave_accel
-    if key == GLUT_KEY_UP or key == GLUT_KEY_DOWN:
-        nave_accel = 0.0   # Parar aceleração quando soltar a tecla         
+    # manter compatibilidade com special_up
+    special_up(key, x, y)
        
 def animacao(value):
     glutPostRedisplay()
@@ -202,7 +445,7 @@ glutInit()
 glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB)
 glutInitWindowSize(1920, 1080)
 glutInitWindowPosition(100, 100)
-wind = glutCreateWindow("Asteroids Game")
+wind = glutCreateWindow("Galinheiro Game")
 init()
 init_asteroides()  # Inicializar asteroides
 meteor = pywavefront.Wavefront("meteor.obj")
@@ -210,6 +453,8 @@ nave = pywavefront.Wavefront("galinha.obj")
 glutDisplayFunc(display)
 glutReshapeFunc(resize)
 glutTimerFunc(16, animacao, 1)  # ~60 FPS
-glutSpecialFunc(Keys)
-glutSpecialUpFunc(keyUp)  # Callback para quando solta a tecla
+glutSpecialFunc(special_down)
+glutSpecialUpFunc(special_up)  # Callback para quando solta a tecla especial
+glutKeyboardFunc(keyboard)
+glutKeyboardUpFunc(keyboard_up)
 glutMainLoop()
