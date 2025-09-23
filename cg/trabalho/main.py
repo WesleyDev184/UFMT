@@ -130,6 +130,38 @@ def spawn_asteroide_from_opposite(dir_x, dir_z):
     asteroides.append(Asteroide(x, z, vel_x, vel_z, rot_speed))
 
 
+def spawn_asteroide_safe():
+    """Spawna um asteroide em posição segura (longe do jogador)."""
+    attempts = 0
+    max_attempts = 50
+    
+    while attempts < max_attempts:
+        # Escolher uma posição aleatória no mapa
+        x = random.uniform(-45, 45)
+        z = random.uniform(-45, 45)
+        
+        # Verificar se está longe o suficiente do jogador
+        dist_to_player = math.hypot(nave_x - x, nave_z - z)
+        if dist_to_player >= SAFE_SPAWN_DIST:
+            # Posição segura encontrada, calcular velocidade em direção ao jogador
+            dx = nave_x - x
+            dz = nave_z - z
+            d = math.hypot(dx, dz)
+            if d == 0:
+                d = 1.0
+            speed = random.uniform(0.02, 0.12)
+            vel_x = (dx / d) * speed
+            vel_z = (dz / d) * speed
+            rot_speed = random.uniform(-3, 3)
+            asteroides.append(Asteroide(x, z, vel_x, vel_z, rot_speed))
+            return
+        
+        attempts += 1
+    
+    # Se não conseguir encontrar posição segura, spawnar na borda
+    spawn_asteroide_from_opposite(random.uniform(-1, 1), random.uniform(-1, 1))
+
+
 def display():
     global nave_x, nave_y, nave_z, nave_angle, nave_vel_x, nave_vel_z, nave_accel
     
@@ -158,12 +190,12 @@ def display():
     for asteroide in list(asteroides):
         asteroide.update()
 
-        # Se saiu da visão (fora do grid desenhado ±50), remova e gere um novo vindo no sentido contrário
+        # Se saiu da visão (fora do grid desenhado ±50), remova e gere um novo
         if abs(asteroide.x) > 50 or abs(asteroide.z) > 50:
-            # respawn vindo do sentido oposto ao seu vetor de velocidade
-            spawn_asteroide_from_opposite(asteroide.vel_x, asteroide.vel_z)
             try:
                 asteroides.remove(asteroide)
+                # Spawnar um novo asteroide em posição segura
+                spawn_asteroide_safe()
             except ValueError:
                 pass
             continue
@@ -208,41 +240,17 @@ def display():
                     pass
                 try:
                     asteroides.remove(asteroide)
+                    # Spawnar um novo asteroide imediatamente em posição segura
+                    spawn_asteroide_safe()
                 except ValueError:
                     pass
                 score += 1
                 print(f"Score: {score}")
-                # spawn um novo vindo de direção aleatória
-                angle = random.uniform(0, math.pi * 2)
-                dir_x = math.cos(angle)
-                dir_z = math.sin(angle)
-                spawn_asteroide_from_opposite(-dir_x, -dir_z)
                 break
 
-    # Manter quantidade de meteoros escalando com a pontuação
-    target = BASE_ASTEROIDES + score
-    while len(asteroides) < target:
-        # spawna aleatório na borda do grid ±50
-        x = random.choice([-50, 50])
-        z = random.uniform(-40, 40)
-        # garantir distancia segura
-        attempts = 0
-        while math.hypot(nave_x - x, nave_z - z) < SAFE_SPAWN_DIST and attempts < 20:
-            x = random.choice([-50, 50])
-            z = random.uniform(-40, 40)
-            attempts += 1
-
-        # velocidade apontando para a nave
-        dx = nave_x - x
-        dz = nave_z - z
-        d = math.hypot(dx, dz)
-        if d == 0:
-            d = 1.0
-        speed = random.uniform(0.02, 0.12)
-        vel_x = (dx / d) * speed
-        vel_z = (dz / d) * speed
-        rot_speed = random.uniform(-3, 3)
-        asteroides.append(Asteroide(x, z, vel_x, vel_z, rot_speed))
+    # Manter quantidade fixa de asteroides (BASE_ASTEROIDES)
+    while len(asteroides) < BASE_ASTEROIDES:
+        spawn_asteroide_safe()
 
     # Desenhar HUD (pontuação)
     # posição em pixels (canto superior esquerdo)
@@ -273,15 +281,15 @@ def update_nave():
     # Aplicar aceleração na direção que a nave está apontando
     if accel_input != 0:
         angle_rad = math.radians(nave_angle)
-        nave_vel_x += accel_input * math.sin(angle_rad) * 0.1
-        nave_vel_z += accel_input * math.cos(angle_rad) * 0.1
+        nave_vel_x += accel_input * math.sin(angle_rad) * 0.05
+        nave_vel_z += accel_input * math.cos(angle_rad) * 0.05
     
     # Aplicar atrito
     nave_vel_x *= 0.98
     nave_vel_z *= 0.98
     
     # Limitar velocidade máxima
-    max_vel = 0.8
+    max_vel = 0.4
     if abs(nave_vel_x) > max_vel:
         nave_vel_x = max_vel if nave_vel_x > 0 else -max_vel
     if abs(nave_vel_z) > max_vel:
