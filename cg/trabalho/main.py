@@ -24,13 +24,12 @@ class Player:
     
     def update(self, pressed_special, pressed_keys):
         # Controle por teclas simultâneas
-        # teclado especial: LEFT/RIGHT para rotacionar
         if GLUT_KEY_LEFT in pressed_special:
             self.angle += self.rotation_speed
         if GLUT_KEY_RIGHT in pressed_special:
             self.angle -= self.rotation_speed
 
-        # teclas ASCII: setas para frente/trás
+        # teclas para frente/trás
         accel_input = 0.0
         if GLUT_KEY_DOWN in pressed_special or 's' in pressed_keys or 'S' in pressed_keys:
             accel_input = -0.5
