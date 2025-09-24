@@ -7,14 +7,76 @@ import random
 import math
 import sys
 
-# Variáveis da nave (nave)
-nave_x = 0.0
-nave_y = 0.0
-nave_z = 0.0
-nave_angle = 0.0
-nave_vel_x = 0.0
-nave_vel_z = 0.0
-nave_accel = 0.0
+# Classe para o player (nave)
+class Player:
+    def __init__(self, x=0.0, y=0.0, z=0.0):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.angle = 0.0
+        self.vel_x = 0.0
+        self.vel_z = 0.0
+        self.accel = 0.0
+        self.max_vel = 0.4
+        self.friction = 0.93
+        self.accel_strength = 0.05
+        self.rotation_speed = 3.0
+    
+    def update(self, pressed_special, pressed_keys):
+        # Controle por teclas simultâneas
+        # teclado especial: LEFT/RIGHT para rotacionar
+        if GLUT_KEY_LEFT in pressed_special:
+            self.angle += self.rotation_speed
+        if GLUT_KEY_RIGHT in pressed_special:
+            self.angle -= self.rotation_speed
+
+        # teclas ASCII: setas para frente/trás
+        accel_input = 0.0
+        if GLUT_KEY_DOWN in pressed_special or 's' in pressed_keys or 'S' in pressed_keys:
+            accel_input = 1.0
+        if GLUT_KEY_UP in pressed_special or 'w' in pressed_keys or 'W' in pressed_keys:
+            accel_input = -0.5
+
+        # Aplicar aceleração na direção que a nave está apontando
+        if accel_input != 0:
+            angle_rad = math.radians(self.angle)
+            self.vel_x += accel_input * math.sin(angle_rad) * self.accel_strength
+            self.vel_z += accel_input * math.cos(angle_rad) * self.accel_strength
+        
+        # Aplicar atrito
+        self.vel_x *= self.friction
+        self.vel_z *= self.friction
+        
+        # Limitar velocidade máxima
+        if abs(self.vel_x) > self.max_vel:
+            self.vel_x = self.max_vel if self.vel_x > 0 else -self.max_vel
+        if abs(self.vel_z) > self.max_vel:
+            self.vel_z = self.max_vel if self.vel_z > 0 else -self.max_vel
+        
+        # Atualizar posição
+        self.x += self.vel_x
+        self.z += self.vel_z
+        
+        # Constrain nave dentro do grid desenhado (±50)
+        if self.x > 50: self.x = 50
+        if self.x < -50: self.x = -50
+        if self.z > 50: self.z = 50
+        if self.z < -50: self.z = -50
+    
+    def draw(self, player_model):
+        glPushMatrix()
+        glTranslatef(self.x, self.y, self.z)
+        glRotatef(self.angle, 0.0, 1.0, 0.0)
+        glScalef(0.3, 0.3, 0.3)  # Diminui o tamanho da nave
+        glColor3f(1.0, 1.0, 1.0)  # Branco para a (galinha)
+        visualization.draw(player_model)
+        glPopMatrix()
+    
+    def shoot(self):
+        angle_rad = math.radians(self.angle)
+        dir_x = math.sin(angle_rad)
+        dir_z = math.cos(angle_rad)
+        return Projetil(self.x, self.z, dir_x, dir_z)
 
 # Classe para asteroides
 class Asteroide:
@@ -62,6 +124,43 @@ class Projetil:
 # Lista de projeteis
 projeteis = []
 
+# Classe para partículas de explosão
+class Particula:
+    def __init__(self, x, z):
+        self.x = x
+        self.z = z
+        self.vel_x = random.uniform(-0.3, 0.3)
+        self.vel_z = random.uniform(-0.3, 0.3)
+        self.vel_y = random.uniform(0.1, 0.4)
+        self.y = 0.0
+        self.life = 60  # frames de vida
+        self.size = random.uniform(2.0, 5.0)
+        # Cores de fogo/explosão
+        self.r = random.uniform(0.8, 1.0)
+        self.g = random.uniform(0.2, 0.6)
+        self.b = random.uniform(0.0, 0.2)
+    
+    def update(self):
+        self.x += self.vel_x
+        self.z += self.vel_z
+        self.y += self.vel_y
+        self.vel_y -= 0.02  # gravidade
+        self.life -= 1
+        # Fade das cores conforme o tempo
+        fade = self.life / 60.0
+        self.r *= fade
+        self.g *= fade
+        self.b *= fade
+    
+    def is_dead(self):
+        return self.life <= 0 or self.y < 0
+
+# Lista de partículas
+particulas = []
+
+# Instância do player
+player = Player()
+
 # Pontuação
 score = 0
 
@@ -77,18 +176,18 @@ def init_asteroides():
         attempts = 0
         x = random.uniform(-40, 40)
         z = random.uniform(-40, 40)
-        while math.hypot(nave_x - x, nave_z - z) < SAFE_SPAWN_DIST and attempts < 20:
+        while math.hypot(player.x - x, player.z - z) < SAFE_SPAWN_DIST and attempts < 20:
             x = random.uniform(-40, 40)
             z = random.uniform(-40, 40)
             attempts += 1
 
         # Velocidade apontando para a nave
-        dx = nave_x - x
-        dz = nave_z - z
+        dx = player.x - x
+        dz = player.z - z
         d = math.hypot(dx, dz)
         if d == 0:
             d = 1.0
-        speed = random.uniform(0.02, 0.12)
+        speed = random.uniform(0.01, 0.06)
         vel_x = (dx / d) * speed
         vel_z = (dz / d) * speed
         rot_speed = random.uniform(-3, 3)
@@ -108,7 +207,7 @@ def spawn_asteroide_from_opposite(dir_x, dir_z):
         x = random.uniform(-40, 40)
     # garantir distancia segura
     attempts = 0
-    while math.hypot(nave_x - x, nave_z - z) < SAFE_SPAWN_DIST and attempts < 20:
+    while math.hypot(player.x - x, player.z - z) < SAFE_SPAWN_DIST and attempts < 20:
         # deslocar ao longo da borda
         if abs(x) == 50:
             z = random.uniform(-40, 40)
@@ -118,12 +217,12 @@ def spawn_asteroide_from_opposite(dir_x, dir_z):
 
     # definir velocidade apontando para o centro (ou aproximado)
     # calcular velocidade apontando para a nave
-    dx = nave_x - x
-    dz = nave_z - z
+    dx = player.x - x
+    dz = player.z - z
     mag = math.hypot(dx, dz)
     if mag == 0:
         mag = 1.0
-    speed = random.uniform(0.02, 0.12)
+    speed = random.uniform(0.01, 0.06)
     vel_x = (dx / mag) * speed
     vel_z = (dz / mag) * speed
     rot_speed = random.uniform(-3, 3)
@@ -141,15 +240,15 @@ def spawn_asteroide_safe():
         z = random.uniform(-45, 45)
         
         # Verificar se está longe o suficiente do jogador
-        dist_to_player = math.hypot(nave_x - x, nave_z - z)
+        dist_to_player = math.hypot(player.x - x, player.z - z)
         if dist_to_player >= SAFE_SPAWN_DIST:
             # Posição segura encontrada, calcular velocidade em direção ao jogador
-            dx = nave_x - x
-            dz = nave_z - z
+            dx = player.x - x
+            dz = player.z - z
             d = math.hypot(dx, dz)
             if d == 0:
                 d = 1.0
-            speed = random.uniform(0.02, 0.12)
+            speed = random.uniform(0.01, 0.06)
             vel_x = (dx / d) * speed
             vel_z = (dz / d) * speed
             rot_speed = random.uniform(-3, 3)
@@ -163,28 +262,20 @@ def spawn_asteroide_safe():
 
 
 def display():
-    global nave_x, nave_y, nave_z, nave_angle, nave_vel_x, nave_vel_z, nave_accel
-    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
     
     # Câmera acompanha a nave de cima
-    gluLookAt(nave_x, 20.0, nave_z + 5.0,  # Posição da câmera
-              nave_x, 0.0, nave_z,          # Para onde olha
-              0.0, 1.0, 0.0)                # Up vector
+    gluLookAt(player.x, 20.0, player.z + 5.0,  # Posição da câmera
+              player.x, 0.0, player.z,          # Para onde olha
+              0.0, 1.0, 0.0)                    # Up vector
     
     # Atualizar física da nave
-    update_nave()
+    player.update(pressed_special, pressed_keys)
     
-    # Desenhar a nave (nave)
-    glPushMatrix()
-    glTranslatef(nave_x, nave_y, nave_z)
-    glRotatef(nave_angle, 0.0, 1.0, 0.0)
-    glScalef(0.3, 0.3, 0.3)  # Diminui o tamanho da nave
-    glColor3f(1.0, 1.0, 1.0)  # Branco para a nave (galinha)
-    visualization.draw(nave)
-    glPopMatrix()
+    # Desenhar a nave (player)
+    player.draw(nave)
     
     # Atualizar e desenhar asteroides (usar cópia para permitir remoção)
     for asteroide in list(asteroides):
@@ -220,10 +311,38 @@ def display():
             continue
 
         glPushMatrix()
-        glColor3f(1.0, 0.2, 0.2)
-        glPointSize(6.0)
+        glTranslatef(proj.x, 0.5, proj.z)
+        glColor3f(1.0, 0.2, 0.0)  # Vermelho fogo ardente
+        
+        # Desenhar um círculo preenchido
+        glBegin(GL_TRIANGLE_FAN)
+        glVertex3f(0.0, 0.0, 0.0)  # Centro do círculo
+        num_segments = 16
+        radius = 0.3  # Raio do círculo
+        for i in range(num_segments + 1):
+            angle = 2.0 * math.pi * i / num_segments
+            x = radius * math.cos(angle)
+            z = radius * math.sin(angle)
+            glVertex3f(x, 0.0, z)
+        glEnd()
+        
+        glPopMatrix()
+
+    # Atualizar e desenhar partículas de explosão
+    for particula in list(particulas):
+        particula.update()
+        if particula.is_dead():
+            try:
+                particulas.remove(particula)
+            except ValueError:
+                pass
+            continue
+        
+        glPushMatrix()
+        glColor3f(particula.r, particula.g, particula.b)
+        glPointSize(particula.size)
         glBegin(GL_POINTS)
-        glVertex3f(proj.x, 0.5, proj.z)
+        glVertex3f(particula.x, particula.y, particula.z)
         glEnd()
         glPopMatrix()
 
@@ -233,7 +352,12 @@ def display():
         for asteroide in list(asteroides):
             dist = math.hypot(proj.x - asteroide.x, proj.z - asteroide.z)
             if dist < (asteroide.size * 1.2 + 0.5):
-                # colisão: remover ambos, incrementar score e spawn de reposição
+                # colisão: criar partículas de explosão
+                for i in range(15):  # 15 partículas por explosão
+                    particula = Particula(asteroide.x, asteroide.z)
+                    particulas.append(particula)
+                
+                # remover ambos, incrementar score e spawn de reposição
                 try:
                     projeteis.remove(proj)
                 except ValueError:
@@ -261,49 +385,6 @@ def display():
     
     glutSwapBuffers()
 
-def update_nave():
-    global nave_x, nave_z, nave_vel_x, nave_vel_z, nave_accel, nave_angle
-
-    # Controle por teclas simultâneas
-    # teclado especial: LEFT/RIGHT para rotacionar
-    if GLUT_KEY_LEFT in pressed_special:
-        nave_angle += 3.0
-    if GLUT_KEY_RIGHT in pressed_special:
-        nave_angle -= 3.0
-
-    # teclas ASCII: setas para frente/trás mapeadas por pressed_special também
-    accel_input = 0.0
-    if GLUT_KEY_DOWN in pressed_special or 's' in pressed_keys or 'S' in pressed_keys:
-        accel_input = 1.0
-    if GLUT_KEY_UP in pressed_special or 'w' in pressed_keys or 'W' in pressed_keys:
-        accel_input = -0.5
-
-    # Aplicar aceleração na direção que a nave está apontando
-    if accel_input != 0:
-        angle_rad = math.radians(nave_angle)
-        nave_vel_x += accel_input * math.sin(angle_rad) * 0.05
-        nave_vel_z += accel_input * math.cos(angle_rad) * 0.05
-    
-    # Aplicar atrito
-    nave_vel_x *= 0.98
-    nave_vel_z *= 0.98
-    
-    # Limitar velocidade máxima
-    max_vel = 0.4
-    if abs(nave_vel_x) > max_vel:
-        nave_vel_x = max_vel if nave_vel_x > 0 else -max_vel
-    if abs(nave_vel_z) > max_vel:
-        nave_vel_z = max_vel if nave_vel_z > 0 else -max_vel
-    
-    # Atualizar posição
-    nave_x += nave_vel_x
-    nave_z += nave_vel_z
-    
-    # Constrain nave dentro do grid desenhado (±50)
-    if nave_x > 50: nave_x = 50
-    if nave_x < -50: nave_x = -50
-    if nave_z > 50: nave_z = 50
-    if nave_z < -50: nave_z = -50
 
 def draw_grid():
     glColor3f(0.2, 0.3, 0.7)  # Grid azul
@@ -363,18 +444,7 @@ def special_up(key, x, y):
     except KeyError:
         pass
     
-def Keys(key, x, y):
-    global nave_angle, nave_accel
-    
-    if key == GLUT_KEY_LEFT:
-        nave_angle += 5.0  # Girar para a esquerda
-    elif key == GLUT_KEY_RIGHT:
-        nave_angle -= 5.0  # Girar para a direita
-    elif key == GLUT_KEY_DOWN:
-        nave_accel = 1.0   # Acelerar para frente
-    elif key == GLUT_KEY_UP:
-        nave_accel = -0.5  # Acelerar para trás
-    # Nota: teclas especiais tratadas aqui; teclas ASCII (como espaço) são tratadas por glutKeyboardFunc
+
 
 def keyboard(key, x, y):
     global projeteis
@@ -387,10 +457,7 @@ def keyboard(key, x, y):
     pressed_keys.add(k)
     # tratar ação de disparo na pressão da barra (ou de outra tecla)
     if k == ' ':
-        angle_rad = math.radians(nave_angle)
-        dir_x = math.sin(angle_rad)
-        dir_z = math.cos(angle_rad)
-        proj = Projetil(nave_x, nave_z, dir_x, dir_z)
+        proj = player.shoot()
         projeteis.append(proj)
 
 def keyboard_up(key, x, y):
@@ -425,9 +492,9 @@ def resize(w, h):
   
 
 def init():
-    glClearColor (0.1, 0.2, 0.4, 0.0)  # Fundo azul escuro
+    glClearColor (0.05, 0.05, 0.1, 0.0)  # Fundo escuro do espaço
     glShadeModel( GL_SMOOTH )
-    glClearColor( 0.1, 0.2, 0.4, 0.5 )  # Fundo azul escuro
+    glClearColor( 0.05, 0.05, 0.1, 0.5 )  # Fundo escuro do espaço
     glClearDepth( 1.0 )
     glEnable( GL_DEPTH_TEST )
     glDepthFunc( GL_LEQUAL )
