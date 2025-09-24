@@ -33,9 +33,9 @@ class Player:
         # teclas ASCII: setas para frente/trás
         accel_input = 0.0
         if GLUT_KEY_DOWN in pressed_special or 's' in pressed_keys or 'S' in pressed_keys:
-            accel_input = 1.0
-        if GLUT_KEY_UP in pressed_special or 'w' in pressed_keys or 'W' in pressed_keys:
             accel_input = -0.5
+        if GLUT_KEY_UP in pressed_special or 'w' in pressed_keys or 'W' in pressed_keys:
+            accel_input = 0.5
 
         # Aplicar aceleração na direção que a nave está apontando
         if accel_input != 0:
@@ -67,6 +67,7 @@ class Player:
         glPushMatrix()
         glTranslatef(self.x, self.y, self.z)
         glRotatef(self.angle, 0.0, 1.0, 0.0)
+        glRotatef(180.0, 0.0, 1.0, 0.0)  # Rotaciona 180 graus para inverter frente/trás
         glScalef(0.3, 0.3, 0.3)  # Diminui o tamanho da nave
         glColor3f(1.0, 1.0, 1.0)  # Branco para a (galinha)
         visualization.draw(player_model)
