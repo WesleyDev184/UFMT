@@ -88,12 +88,99 @@ class Asteroide:
         self.rotation = 0.0
         self.rot_speed = rot_speed
         self.size = random.uniform(0.5, 1.5)
+        self.mass = self.size  # massa proporcional ao tamanho
     
     def update(self):
         self.x += self.vel_x
         self.z += self.vel_z
         self.rotation += self.rot_speed
-    # Note: movement constrained by map bounds handled elsewhere
+    
+    def collides_with(self, other):
+        distance = math.hypot(self.x - other.x, self.z - other.z)
+        return distance < (self.size + other.size)
+    
+    def resolve_collision(self, other):
+        # Calcular vetor de direção entre os asteroides
+        dx = other.x - self.x
+        dz = other.z - self.z
+        distance = math.hypot(dx, dz)
+        
+        if distance == 0 or distance < 0.1:
+            # Evitar divisão por zero - usar direção aleatória
+            dx = random.uniform(-1, 1)
+            dz = random.uniform(-1, 1)
+            distance = math.hypot(dx, dz)
+        
+        # Normalizar o vetor de direção
+        nx = dx / distance
+        nz = dz / distance
+        
+        # Separar os asteroides se estiverem sobrepostos
+        overlap = (self.size + other.size) - distance
+        if overlap > 0:
+            separation = (overlap / 2.0) + 0.1  # Adicionar uma pequena margem extra
+            self.x -= nx * separation
+            self.z -= nz * separation
+            other.x += nx * separation
+            other.z += nz * separation
+        
+        # Sistema de colisão mais simples e efetivo
+        # Salvar velocidades originais
+        vel1_x, vel1_z = self.vel_x, self.vel_z
+        vel2_x, vel2_z = other.vel_x, other.vel_z
+        
+        # Coeficiente de restituição (quão "bouncy" é a colisão)
+        bounce = 1.2
+        
+        # Troca de velocidades com base na massa e direção da colisão
+        # Calcular componentes da velocidade na direção da colisão
+        v1_normal = vel1_x * nx + vel1_z * nz
+        v2_normal = vel2_x * nx + vel2_z * nz
+        
+        # Calcular componentes perpendiculares (tangenciais)
+        v1_tang_x = vel1_x - v1_normal * nx
+        v1_tang_z = vel1_z - v1_normal * nz
+        v2_tang_x = vel2_x - v2_normal * nx
+        v2_tang_z = vel2_z - v2_normal * nz
+        
+        # Calcular novas velocidades normais após colisão
+        mass_sum = self.mass + other.mass
+        new_v1_normal = ((self.mass - other.mass) * v1_normal + 2 * other.mass * v2_normal) / mass_sum
+        new_v2_normal = ((other.mass - self.mass) * v2_normal + 2 * self.mass * v1_normal) / mass_sum
+        
+        # Aplicar coeficiente de restituição
+        new_v1_normal *= bounce
+        new_v2_normal *= bounce
+        
+        # Recombinar componentes normais e tangenciais
+        self.vel_x = new_v1_normal * nx + v1_tang_x
+        self.vel_z = new_v1_normal * nz + v1_tang_z
+        other.vel_x = new_v2_normal * nx + v2_tang_x
+        other.vel_z = new_v2_normal * nz + v2_tang_z
+        
+        # Adicionar um pouco de variação aleatória para tornar mais interessante
+        random_factor = 0.1
+        self.vel_x += random.uniform(-random_factor, random_factor)
+        self.vel_z += random.uniform(-random_factor, random_factor)
+        other.vel_x += random.uniform(-random_factor, random_factor)
+        other.vel_z += random.uniform(-random_factor, random_factor)
+        
+        # Limitar velocidades para evitar que fiquem muito rápidas
+        max_speed = 0.1
+        self_speed = math.hypot(self.vel_x, self.vel_z)
+        other_speed = math.hypot(other.vel_x, other.vel_z)
+        
+        if self_speed > max_speed:
+            self.vel_x = (self.vel_x / self_speed) * max_speed
+            self.vel_z = (self.vel_z / self_speed) * max_speed
+            
+        if other_speed > max_speed:
+            other.vel_x = (other.vel_x / other_speed) * max_speed
+            other.vel_z = (other.vel_z / other_speed) * max_speed
+        
+        # Adicionar um pouco de rotação aleatória após colisão
+        self.rot_speed += random.uniform(-2, 2)
+        other.rot_speed += random.uniform(-2, 2)
 
 # Lista de asteroides
 asteroides = []
@@ -134,11 +221,21 @@ class Particula:
         self.vel_y = random.uniform(0.1, 0.4)
         self.y = 0.0
         self.life = 60  # frames de vida
-        self.size = random.uniform(2.0, 5.0)
-        # Cores de fogo/explosão
-        self.r = random.uniform(0.8, 1.0)
-        self.g = random.uniform(0.2, 0.6)
-        self.b = random.uniform(0.0, 0.2)
+        self.max_life = 60
+        self.size = random.uniform(0.05, 0.15) 
+        fire_type = random.choice(['yellow', 'orange', 'red'])
+        if fire_type == 'yellow':
+            self.r = random.uniform(1.0, 1.0)    # Amarelo brilhante
+            self.g = random.uniform(0.8, 1.0)
+            self.b = random.uniform(0.0, 0.3)
+        elif fire_type == 'orange':
+            self.r = random.uniform(1.0, 1.0)    # Laranja
+            self.g = random.uniform(0.4, 0.7)
+            self.b = random.uniform(0.0, 0.1)
+        else:  # red
+            self.r = random.uniform(0.8, 1.0)    # Vermelho
+            self.g = random.uniform(0.1, 0.3)
+            self.b = random.uniform(0.0, 0.1)
     
     def update(self):
         self.x += self.vel_x
@@ -146,11 +243,30 @@ class Particula:
         self.y += self.vel_y
         self.vel_y -= 0.02  # gravidade
         self.life -= 1
-        # Fade das cores conforme o tempo
-        fade = self.life / 60.0
-        self.r *= fade
-        self.g *= fade
-        self.b *= fade
+        
+        # Transição de cores de fogo (amarelo -> laranja -> vermelho -> preto)
+        life_ratio = self.life / self.max_life
+        if life_ratio > 0.7:
+            # Fase inicial: amarelo brilhante
+            self.r = 1.0
+            self.g = 1.0 * life_ratio
+            self.b = 0.1
+        elif life_ratio > 0.4:
+            # Fase média: laranja
+            self.r = 1.0
+            self.g = 0.5 * life_ratio
+            self.b = 0.05
+        elif life_ratio > 0.1:
+            # Fase final: vermelho
+            self.r = 0.9 * life_ratio
+            self.g = 0.1 * life_ratio
+            self.b = 0.0
+        else:
+            # Fade final para preto
+            fade = life_ratio * 10  # amplifica o fade final
+            self.r *= fade
+            self.g *= fade
+            self.b *= fade
     
     def is_dead(self):
         return self.life <= 0 or self.y < 0
@@ -277,10 +393,18 @@ def display():
     # Desenhar a nave (player)
     player.draw(nave)
     
-    # Atualizar e desenhar asteroides (usar cópia para permitir remoção)
-    for asteroide in list(asteroides):
+    # Atualizar asteroides
+    for asteroide in asteroides:
         asteroide.update()
 
+    # Detectar e resolver colisões entre asteroides
+    for i in range(len(asteroides)):
+        for j in range(i + 1, len(asteroides)):
+            if asteroides[i].collides_with(asteroides[j]):
+                asteroides[i].resolve_collision(asteroides[j])
+
+    # Desenhar asteroides (usar cópia para permitir remoção)
+    for asteroide in list(asteroides):
         # Se saiu da visão (fora do grid desenhado ±50), remova e gere um novo
         if abs(asteroide.x) > 50 or abs(asteroide.z) > 50:
             try:
@@ -339,11 +463,21 @@ def display():
             continue
         
         glPushMatrix()
+        glTranslatef(particula.x, particula.y, particula.z)
         glColor3f(particula.r, particula.g, particula.b)
-        glPointSize(particula.size)
-        glBegin(GL_POINTS)
-        glVertex3f(particula.x, particula.y, particula.z)
+        
+        # Desenhar partícula como um círculo pequeno
+        glBegin(GL_TRIANGLE_FAN)
+        glVertex3f(0.0, 0.0, 0.0)  # Centro do círculo
+        num_segments = 8  # Poucos segmentos para performance
+        radius = particula.size
+        for i in range(num_segments + 1):
+            angle = 2.0 * math.pi * i / num_segments
+            x = radius * math.cos(angle)
+            z = radius * math.sin(angle)
+            glVertex3f(x, 0.0, z)
         glEnd()
+        
         glPopMatrix()
 
     # Colisões: projétil x asteroide
@@ -353,7 +487,8 @@ def display():
             dist = math.hypot(proj.x - asteroide.x, proj.z - asteroide.z)
             if dist < (asteroide.size * 1.2 + 0.5):
                 # colisão: criar partículas de explosão
-                for i in range(15):  # 15 partículas por explosão
+                num_particulas = int(20 + asteroide.size * 10)  # Mais partículas para asteroides maiores
+                for i in range(num_particulas):
                     particula = Particula(asteroide.x, asteroide.z)
                     particulas.append(particula)
                 
@@ -369,7 +504,6 @@ def display():
                 except ValueError:
                     pass
                 score += 1
-                print(f"Score: {score}")
                 break
 
     # Manter quantidade fixa de asteroides (BASE_ASTEROIDES)
@@ -448,14 +582,11 @@ def special_up(key, x, y):
 
 def keyboard(key, x, y):
     global projeteis
-    # key vem como bytes em Python3 quando usando glutKeyboardFunc
     try:
         k = key.decode('utf-8')
     except Exception:
         k = key
-    # registrar tecla ASCII pressionada
     pressed_keys.add(k)
-    # tratar ação de disparo na pressão da barra (ou de outra tecla)
     if k == ' ':
         proj = player.shoot()
         projeteis.append(proj)
@@ -471,12 +602,11 @@ def keyboard_up(key, x, y):
         pass
 
 def keyUp(key, x, y):
-    # manter compatibilidade com special_up
     special_up(key, x, y)
        
 def animacao(value):
     glutPostRedisplay()
-    glutTimerFunc(16, animacao, 1)  # ~60 FPS
+    glutTimerFunc(16, animacao, 1)  
     
 def idle():
     pass
@@ -486,15 +616,15 @@ def resize(w, h):
     glViewport(0, 0, w, h)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(60.0, w/h, 0.1, 200.0)  # Campo de visão maior e distância ajustada
+    gluPerspective(60.0, w/h, 0.1, 200.0) 
     glMatrixMode(GL_MODELVIEW)
 
   
 
 def init():
-    glClearColor (0.05, 0.05, 0.1, 0.0)  # Fundo escuro do espaço
+    glClearColor (0.05, 0.05, 0.1, 0.0)  
     glShadeModel( GL_SMOOTH )
-    glClearColor( 0.05, 0.05, 0.1, 0.5 )  # Fundo escuro do espaço
+    glClearColor( 0.05, 0.05, 0.1, 0.5 )  
     glClearDepth( 1.0 )
     glEnable( GL_DEPTH_TEST )
     glDepthFunc( GL_LEQUAL )
@@ -502,8 +632,8 @@ def init():
 
     glLightModelfv( GL_LIGHT_MODEL_AMBIENT, [0.1, 0.1, 0.1, 1.0] )
     glLightfv( GL_LIGHT0, GL_AMBIENT, [ 0.2, 0.2, 0.2, 1.0] )
-    glLightfv( GL_LIGHT0, GL_DIFFUSE, [0.25, 0.25, 0.25, 1.0] )  # Menor intensidade difusa
-    glLightfv( GL_LIGHT0, GL_SPECULAR, [0.35, 0.35, 0.35, 1] );  # Menor intensidade especular
+    glLightfv( GL_LIGHT0, GL_DIFFUSE, [0.25, 0.25, 0.25, 1.0] )  
+    glLightfv( GL_LIGHT0, GL_SPECULAR, [0.35, 0.35, 0.35, 1] ); 
     glLightfv( GL_LIGHT0, GL_POSITION, [10.0, 10.0, 10.0, 0.0])
     glLightfv(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.01)
     glLightfv(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.01)
@@ -520,7 +650,7 @@ glutInit()
 glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB)
 glutInitWindowSize(1920, 1080)
 glutInitWindowPosition(100, 100)
-wind = glutCreateWindow("Galinheiro Game")
+wind = glutCreateWindow("Game")
 init()
 init_asteroides()  # Inicializar asteroides
 meteor = pywavefront.Wavefront("meteor.obj")
