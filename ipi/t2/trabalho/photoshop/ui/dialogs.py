@@ -49,10 +49,7 @@ class ResampleDialog(_BaseDialog):
         self.method.addItems([
             "Vizinho Mais Próximo (manual)",
             "Bilinear (manual)",
-            "OpenCV – Nearest",
-            "OpenCV – Linear",
-            "OpenCV – Cúbico",
-            "OpenCV – Lanczos",
+            "Bicúbico (OpenCV)",
         ])
         self._form.addRow("Escala Altura:", self.scale_h)
         self._form.addRow("Escala Largura:", self.scale_w)
@@ -60,15 +57,11 @@ class ResampleDialog(_BaseDialog):
 
     def values(self):
         method_map = {
-            0: ('manual_nn',  None),
-            1: ('manual_bil', None),
-            2: ('cv2', 'nearest'),
-            3: ('cv2', 'linear'),
-            4: ('cv2', 'cubic'),
-            5: ('cv2', 'lanczos'),
+            0: 'manual_nn',
+            1: 'manual_bil',
+            2: 'bicubic',
         }
-        mode, cv2_flag = method_map[self.method.currentIndex()]
-        return self.scale_h.value(), self.scale_w.value(), mode, cv2_flag
+        return self.scale_h.value(), self.scale_w.value(), method_map[self.method.currentIndex()]
 
 
 # ─── Brilho ──────────────────────────────────────────────────────────────────

@@ -18,7 +18,7 @@ from .dialogs import (
     FilterDialog, MedianDialog, LaplacianDialog, SobelDialog, UnsharpDialog,
 )
 from ..utils.image_utils import load_image, save_image, image_info
-from ..processing.resampling import nearest_neighbor, bilinear, resize_cv2
+from ..processing.resampling import nearest_neighbor, bilinear, bicubic
 from ..processing.intensity import (
     brightness_additive, brightness_multiplicative, brightness_hsi,
     negative, log_transform, exp_transform, gamma_transform,
@@ -582,22 +582,22 @@ class MainWindow(QMainWindow):
         dlg = ResampleDialog(self)
         if dlg.exec_() != ResampleDialog.Accepted:
             return
-        sh, sw, mode, cv2_flag = dlg.values()
+        sh, sw, mode = dlg.values()
         method_names = {
-            'manual_nn': 'Vizinho Mais Próximo', 'manual_bil': 'Bilinear',
-            'nearest': 'CV2 Nearest', 'linear': 'CV2 Linear',
-            'cubic': 'CV2 Cúbico', 'lanczos': 'CV2 Lanczos',
+            'manual_nn': 'Vizinho Mais Próximo',
+            'manual_bil': 'Bilinear',
+            'bicubic': 'Bicúbico',
         }
-        lbl = f"Reamostrar ({method_names.get(cv2_flag or mode, mode)})"
+        lbl = f"Reamostrar ({method_names.get(mode, mode)})"
 
-        def _fn(img, sh, sw, mode, cv2_flag):
+        def _fn(img, sh, sw, mode):
             if mode == 'manual_nn':
                 return nearest_neighbor(img, sh, sw)
             if mode == 'manual_bil':
                 return bilinear(img, sh, sw)
-            return resize_cv2(img, sh, sw, cv2_flag)
+            return bicubic(img, sh, sw)
 
-        self._apply(_fn, sh, sw, mode, cv2_flag, label=lbl)
+        self._apply(_fn, sh, sw, mode, label=lbl)
 
     def _do_brightness(self):
         if not self._need_image():

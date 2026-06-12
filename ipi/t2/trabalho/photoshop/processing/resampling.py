@@ -65,15 +65,9 @@ def bilinear(img: np.ndarray, scale_h: float, scale_w: float) -> np.ndarray:
     return out[:, :, 0] if is_gray else out
 
 
-def resize_cv2(img: np.ndarray, scale_h: float, scale_w: float, method: str = 'linear') -> np.ndarray:
-    """Resize using cv2. method: 'nearest'|'linear'|'cubic'|'lanczos'"""
-    flags = {
-        'nearest': cv2.INTER_NEAREST,
-        'linear':  cv2.INTER_LINEAR,
-        'cubic':   cv2.INTER_CUBIC,
-        'lanczos': cv2.INTER_LANCZOS4,
-    }
+def bicubic(img: np.ndarray, scale_h: float, scale_w: float) -> np.ndarray:
+    """Bicubic interpolation via cv2.INTER_CUBIC."""
     h, w = img.shape[:2]
     nh = max(1, int(round(h * scale_h)))
     nw = max(1, int(round(w * scale_w)))
-    return cv2.resize(img, (nw, nh), interpolation=flags.get(method, cv2.INTER_LINEAR))
+    return cv2.resize(img, (nw, nh), interpolation=cv2.INTER_CUBIC)

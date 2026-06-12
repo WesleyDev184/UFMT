@@ -1,13 +1,15 @@
 import numpy as np
-import cv2
 from .color_conversion import rgb2hsi, hsi2rgb
+
+
+def _hist(ch: np.ndarray) -> np.ndarray:
+    return np.bincount(ch.ravel().astype(np.int32), minlength=256).astype(np.float64)
 
 
 def _equalize_channel(ch: np.ndarray) -> np.ndarray:
     """Equalize single-channel uint8 image via CDF: Sk = (L-1)*sum(pr[0..k])."""
     h, w = ch.shape
-    hist = cv2.calcHist([ch], [0], None, [256], [0, 256]).ravel()
-    pr = hist / (h * w)
+    pr = _hist(ch) / (h * w)
     cdf = np.cumsum(pr)
     sk = np.round(255 * cdf).astype(np.uint8)
     return sk[ch]
@@ -32,10 +34,8 @@ def histogram_matching(img: np.ndarray, ref: np.ndarray) -> np.ndarray:
     Uses inverse CDF: z = G^{-1}(S(r)).
     """
     def match_ch(src: np.ndarray, ref_ch: np.ndarray) -> np.ndarray:
-        h_src = cv2.calcHist([src], [0], None, [256], [0, 256]).ravel()
-        h_ref = cv2.calcHist([ref_ch], [0], None, [256], [0, 256]).ravel()
-        cdf_src = np.cumsum(h_src)
-        cdf_ref = np.cumsum(h_ref)
+        cdf_src = np.cumsum(_hist(src))
+        cdf_ref = np.cumsum(_hist(ref_ch))
         lut = np.zeros(256, dtype=np.uint8)
         for i in range(256):
             diff = np.abs(cdf_ref - cdf_src[i])
@@ -58,7 +58,7 @@ def _local_eq_channel(ch: np.ndarray, ksize: int) -> np.ndarray:
     """Sliding-window local equalization for a single channel."""
     h, w = ch.shape
     pad = ksize // 2
-    padded = cv2.copyMakeBorder(ch, pad, pad, pad, pad, cv2.BORDER_REFLECT)
+    padded = np.pad(ch, pad, mode='reflect')
     out = np.zeros_like(ch)
     for r in range(h):
         for col in range(w):
