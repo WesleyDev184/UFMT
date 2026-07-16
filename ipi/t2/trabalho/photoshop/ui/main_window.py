@@ -70,8 +70,7 @@ class _Worker(QThread):
 # ─── History item widget ──────────────────────────────────────────────────────
 
 class HistoryItemWidget(QFrame):
-    """Single card in the history panel: thumbnail + label + optional Restore btn."""
-    restore_clicked = pyqtSignal(int)  # emits index into _history
+    restore_clicked = pyqtSignal(int)
 
     _STYLE_CURRENT = (
         "QFrame { border: 2px solid #007acc; border-radius: 4px;"
@@ -95,7 +94,6 @@ class HistoryItemWidget(QFrame):
         row.setSpacing(7)
         row.setAlignment(Qt.AlignVCenter)
 
-        # Thumbnail (left)
         thumb = QLabel()
         thumb.setFixedSize(_THUMB_W, _THUMB_H)
         thumb.setAlignment(Qt.AlignCenter)
@@ -103,7 +101,6 @@ class HistoryItemWidget(QFrame):
         thumb.setPixmap(_to_pixmap(img))
         row.addWidget(thumb, 0, Qt.AlignVCenter)
 
-        # Right column: badge + label + button
         col = QVBoxLayout()
         col.setSpacing(2)
         col.setContentsMargins(0, 0, 0, 0)
@@ -146,11 +143,10 @@ class MainWindow(QMainWindow):
         self._image: np.ndarray = None
         self._original: np.ndarray = None
         self._filepath: str = None
-        self._source_filepath: str = None  # caminho do arquivo aberto (nunca sobrescrito)
+        self._source_filepath: str = None
         self._zoom: float = 1.0
         self._worker: _Worker = None
 
-        # History stacks (parallel lists: image + label)
         self._history: list = []
         self._history_labels: list = []
         self._redo: list = []
@@ -173,7 +169,6 @@ class MainWindow(QMainWindow):
         root.setContentsMargins(4, 4, 4, 4)
         root.setSpacing(4)
 
-        # ── Left: image canvas ──
         self._scroll = QScrollArea()
         self._scroll.setAlignment(Qt.AlignCenter)
         self._scroll.setStyleSheet("background:#2b2b2b;")
@@ -184,7 +179,6 @@ class MainWindow(QMainWindow):
         self._scroll.setWidgetResizable(False)
         root.addWidget(self._scroll, stretch=4)
 
-        # ── Right sidebar ──
         right = QFrame()
         right.setFrameShape(QFrame.StyledPanel)
         right.setFixedWidth(290)
@@ -192,19 +186,16 @@ class MainWindow(QMainWindow):
         rl.setContentsMargins(4, 4, 4, 4)
         rl.setSpacing(4)
 
-        # Histogram
         self._hist_widget = HistogramWidget()
         self._hist_widget.setFixedHeight(215)
         rl.addWidget(self._hist_widget)
 
-        # Info label
         self._info_label = QLabel("Nenhuma imagem carregada")
         self._info_label.setAlignment(Qt.AlignCenter)
         self._info_label.setWordWrap(True)
         self._info_label.setStyleSheet("color:#aaa; font-size:10px;")
         rl.addWidget(self._info_label)
 
-        # Zoom controls
         zoom_row = QHBoxLayout()
         zoom_row.setSpacing(2)
         for txt, fn in [("－", lambda: self._zoom_by(0.8)),
@@ -216,7 +207,6 @@ class MainWindow(QMainWindow):
             zoom_row.addWidget(lbl)
         rl.addLayout(zoom_row)
 
-        # History section header
         sep = QFrame()
         sep.setFrameShape(QFrame.HLine)
         sep.setStyleSheet("color:#444;")
@@ -226,7 +216,6 @@ class MainWindow(QMainWindow):
         hist_header.setStyleSheet("color:#888; font-size:9px; font-weight:bold;")
         rl.addWidget(hist_header)
 
-        # History scroll area
         self._hist_scroll = QScrollArea()
         self._hist_scroll.setWidgetResizable(True)
         self._hist_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -384,23 +373,18 @@ class MainWindow(QMainWindow):
     # ─── History panel ────────────────────────────────────────────────────────
 
     def _rebuild_history_panel(self):
-        """Rebuild the visual history panel from current state."""
-        # Remove all existing widgets (keep the stretch at the end)
         while self._hist_list_layout.count() > 1:
             item = self._hist_list_layout.takeAt(0)
             if item.widget():
                 item.widget().deleteLater()
 
-        # Insert items in order: current (top), history newest→oldest
         insert_pos = 0
 
-        # Current state card
         if self._image is not None:
             w = HistoryItemWidget(-1, self._image, self._current_label, is_current=True)
             self._hist_list_layout.insertWidget(insert_pos, w)
             insert_pos += 1
 
-        # Past states newest-first
         for i in range(len(self._history) - 1, -1, -1):
             w = HistoryItemWidget(i, self._history[i], self._history_labels[i],
                                   is_current=False)
@@ -409,17 +393,13 @@ class MainWindow(QMainWindow):
             insert_pos += 1
 
     def _restore_from_history(self, idx: int):
-        """Jump back to history[idx]. Items after idx move to redo stack."""
-        # Save current → redo
         self._redo.append(self._image.copy())
         self._redo_labels.append(self._current_label)
 
-        # Move history items after idx into redo (so Ctrl+Y can replay them)
         for i in range(len(self._history) - 1, idx, -1):
             self._redo.append(self._history[i].copy())
             self._redo_labels.append(self._history_labels[i])
 
-        # Restore
         self._image = self._history[idx].copy()
         self._current_label = self._history_labels[idx]
         self._history = self._history[:idx]
@@ -431,7 +411,6 @@ class MainWindow(QMainWindow):
     # ─── Internal history stack ops ───────────────────────────────────────────
 
     def _push_history(self, state_label: str):
-        """Save current image+label to history. Called before each operation."""
         if self._image is None:
             return
         self._history.append(self._image.copy())
@@ -545,7 +524,6 @@ class MainWindow(QMainWindow):
         return True
 
     def _apply(self, fn, *args, label: str = "Operação", **kwargs):
-        """Save history, run fn in background, then update display + history panel."""
         if not self._need_image():
             return
         self._push_history(self._current_label)

@@ -7,7 +7,6 @@ def _hist(ch: np.ndarray) -> np.ndarray:
 
 
 def _equalize_channel(ch: np.ndarray) -> np.ndarray:
-    """Equalize single-channel uint8 image via CDF: Sk = (L-1)*sum(pr[0..k])."""
     h, w = ch.shape
     pr = _hist(ch) / (h * w)
     cdf = np.cumsum(pr)
@@ -16,10 +15,6 @@ def _equalize_channel(ch: np.ndarray) -> np.ndarray:
 
 
 def equalize_global(img: np.ndarray) -> np.ndarray:
-    """Global histogram equalization.
-    Grayscale: direct CDF mapping.
-    Color: equalize I channel in HSI to avoid chromatic distortion.
-    """
     if img.ndim == 2:
         return _equalize_channel(img.astype(np.uint8))
 
@@ -30,9 +25,6 @@ def equalize_global(img: np.ndarray) -> np.ndarray:
 
 
 def histogram_matching(img: np.ndarray, ref: np.ndarray) -> np.ndarray:
-    """Histogram specification: transform img histogram to match ref.
-    Uses inverse CDF: z = G^{-1}(S(r)).
-    """
     def match_ch(src: np.ndarray, ref_ch: np.ndarray) -> np.ndarray:
         cdf_src = np.cumsum(_hist(src))
         cdf_ref = np.cumsum(_hist(ref_ch))
@@ -55,7 +47,6 @@ def histogram_matching(img: np.ndarray, ref: np.ndarray) -> np.ndarray:
 
 
 def _local_eq_channel(ch: np.ndarray, ksize: int) -> np.ndarray:
-    """Sliding-window local equalization for a single channel."""
     h, w = ch.shape
     pad = ksize // 2
     padded = np.pad(ch, pad, mode='reflect')
@@ -70,7 +61,6 @@ def _local_eq_channel(ch: np.ndarray, ksize: int) -> np.ndarray:
 
 
 def equalize_local(img: np.ndarray, ksize: int = 11) -> np.ndarray:
-    """Local histogram equalization using sliding ksize×ksize window."""
     if img.ndim == 2:
         return _local_eq_channel(img.astype(np.uint8), ksize)
     result = np.zeros_like(img)

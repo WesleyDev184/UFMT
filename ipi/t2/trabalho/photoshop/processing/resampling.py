@@ -3,7 +3,6 @@ import cv2
 
 
 def nearest_neighbor(img: np.ndarray, scale_h: float, scale_w: float) -> np.ndarray:
-    """Manual nearest neighbor interpolation (vectorized)."""
     is_gray = img.ndim == 2
     arr = img[:, :, np.newaxis] if is_gray else img
     h, w, c = arr.shape
@@ -17,16 +16,11 @@ def nearest_neighbor(img: np.ndarray, scale_h: float, scale_w: float) -> np.ndar
     R = np.clip(np.round(np.arange(nh) * sr).astype(int), 0, h - 1)
     C = np.clip(np.round(np.arange(nw) * sc).astype(int), 0, w - 1)
 
-    # fancy index: arr[R, :, :][:, C, :]
     out = arr[np.ix_(R, C)]
     return out[:, :, 0] if is_gray else out
 
 
 def bilinear(img: np.ndarray, scale_h: float, scale_w: float) -> np.ndarray:
-    """Manual bilinear interpolation (vectorized).
-    J(r,c) = I(r0,c0)(1-dr)(1-dc) + I(r0+1,c0)dr(1-dc)
-           + I(r0,c0+1)(1-dr)dc   + I(r0+1,c0+1)dr*dc
-    """
     is_gray = img.ndim == 2
     arr = img[:, :, np.newaxis].astype(np.float64) if is_gray else img.astype(np.float64)
     h, w, c = arr.shape
@@ -45,10 +39,10 @@ def bilinear(img: np.ndarray, scale_h: float, scale_w: float) -> np.ndarray:
     r1 = np.minimum(r0 + 1, h - 1)
     c1 = np.minimum(c0 + 1, w - 1)
 
-    dr = (rm - r0)[:, np.newaxis]   # (nh, 1)
-    dc = (cm - c0)[np.newaxis, :]   # (1, nw)
+    dr = (rm - r0)[:, np.newaxis]
+    dc = (cm - c0)[np.newaxis, :]
 
-    wa = (1 - dr) * (1 - dc)  # (nh, nw)
+    wa = (1 - dr) * (1 - dc)
     wb = dr * (1 - dc)
     wc = (1 - dr) * dc
     wd = dr * dc
@@ -66,7 +60,6 @@ def bilinear(img: np.ndarray, scale_h: float, scale_w: float) -> np.ndarray:
 
 
 def bicubic(img: np.ndarray, scale_h: float, scale_w: float) -> np.ndarray:
-    """Bicubic interpolation via cv2.INTER_CUBIC."""
     h, w = img.shape[:2]
     nh = max(1, int(round(h * scale_h)))
     nw = max(1, int(round(w * scale_w)))

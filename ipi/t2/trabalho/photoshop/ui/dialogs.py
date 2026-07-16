@@ -239,7 +239,6 @@ class HistMatchDialog(_BaseDialog):
 # ─── Filtros ─────────────────────────────────────────────────────────────────
 
 class FilterDialog(_BaseDialog):
-    """Generic filter dialog for Box and Gaussian filters."""
     def __init__(self, filter_type: str = 'box', parent=None):
         titles = {'box': 'Filtro Box (Média)', 'gaussian': 'Filtro Gaussiano'}
         super().__init__(titles.get(filter_type, 'Filtro'), parent)

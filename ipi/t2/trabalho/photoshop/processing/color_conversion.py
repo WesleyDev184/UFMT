@@ -2,7 +2,6 @@ import numpy as np
 
 
 def rgb2hsi(image: np.ndarray) -> np.ndarray:
-    """RGB float64/uint8 [0,255] -> HSI float64 [0,255]"""
     img = image.astype(np.float64) / 255.0
     r = img[:, :, 0]
     g = img[:, :, 1]
@@ -24,7 +23,6 @@ def rgb2hsi(image: np.ndarray) -> np.ndarray:
 
 
 def hsi2rgb(image: np.ndarray) -> np.ndarray:
-    """HSI float64 [0,255] -> RGB float64 [0,255] clipped"""
     img = image.astype(np.float64) / 255.0
     h = img[:, :, 0] * 2 * np.pi
     s = img[:, :, 1]
@@ -34,7 +32,6 @@ def hsi2rgb(image: np.ndarray) -> np.ndarray:
     g = np.zeros_like(h)
     b = np.zeros_like(h)
 
-    # Sector 1: H in [0, 2pi/3)
     m1 = (h >= 0) & (h < 2 * np.pi / 3)
     b[m1] = i[m1] * (1 - s[m1])
     cos_h = np.cos(h[m1])
@@ -42,14 +39,12 @@ def hsi2rgb(image: np.ndarray) -> np.ndarray:
     r[m1] = i[m1] * (1 + s[m1] * cos_h / (cos_60_h + 1e-6))
     g[m1] = 3 * i[m1] - (r[m1] + b[m1])
 
-    # Sector 2: H in [2pi/3, 4pi/3)
     m2 = (h >= 2 * np.pi / 3) & (h < 4 * np.pi / 3)
     h2 = h[m2] - 2 * np.pi / 3
     r[m2] = i[m2] * (1 - s[m2])
     g[m2] = i[m2] * (1 + s[m2] * np.cos(h2) / (np.cos(np.pi / 3 - h2) + 1e-6))
     b[m2] = 3 * i[m2] - (r[m2] + g[m2])
 
-    # Sector 3: H in [4pi/3, 2pi)
     m3 = (h >= 4 * np.pi / 3) & (h < 2 * np.pi)
     h3 = h[m3] - 4 * np.pi / 3
     g[m3] = i[m3] * (1 - s[m3])

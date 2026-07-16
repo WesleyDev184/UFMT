@@ -3,7 +3,6 @@ import cv2
 
 
 def load_image(path: str) -> np.ndarray:
-    """Load image via OpenCV, return RGB uint8 numpy array."""
     img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
     if img is None:
         raise IOError(f"Cannot load image: {path}")
@@ -15,7 +14,6 @@ def load_image(path: str) -> np.ndarray:
 
 
 def save_image(path: str, img: np.ndarray) -> None:
-    """Save RGB/gray uint8 numpy array via OpenCV."""
     if img.ndim == 3:
         out = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_RGB2BGR)
     else:
@@ -24,7 +22,6 @@ def save_image(path: str, img: np.ndarray) -> None:
 
 
 def to_display(img: np.ndarray) -> np.ndarray:
-    """Ensure image is uint8 for display purposes."""
     return np.clip(img, 0, 255).astype(np.uint8)
 
 
