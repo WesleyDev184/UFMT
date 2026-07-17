@@ -1,6 +1,6 @@
-"""Núcleo de morfologia matemática — erosão, dilatação, abertura,
-fechamento e hit-or-miss. Tudo vetorizado com broadcast via
-`sliding_window_view` (sem cv2, sem scipy.ndimage).
+"""Núcleo de morfologia matemática — erosão e hit-or-miss. Tudo
+vetorizado com broadcast via `sliding_window_view` (sem cv2, sem
+scipy.ndimage).
 
 Convenção: imagens binárias usam 0 (fundo) e 255 (objeto). Elemento
 estruturante B é um array 2D de 0/1; `anchor` é (linha, coluna) da
@@ -49,27 +49,6 @@ def erode(img, B, anchor=None, border_value=None):
     win = _windows(img, B, anchor, pad_value)
     masked = np.where(B.astype(bool), win, dont_care)
     return masked.min(axis=(2, 3)).astype(img.dtype)
-
-
-def dilate(img, B, anchor=None, border_value=None):
-    """A ⊕ B: max sobre a janela nas posições onde B==1."""
-    B = np.asarray(B)
-    anchor = anchor or default_anchor(B)
-    dont_care = int(img.min())  # identidade do max: nunca deve afetar o resultado
-    pad_value = dont_care if border_value is None else border_value
-    win = _windows(img, B, anchor, pad_value)
-    masked = np.where(B.astype(bool), win, dont_care)
-    return masked.max(axis=(2, 3)).astype(img.dtype)
-
-
-def opening(img, B, anchor=None):
-    """A ∘ B = (A ⊖ B) ⊕ B."""
-    return dilate(erode(img, B, anchor), B, anchor)
-
-
-def closing(img, B, anchor=None):
-    """A • B = (A ⊕ B) ⊖ B."""
-    return erode(dilate(img, B, anchor), B, anchor)
 
 
 def hit_or_miss(img, B1, B2, anchor=None):

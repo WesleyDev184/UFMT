@@ -20,13 +20,6 @@ def load_image(path, grayscale=True):
     return img
 
 
-def save_image(path, img):
-    """Salva imagem (RGB ou grayscale uint8) no disco."""
-    if img.ndim == 3:
-        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-    cv2.imwrite(path, img)
-
-
 def to_uint8(img):
     """Normaliza um array float para uint8 [0,255]."""
     img = img.astype(np.float64)
