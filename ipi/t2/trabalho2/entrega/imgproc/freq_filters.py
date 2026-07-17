@@ -85,7 +85,7 @@ def butterworth_filter(img, D0, n, highpass=False, as_uint8=True):
     return _to_uint8(out) if as_uint8 else out
 
 
-def highboost_sharpen(img, D0, k=1.0, as_uint8=True):
+def gaussian_sharpen(img, D0, k=1.0, as_uint8=True):
     """g = f + k * GHPF(f, D0). Extensão padrão (Gonzalez) do H_HP do slide 52,
     já que o material do curso define apenas o filtro, não a fórmula de
     aguçamento em si (slide 48 só anuncia o tópico)."""
