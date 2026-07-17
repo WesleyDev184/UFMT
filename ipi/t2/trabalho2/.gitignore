@@ -1,0 +1,38 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+*.egg
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Temp / output images (descomente se quiser ignorar)
+# output/
